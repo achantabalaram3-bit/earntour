@@ -21,3 +21,17 @@ root.render(
     </QueryClientProvider>
   </React.StrictMode>,
 );
+
+/*
+ * Prize League PWA registration.
+ * The service worker intentionally performs no API/network caching.
+ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .catch((error) => {
+        console.error('Prize League service worker registration failed:', error);
+      });
+  });
+}
