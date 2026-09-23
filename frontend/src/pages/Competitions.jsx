@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CompetitionCard from '../components/CompetitionCard';
 import { CATEGORIES } from '../mock/mockData';
 import { contestsAPI } from '../lib/api';
@@ -6,128 +7,120 @@ import { Input } from '../components/ui/input';
 import {
   Search,
   Sparkles,
-  Image as ImageIcon,
 } from 'lucide-react';
 
-function ComingSoonCard({ contest }) {
-  return (
-    <article
-      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-      data-testid={`coming-soon-${contest.id}`}
-    >
-      <div className="relative aspect-[16/10] bg-gradient-to-br from-[#160B35] via-[#351071] to-[#6C2BFF] flex items-center justify-center overflow-hidden">
-        {contest.image ? (
-          <img
-            src={contest.image}
-            alt={contest.title}
-            className="absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="text-center text-white/75">
-            <ImageIcon className="w-10 h-10 mx-auto mb-2" />
-            <span className="text-xs font-bold uppercase tracking-widest">
-              Image coming soon
-            </span>
-          </div>
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-
-        <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFD54A]/50 bg-black/65 px-3 py-1.5 text-[11px] font-black tracking-wider text-[#FFD54A]">
-          <Sparkles className="w-3.5 h-3.5" />
-          COMING SOON
-        </div>
-      </div>
-
-      <div className="p-5">
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#6C2BFF]">
-          Prize Competition
-        </p>
-
-        <h2 className="mt-1 font-display text-xl font-extrabold text-slate-900">
-          {contest.title}
-        </h2>
-
-        <p className="mt-2 min-h-[40px] text-sm leading-5 text-slate-500">
-          {contest.subtitle ||
-            'Competition details, prize information and entry information will be announced soon.'}
-        </p>
-
-        <div className="mt-5 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-extrabold text-slate-600">
-          COMING SOON
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export default function Competitions() {
-  const [contests, setContests] =
-    useState([]);
+  const [contests, setContests] = useState([]);
+  const [cat, setCat] = useState('all');
+  const [q, setQ] = useState('');
 
-  const [cat, setCat] =
-    useState('all');
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [q, setQ] =
-    useState('');
+  const requestedView = searchParams.get('view');
+
+  const initialView =
+    requestedView === 'live' || requestedView === 'future'
+      ? requestedView
+      : 'all';
+
+  const [view, setView] = useState(initialView);
 
   useEffect(() => {
     contestsAPI
       .list()
-      .then(setContests)
+      .then(r => setContests(Array.isArray(r) ? r : (r?.contests || [])))
       .catch(() => setContests([]));
   }, []);
 
-  const mapped =
-    useMemo(
-      () =>
-        contests.map(c => ({
-          id: c.contest_id,
-          slug: c.slug,
-          title: c.title,
-          subtitle: c.subtitle,
-          category: c.category,
-          tag: c.tag,
-          price: c.price,
-          prizeAmount: c.prize_amount,
-          ticketsSold: c.tickets_sold,
-          ticketsTotal: c.tickets_total,
-          endDate: c.end_date,
-          image: c.image,
-          jackpot: c.jackpot,
-          gameType: c.game_type,
-          status: c.status,
-          comingSoon:
-            c.public_coming_soon === true ||
-            (
-              c.status === 'draft' &&
-              c.tag === 'Coming Soon'
-            ),
-        })),
-      [contests]
-    );
+  // Keep the page in sync when a user arrives through:
+  // /competitions?view=live
+  // /competitions?view=future
+  useEffect(() => {
+    const next = searchParams.get('view');
 
-  const items =
-    useMemo(
-      () =>
-        mapped.filter(c =>
-          (
-            cat === 'all' ||
-            c.category === cat
-          ) &&
-          c.title
+    if (next === 'live' || next === 'future') {
+      setView(next);
+    } else {
+      setView('all');
+    }
+  }, [searchParams]);
+
+  const changeView = nextView => {
+    setView(nextView);
+
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (nextView === 'all') {
+      nextParams.delete('view');
+    } else {
+      nextParams.set('view', nextView);
+    }
+
+    setSearchParams(nextParams);
+  };
+
+  const mapped = useMemo(
+    () =>
+      contests.map(c => ({
+        id: c.contest_id,
+        contest_id: c.contest_id,
+        slug: c.slug,
+        title: c.title,
+        subtitle: c.subtitle,
+        category: c.category,
+        tag: c.tag,
+        price: c.price,
+        prizeAmount: c.prize_amount,
+        ticketsSold: c.tickets_sold,
+        ticketsTotal: c.tickets_total,
+        endDate: c.end_date,
+        image: c.image,
+        jackpot: c.jackpot,
+        featured: c.featured,
+        gameType: c.game_type,
+        status: c.status,
+
+        public_coming_soon: c.public_coming_soon === true,
+        comingSoon: c.public_coming_soon === true,
+      })),
+    [contests]
+  );
+
+  const items = useMemo(
+    () =>
+      mapped.filter(c => {
+        const matchesView =
+          view === 'all' ||
+          (view === 'live' && c.public_coming_soon !== true) ||
+          (view === 'future' && c.public_coming_soon === true);
+
+        const matchesCategory =
+          cat === 'all' ||
+          c.category === cat;
+
+        const matchesSearch =
+          String(c.title || '')
             .toLowerCase()
-            .includes(q.toLowerCase())
-        ),
-      [mapped, cat, q]
-    );
+            .includes(q.toLowerCase());
+
+        return (
+          matchesView &&
+          matchesCategory &&
+          matchesSearch
+        );
+      }),
+    [mapped, view, cat, q]
+  );
 
   const liveCount =
-    mapped.filter(c => !c.comingSoon).length;
+    mapped.filter(
+      c => c.public_coming_soon !== true
+    ).length;
 
-  const comingSoonCount =
-    mapped.filter(c => c.comingSoon).length;
+  const futureCount =
+    mapped.filter(
+      c => c.public_coming_soon === true
+    ).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10">
@@ -142,11 +135,59 @@ export default function Competitions() {
             ? `${liveCount} live competition${liveCount === 1 ? '' : 's'}`
             : 'New competitions are on the way.'}
 
-          {comingSoonCount > 0 &&
-            ` • ${comingSoonCount} coming soon`}
+          {futureCount > 0 &&
+            ` - ${futureCount} future contest${futureCount === 1 ? '' : 's'}`}
         </p>
       </div>
 
+      {/* LIVE / FUTURE FILTERS */}
+      <div className="flex flex-wrap gap-2 mb-5">
+
+        <button
+          type="button"
+          onClick={() => changeView('all')}
+          className={[
+            'rounded-full px-5 py-2.5 text-sm font-extrabold transition',
+            view === 'all'
+              ? 'bg-[#6C2BFF] text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
+          ].join(' ')}
+          data-testid="contest-view-all"
+        >
+          All Contests
+        </button>
+
+        <button
+          type="button"
+          onClick={() => changeView('live')}
+          className={[
+            'rounded-full px-5 py-2.5 text-sm font-extrabold transition',
+            view === 'live'
+              ? 'bg-[#6C2BFF] text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
+          ].join(' ')}
+          data-testid="contest-view-live"
+        >
+          Live Contests ({liveCount})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => changeView('future')}
+          className={[
+            'rounded-full px-5 py-2.5 text-sm font-extrabold transition',
+            view === 'future'
+              ? 'bg-[#6C2BFF] text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
+          ].join(' ')}
+          data-testid="contest-view-future"
+        >
+          Future Contests ({futureCount})
+        </button>
+
+      </div>
+
+      {/* EXISTING SEARCH + CATEGORY OPTIONS */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
 
         <div className="relative flex-1">
@@ -156,10 +197,8 @@ export default function Competitions() {
 
           <Input
             value={q}
-            onChange={e =>
-              setQ(e.target.value)
-            }
-            placeholder="Search competitions…"
+            onChange={e => setQ(e.target.value)}
+            placeholder="Search competitions..."
             className="pl-9"
           />
         </div>
@@ -169,9 +208,7 @@ export default function Competitions() {
             <button
               type="button"
               key={category.slug}
-              onClick={() =>
-                setCat(category.slug)
-              }
+              onClick={() => setCat(category.slug)}
               className={[
                 'rounded-full px-4 py-2 text-sm font-bold transition',
                 cat === category.slug
@@ -188,33 +225,32 @@ export default function Competitions() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 
-        {items.map(contest =>
-          contest.comingSoon ? (
-            <ComingSoonCard
-              key={contest.id}
-              contest={contest}
-            />
-          ) : (
-            <CompetitionCard
-              key={contest.id}
-              c={contest}
-            />
-          )
-        )}
+        {items.map(contest => (
+          <CompetitionCard
+            key={contest.id}
+            c={contest}
+          />
+        ))}
 
       </div>
 
       {items.length === 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white py-20 text-center">
+
           <Sparkles className="w-10 h-10 mx-auto text-[#6C2BFF]" />
 
           <h2 className="mt-4 font-display text-2xl font-extrabold text-slate-900">
-            Competitions coming soon
+            {view === 'live'
+              ? 'No live competitions'
+              : view === 'future'
+                ? 'No future competitions announced'
+                : 'Competitions coming soon'}
           </h2>
 
           <p className="mt-2 text-slate-500">
             New Prize League competitions are being prepared.
           </p>
+
         </div>
       )}
 

@@ -2325,7 +2325,7 @@ if (
                   <div>
                     <span>Token cost</span>
                     <strong data-testid="retry-cost">
-                      {retryCost} 🪙
+                      {retryCost} ðŸª™
                     </strong>
                   </div>
 
@@ -2333,8 +2333,8 @@ if (
                     <span>Current balance</span>
                     <strong data-testid="retry-current-balance">
                       {walletBalance === null
-                        ? '…'
-                        : `${walletBalance} 🪙`}
+                        ? 'â€¦'
+                        : `${walletBalance} ðŸª™`}
                     </strong>
                   </div>
 
@@ -2342,12 +2342,12 @@ if (
                     <span>Remaining balance</span>
                     <strong data-testid="retry-remaining-balance">
                       {walletBalance === null
-                        ? '…'
+                        ? 'â€¦'
                         : `${Math.max(
                             0,
                             walletBalance -
                               retryCost,
-                          )} 🪙`}
+                          )} ðŸª™`}
                     </strong>
                   </div>
                 </div>
@@ -2410,7 +2410,7 @@ if (
                       onClick={retryWithToken}
                     >
                       {busy
-                        ? 'Please wait…'
+                        ? 'Please waitâ€¦'
                         : 'Confirm'}
                     </button>
                   </div>

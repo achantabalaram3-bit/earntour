@@ -9,31 +9,9 @@ import {
 import { Button } from '../../components/ui/button';
 
 
-const DEFAULT_TARGETS = [
-  20,
-  25,
-  30,
-  35,
-  40,
-  45,
-  50,
-  60,
-  75,
-  90,
-];
+const DEFAULT_TARGETS = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
 
-const DEFAULT_TIMES = [
-  25,
-  27,
-  30,
-  32,
-  35,
-  38,
-  42,
-  48,
-  55,
-  65,
-];
+const DEFAULT_TIMES = [60, 55, 50, 45, 40, 35, 30, 25, 20, 18];
 
 const DEFAULT_NAMES = [
   'Village Gate',
@@ -808,7 +786,7 @@ export default function FreeWorldContestConfig({
               </div>
 
               <div className="text-xs text-slate-500">
-                Separate prize challenge — not Level 11
+                Separate prize challenge â€” not Level 11
               </div>
             </div>
           </div>

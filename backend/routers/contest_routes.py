@@ -181,7 +181,7 @@ async def issue_skill_challenge(slug: str):
 @router.post('/{contest_id}/track-view')
 async def track_contest_view(contest_id: str, is_mobile: bool = False):
     """Bump card-view counters used by admin's mobile-optimisation hint.
-    No auth required Ã¢â‚¬â€ anonymous view tracking with rate-limit-safe increments."""
+    No auth required â€” anonymous view tracking with rate-limit-safe increments."""
     from deps import get_db
     db = get_db()
     field = 'mobile_views' if is_mobile else 'desktop_views'

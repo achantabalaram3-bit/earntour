@@ -1,12 +1,12 @@
 /**
- * MobileHome — the entire redesigned mobile experience (<768px) in one
+ * MobileHome - the entire redesigned mobile experience (<768px) in one
  * self-contained component. Wrapped by `md:hidden` at the mount site and
  * paired with `hidden md:block` on the desktop Home markup so desktop UI is
  * BYTE-FOR-BYTE untouched.
  *
  * Three tabs, each hitting the same live API methods the desktop pages use
  * (contestsAPI.list, gamesAPI.leaderboard, contestsAPI.myGames, ordersAPI.myTickets)
- * — no mock, no seed, no new endpoints.
+ * - no mock, no seed, no new endpoints.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -36,7 +36,7 @@ export default function MobileHome() {
   });
   const [contests, setContests] = useState([]);
   useEffect(() => {
-    contestsAPI.list({ status: 'live', limit: 24 }).then(r => setContests(r?.contests || r || [])).catch(() => setContests([]));
+    contestsAPI.list({ limit: 100 }).then(r => setContests(r?.contests || r || [])).catch(() => setContests([]));
   }, []);
   // Persist the active tab in the URL (?m=leaderboard) so back-button + deep links work.
   useEffect(() => {
@@ -76,62 +76,76 @@ export default function MobileHome() {
 
 /* --------------------------------- CONTESTS -------------------------------- */
 function ContestsPanel({ contests }) {
-  const homeContests = contests.slice(0, 4);
+  const liveContests = contests
+    .filter(c => c.public_coming_soon !== true)
+    .slice(0, 10);
+
+  const futureContests = contests
+    .filter(c => c.public_coming_soon === true)
+    .slice(0, 10);
+
+  const mapContest = c => ({
+    id: c.contest_id,
+    contest_id: c.contest_id,
+    slug: c.slug,
+    title: c.title,
+    subtitle: c.subtitle || c.tag,
+    tag: c.tag,
+    price: c.price,
+    ticketsSold: c.tickets_sold,
+    ticketsTotal: c.tickets_total,
+    prizeAmount: c.prize_amount,
+    endDate: c.end_date || c.end_time,
+    image: c.image,
+    jackpot: c.jackpot,
+    featured: c.featured,
+    gameType: c.game_type,
+    status: c.status,
+    public_coming_soon: c.public_coming_soon === true,
+    comingSoon: c.public_coming_soon === true,
+  });
 
   return (
     <div className="pt-4">
 
-      {/* 1 — clean promotional image holder */}
+      {/* 1 - clean promotional image holder */}
       <div className="-mt-4">
         <PromotionBanner />
       </div>
 
-      {/* 2 — optional admin-controlled public game previews */}
+      {/* 2 - optional admin-controlled public game previews */}
       <GamePreviewSection mobile />
 
-      {/* 3 — only four contests */}
+      {/* 3 - LIVE CONTESTS */}
       <div className="px-4 pt-6">
         <h2 className="font-display font-extrabold text-xl text-white mb-3">
-          Contests
+          Live Contests
         </h2>
 
-        {homeContests.length === 0 ? (
-          <div className="text-center py-16 text-white text-sm">
-            No contests live right now. Check back soon.
+        {liveContests.length === 0 ? (
+          <div className="text-center py-10 text-white text-sm">
+            No live contests right now. Check back soon.
           </div>
         ) : (
           <div
             className="space-y-4"
-            data-testid="mobile-contest-list"
+            data-testid="mobile-live-contest-list"
           >
-            {homeContests.map(c => (
+            {liveContests.map(c => (
               <CompetitionCard
                 key={c.contest_id}
-                c={{
-                  id: c.contest_id,
-                  contest_id: c.contest_id,
-                  slug: c.slug,
-                  title: c.title,
-                  subtitle: c.subtitle || c.tag,
-                  tag: c.tag,
-                  price: c.price,
-                  ticketsSold: c.tickets_sold,
-                  ticketsTotal: c.tickets_total,
-                  endDate: c.end_date || c.end_time,
-                  image: c.image,
-                }}
+                c={mapContest(c)}
               />
             ))}
           </div>
         )}
 
-        {/* 4 — More Contests */}
-        {homeContests.length > 0 && (
+        {liveContests.length > 0 && (
           <div className="flex justify-center pt-6 pb-2">
             <Link
-              to="/competitions"
+              to="/competitions?view=live"
               className="inline-flex items-center justify-center min-w-[170px] h-11 px-6 rounded-full bg-[#FFD54A] text-slate-900 font-extrabold text-sm shadow"
-              data-testid="mobile-more-contests"
+              data-testid="mobile-more-live-contests"
             >
               More Contests
               <ChevronRight className="w-4 h-4 ml-1" />
@@ -140,20 +154,59 @@ function ContestsPanel({ contests }) {
         )}
       </div>
 
-      {/* 5 — How It Works */}
+      {/* 4 - FUTURE CONTESTS */}
+      <div className="px-4 pt-8">
+        <h2 className="font-display font-extrabold text-xl text-white mb-3">
+          Future Contests
+        </h2>
+
+        {futureContests.length === 0 ? (
+          <div className="text-center py-10 text-white text-sm">
+            No future contests announced right now.
+          </div>
+        ) : (
+          <div
+            className="space-y-4"
+            data-testid="mobile-future-contest-list"
+          >
+            {futureContests.map(c => (
+              <CompetitionCard
+                key={c.contest_id}
+                c={mapContest(c)}
+              />
+            ))}
+          </div>
+        )}
+
+        {futureContests.length > 0 && (
+          <div className="flex justify-center pt-6 pb-2">
+            <Link
+              to="/competitions?view=future"
+              className="inline-flex items-center justify-center min-w-[170px] h-11 px-6 rounded-full bg-[#FFD54A] text-slate-900 font-extrabold text-sm shadow"
+              data-testid="mobile-more-future-contests"
+            >
+              More Contests
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* 5 - How It Works */}
       <div className="mt-7">
         <HowToPlaySection compact />
       </div>
 
-      {/* 6 — Refer & Earn */}
+      {/* 6 - Refer & Earn */}
       <div className="px-4 mt-7">
         <ReferAndEarnCard />
       </div>
 
-      {/* 7 — Trust / safety */}
+      {/* 7 - Trust / safety */}
       <div className="mt-7">
         <TrustBadges />
       </div>
+
     </div>
   );
 }
@@ -200,7 +253,7 @@ function GamesPanel() {
       {playable.length === 0 ? (
         <div className="text-center py-10 text-white text-sm">
           <p>No pending games right now.</p>
-          <Link to="/?m=contests" className="inline-block mt-3 text-[#FFD54A] font-bold">Browse contests →</Link>
+          <Link to="/?m=contests" className="inline-block mt-3 text-[#FFD54A] font-bold">Browse contests ></Link>
         </div>
       ) : (
         <div className="space-y-2" data-testid="mobile-games-list">
@@ -216,7 +269,7 @@ function GamesPanel() {
               )}
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-white text-sm truncate">{t.contest?.title || 'Contest'}</div>
-                <div className="text-[10px] text-white">{t.contest?.game_type || 'Skill game'} · Ticket #{t.ticket_number}</div>
+                <div className="text-[10px] text-white">{t.contest?.game_type || 'Skill game'} - Ticket #{t.ticket_number}</div>
               </div>
               <div className="bg-[#FFD54A] text-slate-900 font-extrabold text-[10px] rounded-full px-2 py-0.5">1 attempt</div>
               <ChevronRight className="w-4 h-4 text-white" />

@@ -17,13 +17,13 @@ import secrets
 
 from models import Contest, SkillQuestion, Winner
 
-# Shared question bank – kept small; expanded by seed.py's QBANK if needed.
+# Shared question bank â€“ kept small; expanded by seed.py's QBANK if needed.
 QBANK = [
     ('What is 12 + 7?', ['17', '19', '21', '23'], '19', 'math'),
-    ('What is 8 × 6?', ['42', '46', '48', '54'], '48', 'math'),
-    ('What is 100 ÷ 4?', ['20', '25', '30', '40'], '25', 'math'),
+    ('What is 8 Ã— 6?', ['42', '46', '48', '54'], '48', 'math'),
+    ('What is 100 Ã· 4?', ['20', '25', '30', '40'], '25', 'math'),
     ('What is 15 - 8?', ['5', '6', '7', '8'], '7', 'math'),
-    ('What is 9 × 9?', ['72', '81', '89', '99'], '81', 'math'),
+    ('What is 9 Ã— 9?', ['72', '81', '89', '99'], '81', 'math'),
     ('Capital city of France?', ['Rome', 'Madrid', 'Paris', 'Berlin'], 'Paris', 'trivia'),
     ('Which planet is closest to the Sun?', ['Venus', 'Mercury', 'Earth', 'Mars'], 'Mercury', 'trivia'),
     ('How many continents are there?', ['5', '6', '7', '8'], '7', 'trivia'),
@@ -77,7 +77,7 @@ async def handle_create_contests(db, a: dict) -> dict:
     prize = float(a.get('prize_amount', 100))
     tickets = int(a.get('tickets_total', 150))
     duration = int(a.get('duration_days', 7))
-    title = a.get('title') or f"Win £{int(prize)} Cash"
+    title = a.get('title') or f"Win Â£{int(prize)} Cash"
     category = a.get('category') or ('jackpot' if prize >= 250 else 'prize-draws')
     tag_map = {'jackpot': 'Jackpot', 'instant-wins': 'Instant Wins', 'prize-draws': 'Prize Draws', 'new-games': 'New Game'}
     tag = tag_map.get(category, 'Prize Draws')
@@ -92,7 +92,7 @@ async def handle_create_contests(db, a: dict) -> dict:
         c = Contest(
             slug=_slug_for(title, i),
             title=f"{title}" + (f" #{i + 1}" if count > 1 else ''),
-            subtitle=f"£{int(prize)} cash prize",
+            subtitle=f"Â£{int(prize)} cash prize",
             category=category,
             tag=tag,
             price=price,
@@ -148,7 +148,22 @@ async def _set_contest_status(db, a: dict, status: str, action_name: str) -> dic
     c = await _find_contest(db, a.get('id_or_slug') or '')
     if not c:
         return {'action': action_name, 'ok': False, 'error': f'Not found: {a.get("id_or_slug")}'}
-    await db.contests.update_one({'contest_id': c['contest_id']}, {'$set': {'status': status}})
+
+    if status == 'live' and c.get('public_coming_soon') is True:
+        return {
+            'action': action_name,
+            'ok': False,
+            'error': 'This competition is marked Coming Soon. Remove Coming Soon before launching it.',
+        }
+
+    updates = {'status': status}
+    if status == 'live':
+        updates['public_coming_soon'] = False
+
+    await db.contests.update_one(
+        {'contest_id': c['contest_id']},
+        {'$set': updates},
+    )
     return {'action': action_name, 'ok': True, 'contest_id': c['contest_id']}
 
 
@@ -157,7 +172,18 @@ async def handle_launch_contest(db, a: dict) -> dict:
 
 
 async def handle_launch_all_drafts(db, a: dict) -> dict:
-    r = await db.contests.update_many({'status': 'draft'}, {'$set': {'status': 'live'}})
+    r = await db.contests.update_many(
+        {
+            'status': 'draft',
+            'public_coming_soon': {'$ne': True},
+        },
+        {
+            '$set': {
+                'status': 'live',
+                'public_coming_soon': False,
+            }
+        },
+    )
     return {'action': 'launch_all_drafts', 'ok': True, 'launched': r.modified_count}
 
 

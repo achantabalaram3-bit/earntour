@@ -1762,7 +1762,7 @@ async def admin_world_users(
     qualified: Optional[bool] = None,
 ):
     """Read-only, server-side paginated Free World user progress for admin
-    monitoring. Reuses world_progress + users. Exposes only safe fields —
+    monitoring. Reuses world_progress + users. Exposes only safe fields Î“Ã‡Ã¶
     never passwords, tokens, or KYC. Performs NO mutation.
     """
     await require_admin(request)
@@ -1859,9 +1859,8 @@ async def admin_world_users(
     }
 
 
-
 # ===========================================================================
-# FREE WORLD PROGRESSION LEVELS Ã¢â‚¬â€ ROYAL VILLAGE
+# FREE WORLD PROGRESSION LEVELS â€” ROYAL VILLAGE
 # ===========================================================================
 #
 # IMPORTANT:
@@ -2081,10 +2080,7 @@ def _default_world_level_config(
         # Used later by the Championship cycle scheduler.
         # It does NOT currently auto-unlock the level.
         "unlock_after_days":
-            max(
-                0,
-                (level - 1),
-            ),
+            max(0, (level - 1)),
     }
 
     return result
@@ -2244,7 +2240,7 @@ def _validate_world_level_config(
                 status_code=400,
                 detail=(
                     f"Level {level} time limit "
-                    "must be 5Ã¢â‚¬â€œ900 seconds."
+                    "must be 5â€“900 seconds."
                 ),
             )
 
@@ -3108,6 +3104,41 @@ async def _effective_level_config(
             or {}
         ),
     }
+
+    # Free World V2 locked normal-level game rules.
+    #
+    # Existing contest/admin configuration may still control the
+    # non-game metadata for a level, but old Season 1 game settings
+    # must never restore the previous variable number sequences.
+    #
+    # Levels 1-10 always use the same 1-20 Number Sequence game.
+    # Difficulty increases only through the time limit.
+    locked_times = {
+        1: 60,
+        2: 55,
+        3: 50,
+        4: 45,
+        5: 40,
+        6: 35,
+        7: 30,
+        8: 25,
+        9: 20,
+        10: 18,
+    }
+
+    merged["game_id"] = "number_sequence"
+
+    merged["game_config"] = {
+        **merged.get(
+            "game_config",
+            {}
+        ),
+        "target_number": 20,
+    }
+
+    merged["time_limit_seconds"] = (
+        locked_times[level]
+    )
 
     return merged
 
@@ -5177,7 +5208,7 @@ async def free_world_session_submit(
 
 
 # ===========================================================================
-# FREE WORLD Ã¢â‚¬â€ CHAMPION CONTEST GAMEPLAY
+# FREE WORLD â€” CHAMPION CONTEST GAMEPLAY
 # ===========================================================================
 #
 # GLOBAL CONTEST NUMBER:
@@ -5336,7 +5367,7 @@ async def _ensure_champion_entry(
         "season_id":
             WORLD_SEASON_ID,
 
-        # GLOBAL Ã¢â‚¬â€ decides game everyone plays.
+        # GLOBAL â€” decides game everyone plays.
         "global_contest_number":
             contest_number,
 
@@ -6933,7 +6964,7 @@ async def champion_my_history(
 
 
 # ===========================================================================
-# PHASE 2C REVISED Ã¢â‚¬â€ TOKEN / BEST-TIME / CHAMPION RULES
+# PHASE 2C REVISED â€” TOKEN / BEST-TIME / CHAMPION RULES
 # ===========================================================================
 
 
@@ -6976,9 +7007,9 @@ def _champion_final_prize(
 ) -> int:
     """
     Example:
-      rank 4 base = Ã‚Â£10
+      rank 4 base = Â£10
       Champion 9
-      final = Ã‚Â£90
+      final = Â£90
     """
     return (
         _champion_rank_base_prize(rank)
@@ -7019,7 +7050,7 @@ async def _world_best_verified_time(
 
 
 # ===========================================================================
-# TOKEN RETRY Ã¢â‚¬â€ RESERVATION HOOK ONLY
+# TOKEN RETRY â€” RESERVATION HOOK ONLY
 # ===========================================================================
 
 
@@ -7599,7 +7630,7 @@ async def reserve_world_token_retry(
 
 
 # ===========================================================================
-# TOKEN LEVEL UNLOCK Ã¢â‚¬â€ RESERVATION HOOK ONLY
+# TOKEN LEVEL UNLOCK â€” RESERVATION HOOK ONLY
 # ===========================================================================
 
 
@@ -7721,7 +7752,7 @@ async def reserve_world_level_unlock(
             },
         )
 
-    # Tokens bypass time only Ã¢â‚¬â€ never progression/start/closed rules.
+    # Tokens bypass time only â€” never progression/start/closed rules.
     if access.get(
         "lock_reason"
     ) != "time":
@@ -8095,7 +8126,7 @@ async def free_world_level_attempt_summary(
 
 
 # ===========================================================================
-# PAID-CONTEST QUALIFICATION EVIDENCE Ã¢â‚¬â€ SHADOW MODE
+# PAID-CONTEST QUALIFICATION EVIDENCE â€” SHADOW MODE
 # ===========================================================================
 #
 # IMPORTANT:
@@ -10349,7 +10380,7 @@ async def continue_after_champion(
 
 
 # ===========================================================================
-# FREE WORLD Ã¢â‚¬â€ LEVEL ACCESS / TIMING
+# FREE WORLD â€” LEVEL ACCESS / TIMING
 # ===========================================================================
 
 
