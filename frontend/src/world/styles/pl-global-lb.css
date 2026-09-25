@@ -8,7 +8,7 @@
 .pl-global-lb-shell {
   position: fixed;
   inset: 0;
-  z-index: 4000;
+  z-index: 10100;
   overflow-y: auto;
   overflow-x: hidden;
   color: #1e1b3a;
@@ -247,7 +247,7 @@
 .pl-global-lb-x:active { transform: scale(0.94); }
 
 /* ---------- MULTIPLIERS MODAL ---------- */
-.pl-global-lb-modal { position: fixed; inset: 0; z-index: 4100; display: flex; align-items: flex-end; justify-content: center; }
+.pl-global-lb-modal { position: fixed; inset: 0; z-index: 10200; display: flex; align-items: flex-end; justify-content: center; }
 .pl-global-lb-modal-bg { position: absolute; inset: 0; background: rgba(23, 19, 52, 0.5); backdrop-filter: blur(3px); }
 .pl-global-lb-modal-card {
   position: relative; width: 100%; max-width: 640px; max-height: 90vh;

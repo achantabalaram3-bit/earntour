@@ -1,0 +1,51 @@
+{
+  "summary": "Frontend UI redesign of Free World GLOBAL LEADERBOARD tested end-to-end on desktop (1920) and mobile (390). Overlay opens from bottom nav (data-testid world-nav-leaderboard) and correctly renders: slim topbar with brand + Back, prize pool £257,500 side-by-side with ends-in timer (27:55:53), Prize Calculation card with all 5 base prizes (1st £50 / 2nd £20 / 3rd £15 / 4th £10 / 5th £5), MORE multipliers modal titled '100 Championship Prize Multipliers' with formula + worked example + 100-tile grid (Champion 1=1x, 2=1.5x, 3=2x, 4=2.5x, 100=50.5x). Selecting Champion 2 in example-select correctly shows £75, £30, £22.50, £15, £7.50. VIEW CHAMPIONSHIP dropdown has exactly 101 options (All Championships (Global) + Champion 1..100). All=global rankings header, Champion N=CHAMPION N RANKINGS header. Selecting Champion 3 fires GET /api/world/public/champion/leaderboard?contest_number=3 -> 200. Not-logged-in shows lb-your-rank-empty, empty leaderboard shows lb-empty ('No rankings yet'). Mobile 390 stacks cards and has NO horizontal overflow (scrollWidth==clientWidth==390). Free World map still renders and bottom nav still works.\n\nCRITICAL BUGS FOUND:\n1) Back button (data-testid=lb-close) does NOT close the overlay — click has zero effect on desktop.\n2) Multipliers modal close (data-testid=lb-mult-close) does NOT close the modal — click has zero effect.\n3) Refresh button (data-testid=lb-refresh) does NOT trigger a champion-leaderboard fetch (0 network requests observed).\n4) Escape key: closes overlay only when body is focused; when overlay/interactive element retains focus, Escape does not close the overlay reliably. In first run Escape did not close overlay; in second run it did after clicking body first. Suggests missing global keydown listener or focus-scoped listener.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "FreeWorldLeaderboard - Back button", "issue": "Clicking Back button does not close the overlay (no state change). onClick handler likely not wired or overlay open state not toggled.", "selector": "[data-testid='lb-close']", "priority": "HIGH"},
+      {"component": "FreeWorldLeaderboard - Multipliers modal close (X)", "issue": "Clicking the X close button in the multipliers modal does not close it.", "selector": "[data-testid='lb-mult-close']", "priority": "HIGH"},
+      {"component": "FreeWorldLeaderboard - Refresh button", "issue": "Clicking Refresh does not fire the champion-leaderboard GET request (network monitor observed 0 requests after click).", "selector": "[data-testid='lb-refresh']", "priority": "HIGH"},
+      {"component": "FreeWorldLeaderboard - Escape key handler", "issue": "Escape key only closes overlay if focus is on body; global keydown listener may not be attached, or is attached to the wrong scope.", "selector": "document keydown", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "verified_working": [
+    "Bottom nav leaderboard button opens overlay",
+    "Slim topbar renders with brand + Back button (visible)",
+    "Prize pool card shows £257,500 side-by-side with Ends-in timer",
+    "Prize Calculation card lists all 5 base prizes",
+    "MORE opens multipliers modal with formula, worked example, example-select, 100-tile grid (all data-testids present)",
+    "Champion 1=1x, 2=1.5x, 3=2x, 4=2.5x, 100=50.5x correct",
+    "Selecting Champion 2 in example shows £75/£30/£22.50/£15/£7.50 correctly",
+    "VIEW CHAMPIONSHIP dropdown has 101 options: All + Champion 1..100",
+    "Selecting Champion 3 issues GET /api/world/public/champion/leaderboard?contest_number=3 -> 200",
+    "Rankings heading switches: 'GLOBAL RANKINGS' vs 'CHAMPION 3 RANKINGS'",
+    "Empty state (lb-empty) renders 'No rankings yet'",
+    "Your Position empty variant (lb-your-rank-empty) renders when logged out",
+    "Mobile 390px: cards stack, no horizontal overflow",
+    "Free World map still renders after redesign"
+  ],
+  "test_report_links": ["/app/test_reports/lb_desktop.png", "/app/test_reports/lb_mobile.png"],
+  "action_items": [
+    "Fix Back button (lb-close) onClick to call the close handler / setShowFreeLeaderboard(false).",
+    "Fix multipliers modal close (lb-mult-close) onClick to setShowMultipliersModal(false).",
+    "Fix Refresh button (lb-refresh) to invoke worldAPI.championLeaderboard(currentSelection) again.",
+    "Attach global window/document keydown listener for Escape to close overlay regardless of focused element (useEffect with document.addEventListener('keydown')).",
+    "Investigate why the trigger button (world-nav-leaderboard) is detected as not-visible by Playwright at bounding-rect 0,0 — parentDisplay=none. It's rendered visually via a nested layer; consider ensuring the accessible/DOM path is visible for keyboard/screen-reader users too."
+  ],
+  "critical_code_review_comments": [
+    "Back / modal-close / refresh buttons render with correct data-testids and are visually visible but their click handlers appear to be no-ops. Verify that onClick={() => close()} is actually bound in FreeWorldLeaderboard.jsx and that state setters aren't shadowed by early returns.",
+    "Escape handler should be a document-level keydown effect scoped to overlay open state.",
+    "Bottom-nav leaderboard button parent has display:none per computed style yet the button is visually rendered — indicates styling reaches through a hidden ancestor which is an a11y/testing concern."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "~75% (structure/data correct, but 3 core interactions broken: back, modal-close, refresh)"},
+  "test_credentials": "Not exercised (empty-state path validated instead per prompt).",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use page.evaluate(() => document.querySelector('[data-testid=world-nav-leaderboard]').click()) to open the overlay — Playwright reports the button as not-visible (parent display:none) so .click() throws. Overlay + first champion fetch takes ~3-4s. On retest confirm lb-close, lb-mult-close and lb-refresh actually work.",
+  "rca of the issue": "Likely a missing/broken onClick binding in FreeWorldLeaderboard.jsx for the three buttons (lb-close, lb-mult-close, lb-refresh). Suggest inspecting whether the handlers reference stale state or whether the JSX uses onClick={handler()} (immediate invoke) instead of onClick={handler}. Also add a useEffect for Escape keydown at document level."
+}
