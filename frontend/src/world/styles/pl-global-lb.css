@@ -189,6 +189,14 @@
 .pl-global-lb-rankhead h2 { margin: 0; font-size: 17px; font-weight: 900; color: #171334; letter-spacing: -0.3px; }
 .pl-global-lb-updates { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 900; letter-spacing: 0.4px; color: #0b7a43; }
 .pl-global-lb-updates i { width: 7px; height: 7px; border-radius: 50%; background: #16c26a; animation: pl-global-lb-blink 1.4s ease-in-out infinite; }
+.pl-global-lb-updates.final { color: #a56a00; }
+.pl-global-lb-settled {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 12px; padding: 10px 12px; border-radius: 12px;
+  font-size: 12.5px; font-weight: 800; color: #9c6400;
+  background: linear-gradient(160deg, #fff7dd, #ffe6b3); border: 1px solid #f6dfa2;
+}
+.pl-global-lb-settled svg { color: #f2a100; flex: 0 0 auto; }
 
 .pl-global-lb-tablewrap { display: flex; flex-direction: column; }
 .pl-global-lb-thead, .pl-global-lb-tr {

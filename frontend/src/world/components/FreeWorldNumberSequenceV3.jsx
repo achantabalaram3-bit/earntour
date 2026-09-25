@@ -1244,6 +1244,16 @@ if (
         );
 
 
+  const attemptTotal =
+    Number(
+      resultAttempts
+        ?.initial_attempts ??
+      resultAttempts
+        ?.initial_free_attempts ??
+      3,
+    ) || 3;
+
+
   const attemptUsed =
     Math.max(
       1,
@@ -1254,7 +1264,7 @@ if (
           ?.attempts_used ??
         Math.max(
           1,
-          3 -
+          attemptTotal -
           resultFreeAttempts,
         ),
       ),
@@ -2204,7 +2214,7 @@ if (
               </span>
 
               <strong>
-                {attemptUsed} of 3
+                {attemptUsed} of {attemptTotal}
               </strong>
 
             </div>

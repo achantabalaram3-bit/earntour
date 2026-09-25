@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown, Coins, ChevronRight,
 } from 'lucide-react';
@@ -59,6 +59,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   const [endsIn, setEndsIn] = useState('');
   const [showMult, setShowMult] = useState(false);
   const [exStage, setExStage] = useState(2);
+  const endHandledRef = useRef(false);
 
   const load = useCallback(async (which) => {
     setLoading(true); setError('');
@@ -85,10 +86,26 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   const endAt = contest?.end_at ? new Date(contest.end_at).getTime() : null;
 
   useEffect(() => {
-    if (!open || !endAt) { setEndsIn(''); return undefined; }
+    if (!open || !endAt) { setEndsIn(''); endHandledRef.current = false; return undefined; }
+    let poll;
     const tick = () => {
       const diff = endAt - Date.now();
-      if (diff <= 0) { setEndsIn('00:00:00'); return; }
+      if (diff <= 0) {
+        setEndsIn('00:00:00');
+        // Championship has closed exactly at end_at — pull the settled
+        // leaderboard so the winners are announced automatically.
+        if (!endHandledRef.current) {
+          endHandledRef.current = true;
+          load(champN);
+          let tries = 0;
+          poll = setInterval(() => {
+            tries += 1;
+            load(champN);
+            if (tries >= 8 && poll) clearInterval(poll);
+          }, 20000);
+        }
+        return;
+      }
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
@@ -96,8 +113,8 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
     };
     tick();
     const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [open, endAt]);
+    return () => { clearInterval(id); if (poll) clearInterval(poll); };
+  }, [open, endAt, champN, load]);
 
   const rows = useMemo(() => (Array.isArray(data?.leaderboard) ? data.leaderboard : []), [data]);
   const isMine = useCallback(
@@ -106,7 +123,9 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   );
 
   const myRow = useMemo(() => rows.find(isMine) || null, [rows, isMine]);
-  const isLive = String(contest?.status || '').toLowerCase() === 'active';
+  const status = String(contest?.status || '').toLowerCase();
+  const isLive = status === 'active';
+  const settled = Boolean(contest?.settled) || status === 'settled' || status === 'closed_settled';
   const titleLbl = champN === 'all' ? 'GLOBAL RANKINGS' : `CHAMPION ${champN} RANKINGS`;
 
   if (!open) return null;
@@ -188,8 +207,8 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <div className="pl-global-lb-card pl-global-lb-ends">
             <span className="pl-global-lb-endsicon"><Clock size={26} /></span>
             <div>
-              <div className="pl-global-lb-endsval" data-testid="lb-ends-in">{endsIn || '—'}</div>
-              <div className="pl-global-lb-endslbl">Ends In</div>
+              <div className="pl-global-lb-endsval" data-testid="lb-ends-in">{settled ? 'CLOSED' : (endsIn || '—')}</div>
+              <div className="pl-global-lb-endslbl">{settled ? 'Winners Announced' : 'Ends In'}</div>
             </div>
           </div>
         </div>
@@ -260,7 +279,13 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <div className="pl-global-lb-rankhead">
             <h2>{titleLbl}</h2>
             {isLive && <span className="pl-global-lb-updates" data-testid="lb-updates"><i /> UPDATES LIVE</span>}
+            {settled && <span className="pl-global-lb-updates final" data-testid="lb-final"><Crown size={12} /> FINAL RESULTS</span>}
           </div>
+          {settled && (
+            <div className="pl-global-lb-settled" data-testid="lb-settled">
+              <Crown size={14} /> Championship closed — winners announced below
+            </div>
+          )}
           <RankingsBody />
         </div>
       </div>

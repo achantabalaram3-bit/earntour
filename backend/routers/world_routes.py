@@ -78,6 +78,10 @@ CHAMPION_BASE_RANK_PRIZES = {
 
 CHAMPION_WINNER_COUNT = 5
 
+# Token cost to purchase one additional Champion attempt after the
+# free Champion attempt(s) for the contest are used.
+CHAMPION_TOKEN_RETRY_COST = 1
+
 # Technical capability exists, but prize qualification
 # based on paid contest participation is not enforced
 # until explicitly enabled and connected.
@@ -5603,10 +5607,9 @@ async def _champion_attempt_status(
     Free World admin panel later.
     """
 
-    # Champion Level 2 and every later Champion level get ONE free
-    # attempt (then token retry). Scoped to season + contest + user
-    # + champion_stage in a dedicated collection so it never touches
-    # the stage-1 (Champion 1 = 3 free) counters.
+    # Personal Champion stage decides the free-attempt policy:
+    #   Champion 1        -> 3 free attempts  (world_champion_attempt_counters)
+    #   Champion 2 and up -> 1 free attempt   (world_champion_stage_counters)
     stage = 1
     try:
         stage = int(await _user_champion_stage(db, user_id) or 1)
@@ -5614,6 +5617,7 @@ async def _champion_attempt_status(
         stage = 1
 
     if stage >= 2:
+        initial_attempts = 1
         scoped = await db.world_champion_stage_counters.find_one(
             {
                 "season_id": WORLD_SEASON_ID,
@@ -5624,115 +5628,100 @@ async def _champion_attempt_status(
             {"_id": 0},
         )
         if not scoped:
-            return {
-                "initial_attempts": 1,
-                "attempts_remaining": 1,
-            }
-        return {
-            "initial_attempts": 1,
-            "attempts_remaining": max(
+            attempts_remaining = 1
+        else:
+            attempts_remaining = max(
                 0,
                 int(scoped.get("attempts_remaining", 1)),
-            ),
-        }
-
-    counter = await db.world_champion_attempt_counters.find_one(
-        {
-            "season_id":
-                WORLD_SEASON_ID,
-
-            "global_contest_number":
-                contest_number,
-
-            "user_id":
-                user_id,
-        },
-        {
-            "_id": 0,
-        },
-    )
-
-    initial_attempts = 3
-
-    if not counter:
-        return {
-            "initial_attempts":
-                initial_attempts,
-
-            "attempts_remaining":
-                initial_attempts,
-        }
-
-    # One-time upgrade for counters created under the old
-    # one-free-attempt Championship policy.
-    #
-    # Current Championship has not started consuming attempts,
-    # so a legacy counter is upgraded to the full 3 attempts.
-    if counter.get("free_attempt_policy") != 3:
-        # Migrate ONCE from the old one-free-attempt policy to the new
-        # 3-free policy. Preserve any attempts the user already used:
-        #   consumed  = old_initial(=old policy, default 1) - old_remaining
-        #   remaining = new_initial(3) - consumed  (never negative)
-        old_policy = int(
-            counter.get("free_attempt_policy", 1) or 1
-        )
-        old_remaining = max(
-            0,
-            int(counter.get("attempts_remaining", 0)),
-        )
-        consumed = max(0, old_policy - old_remaining)
-        migrated_remaining = max(0, initial_attempts - consumed)
-
-        result = await db.world_champion_attempt_counters.find_one_and_update(
-            {
-                "season_id":
-                    WORLD_SEASON_ID,
-
-                "global_contest_number":
-                    contest_number,
-
-                "user_id":
-                    user_id,
-
-                "free_attempt_policy": {
-                    "$ne": 3,
-                },
-            },
-            {
-                "$set": {
-                    "attempts_remaining":
-                        migrated_remaining,
-
-                    "free_attempt_policy":
-                        3,
-
-                    "updated_at":
-                        _utcnow(),
-                },
-            },
-            return_document=True,
-        )
-
-        if result:
-            counter = result
-
-    remaining = max(
-        0,
-        int(
-            counter.get(
-                "attempts_remaining",
-                initial_attempts,
             )
-        ),
+    else:
+        initial_attempts = 3
+        counter = await db.world_champion_attempt_counters.find_one(
+            {
+                "season_id": WORLD_SEASON_ID,
+                "global_contest_number": contest_number,
+                "user_id": user_id,
+            },
+            {"_id": 0},
+        )
+
+        if not counter:
+            attempts_remaining = initial_attempts
+        else:
+            # One-time upgrade for counters created under the old
+            # one-free-attempt Championship policy. Preserve any
+            # attempts the user already used.
+            if counter.get("free_attempt_policy") != 3:
+                old_policy = int(
+                    counter.get("free_attempt_policy", 1) or 1
+                )
+                old_remaining = max(
+                    0,
+                    int(counter.get("attempts_remaining", 0)),
+                )
+                consumed = max(0, old_policy - old_remaining)
+                migrated_remaining = max(0, initial_attempts - consumed)
+
+                result = await db.world_champion_attempt_counters.find_one_and_update(
+                    {
+                        "season_id": WORLD_SEASON_ID,
+                        "global_contest_number": contest_number,
+                        "user_id": user_id,
+                        "free_attempt_policy": {"$ne": 3},
+                    },
+                    {
+                        "$set": {
+                            "attempts_remaining": migrated_remaining,
+                            "free_attempt_policy": 3,
+                            "updated_at": _utcnow(),
+                        },
+                    },
+                    return_document=True,
+                )
+
+                if result:
+                    counter = result
+
+            attempts_remaining = max(
+                0,
+                int(counter.get("attempts_remaining", initial_attempts)),
+            )
+
+    # Shared Champion token-retry entitlement (sentinel level 0).
+    champion_retry = await db.world_token_retry_daily.find_one(
+        {
+            "season_id": WORLD_SEASON_ID,
+            "user_id": user_id,
+            "level": 0,
+        },
+        {"_id": 0},
+    )
+    entitlement_remaining = max(
+        0,
+        int((champion_retry or {}).get("entitlement_remaining", 0)),
     )
 
     return {
-        "initial_attempts":
-            initial_attempts,
+        # Canonical Champion counters (backend-authoritative).
+        "initial_attempts": initial_attempts,
+        "attempts_remaining": attempts_remaining,
 
-        "attempts_remaining":
-            remaining,
+        # Frontend-facing fields — mirror the normal-level attempt
+        # status shape so the Champion play UI shows the correct
+        # "PLAY AGAIN — FREE" / "RETRY WITH TOKEN" state.
+        "free_attempts_available": attempts_remaining,
+        "token_retry_enabled": True,
+        "token_retry_entitlement_remaining": entitlement_remaining,
+        "total_attempts_available": (
+            attempts_remaining + entitlement_remaining
+        ),
+        "token_retry_available": bool(
+            attempts_remaining == 0
+            and entitlement_remaining == 0
+        ),
+        "token_retry_cost": CHAMPION_TOKEN_RETRY_COST,
     }
+
 
 
 async def _consume_champion_stage2_attempt(
