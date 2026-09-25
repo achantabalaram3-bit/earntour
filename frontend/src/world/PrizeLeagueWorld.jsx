@@ -34,7 +34,9 @@ import WorldCanvas
   from './components/WorldCanvas';
 
 import FreeWorldLeaderboard
-  from './components/FreeWorldLeaderboard';import FreeWorldNumberSequence
+  from './components/FreeWorldLeaderboard';
+
+import FreeWorldNumberSequence
   from './components/FreeWorldNumberSequenceV3';
 
 import './styles/world.css';
@@ -347,13 +349,15 @@ export default function PrizeLeagueWorld() {
   return (
     <div className="pl-world-page">
 
-      <WorldCanvas />
+      {!showWorldLeaderboard && (
+<WorldCanvas />
+      )}
 
-      {/* Something Special — animated, colourful popping surprise symbol → Winnings / £50 challenge */}
+      {/* Something Special — animated, colourful popping surprise symbol → Winnings / £500 challenge */}
       <button
         type="button"
         onClick={() => navigate(user ? '/my-account/winnings' : '/login')}
-        aria-label="Something Special — win £50"
+        aria-label="Something Special — win £500"
         data-testid="something-special-fab"
         className="pl-special-fab"
       >
@@ -363,7 +367,7 @@ export default function PrizeLeagueWorld() {
           <span className="pl-special-fab-gift">
             <Gift />
           </span>
-          <span className="pl-special-fab-amount">{'\u00A3'}50</span>
+          <span className="pl-special-fab-amount">{'\u00A3'}500</span>
           <span className="pl-special-fab-tag">SPECIAL</span>
         </span>
       </button>

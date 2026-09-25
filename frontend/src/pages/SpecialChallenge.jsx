@@ -42,11 +42,19 @@ export default function SpecialChallenge() {
       finishedRef.current = false;
       setNext(1); setSeq([]); setLeft(LIMIT); setResult(null); setPlaying(true);
     } catch (e) {
-      setError('Could not start the challenge. Please make sure you are logged in.');
+      const message =
+        e?.response?.data?.detail ||
+        e?.response?.data?.message ||
+        'Could not start the challenge. You need 1 token to play.';
+
+      setError(message);
     } finally { setStarting(false); }
   };
 
-  useEffect(() => { startGame(); /* eslint-disable-next-line */ }, []);
+  // Paid challenge: start only after explicit PLAY.
+  useEffect(() => {
+    setStarting(false);
+  }, []);
 
   useEffect(() => {
     if (!playing) return undefined;
@@ -70,7 +78,7 @@ export default function SpecialChallenge() {
       const r = await winningsAPI.completeChallenge(attemptId, sequence);
       setResult(r);
       if (r.reward_pence > 0) {
-        toast({ title: 'You won £50!', description: 'Credited to your Winnings Wallet.' });
+        toast({ title: 'You won £500!', description: 'Credited to your Winnings Wallet.' });
       }
     } catch (e) {
       setResult({ result: 'fail', reward_pence: 0 });
@@ -105,12 +113,42 @@ export default function SpecialChallenge() {
           <div className="text-center text-white/70 py-20" data-testid="challenge-starting">Starting…</div>
         )}
 
+        {!starting && !playing && !result && !error && !attemptId && (
+          <div className="text-center py-16">
+            <Gift className="w-14 h-14 mx-auto text-amber-400 mb-4" />
+
+            <h1 className="text-3xl font-black text-amber-400">
+              WIN £500
+            </h1>
+
+            <p className="mt-3 text-white/70">
+              Complete the impossible challenge within {LIMIT} seconds.
+            </p>
+
+            <div className="mt-5 text-lg font-black text-white">
+              ENTRY: 1 🪙
+            </div>
+
+            <Button
+              className="mt-6 bg-amber-500 hover:bg-amber-600 text-white font-black"
+              onClick={startGame}
+              data-testid="challenge-paid-start"
+            >
+              PLAY — 1 🪙
+            </Button>
+
+            <p className="mt-3 text-xs text-white/50">
+              1 token is charged when you start the attempt.
+            </p>
+          </div>
+        )}
+
         {error && !starting && (
           <div className="text-center py-16">
             <p className="text-white/80" data-testid="challenge-error">{error}</p>
             <div className="flex gap-2 justify-center mt-4">
               <Button variant="outline" className="text-white border-white/40" onClick={backToWallet}>Back</Button>
-              <Button className="bg-amber-500 hover:bg-amber-600" onClick={startGame}>Retry</Button>
+              <Button className="bg-amber-500 hover:bg-amber-600" onClick={startGame}>Retry — 1 🪙</Button>
             </div>
           </div>
         )}
@@ -139,14 +177,14 @@ export default function SpecialChallenge() {
             <h3 className="text-2xl font-extrabold">{result.result === 'success' ? 'Completed! 🎉' : 'Time / sequence missed'}</h3>
             <p className="mt-2 text-slate-600" data-testid="result-message">
               {result.reward_pence > 0
-                ? 'You earned £50.00 — credited to your Winnings Wallet.'
+                ? 'You earned £500.00 — credited to your Winnings Wallet.'
                 : result.result === 'success'
-                  ? 'Well done! You have already claimed the £50 reward (practice run — no further reward).'
+                  ? 'Well done! You have already claimed the £500 reward (practice run — no further reward).'
                   : 'Not this time. Unlimited attempts — try again!'}
             </p>
             <div className="flex gap-2 mt-5">
               <Button variant="outline" className="flex-1" onClick={backToWallet} data-testid="result-back">Back to Wallet</Button>
-              <Button className="flex-1 bg-amber-500 hover:bg-amber-600 text-white" onClick={startGame} data-testid="result-playagain">Play again</Button>
+              <Button className="flex-1 bg-amber-500 hover:bg-amber-600 text-white" onClick={startGame} data-testid="result-playagain">Play again — 1 🪙</Button>
             </div>
           </div>
         </div>

@@ -634,6 +634,72 @@ function ChampionshipSection({
     championshipNumber ===
     currentChampionship;
 
+  const championTimer =
+    (() => {
+      if (!isCurrentChampionship) {
+        return null;
+      }
+
+      const champion =
+        worldState?.champion ?? {};
+
+      const opensMs =
+        Date.parse(
+          champion.champion_opens_at ?? '',
+        );
+
+      const closesMs =
+        Date.parse(
+          champion.champion_closes_at ?? '',
+        );
+
+      const nextLevelMs =
+        Date.parse(
+          champion.next_level_opens_at ?? '',
+        );
+
+      if (
+        Number.isFinite(opensMs) &&
+        worldNowMs < opensMs
+      ) {
+        return {
+          label: 'STARTS IN',
+          value: formatWorldCountdown(
+            opensMs,
+            worldNowMs,
+          ),
+        };
+      }
+
+      if (
+        Number.isFinite(closesMs) &&
+        worldNowMs < closesMs
+      ) {
+        return {
+          label: 'CLOSES IN',
+          value: formatWorldCountdown(
+            closesMs,
+            worldNowMs,
+          ),
+        };
+      }
+
+      if (
+        Number.isFinite(nextLevelMs) &&
+        worldNowMs < nextLevelMs
+      ) {
+        return {
+          label: 'NEXT LEVEL OPENS IN',
+          value: formatWorldCountdown(
+            nextLevelMs,
+            worldNowMs,
+          ),
+        };
+      }
+
+      return null;
+    })();
+
   const backendLevels =
     worldState?.levels ?? [];
 
@@ -775,76 +841,280 @@ function ChampionshipSection({
           currentGlobalLevel,
         );
 
-      const slotIndex = localLevel - 1;
+      const champion =
+        worldState?.champion ?? {};
+
+      const championReady =
+        Boolean(
+          worldState?.progress
+            ?.champion_ready,
+        );
+
+      const completedLevels =
+        worldState?.progress
+          ?.completed_levels ?? [];
+
+      const levelTenCompleted =
+        completedLevels.some(
+          (level) => {
+            const completedLevel =
+              Number(
+                typeof level === 'object'
+                  ? (
+                      level?.level ??
+                      level?.level_number
+                    )
+                  : level,
+              );
+
+            return (
+              completedLevel === endLevel ||
+              (
+                completedLevel === 10 &&
+                championshipNumber === 1
+              )
+            );
+          },
+        );
+
+      const championSlot =
+        PL1000_SLOT_POSITIONS[10];
+
+      const levelTenSlot =
+        PL1000_SLOT_POSITIONS[9];
+
+      const championOpensMs =
+        Date.parse(
+          champion.champion_opens_at ?? '',
+        );
+
+      const championClosesMs =
+        Date.parse(
+          champion.champion_closes_at ?? '',
+        );
+
+      const nextLevelOpensMs =
+        Date.parse(
+          champion.next_level_opens_at ?? '',
+        );
+
+      const championReached =
+        championReady ||
+        levelTenCompleted;
+
+      /*
+       * CHAMPION AVATAR STATE
+       *
+       * Final level completed:
+       *
+       * 1. Before Champion opens:
+       *    wait on road before Champion.
+       *
+       * 2. Champion open:
+       *    stand directly on Champion.
+       *
+       * 3. Champion closed:
+       *    wait beyond Champion toward
+       *    next Championship Level 1.
+       *
+       * 4. Next level opens:
+       *    normal championship progression
+       *    takes over.
+       */
+      if (
+        championReached &&
+        championSlot &&
+        levelTenSlot
+      ) {
+        /*
+         * BEFORE CHAMPION OPENS
+         */
+        if (
+          Number.isFinite(
+            championOpensMs,
+          ) &&
+          worldNowMs <
+            championOpensMs
+        ) {
+          return {
+            left:
+              PL1000_ROAD_X[9] ??
+              championSlot.x,
+
+            bottom:
+              levelTenSlot.bottom +
+              (
+                championSlot.bottom -
+                levelTenSlot.bottom
+              ) * 0.60,
+
+            waiting: true,
+            beforeChampion: true,
+          };
+        }
+
+        /*
+         * CHAMPION OPEN
+         */
+        if (
+          !Number.isFinite(
+            championClosesMs,
+          ) ||
+          worldNowMs <
+            championClosesMs
+        ) {
+          return {
+            /*
+             * Champion avatar:
+             * keep the player beside the Champion card instead of
+             * covering the title / prize in the centre.
+             *
+             * This branch is shared by every Championship.
+             */
+            left:
+              Math.min(
+                94,
+                championSlot.x + 18,
+              ),
+
+            bottom:
+              championSlot.bottom,
+
+            waiting: false,
+            atChampion: true,
+          };
+        }
+
+        /*
+         * CHAMPION CLOSED,
+         * NEXT LEVEL NOT OPEN YET
+         */
+        if (
+          Number.isFinite(
+            nextLevelOpensMs,
+          ) &&
+          worldNowMs <
+            nextLevelOpensMs
+        ) {
+          return {
+            left:
+              PL1000_ROAD_X[10] ??
+              championSlot.x,
+
+            bottom:
+              Math.min(
+                97,
+                championSlot.bottom +
+                  Math.max(
+                    3,
+                    (
+                      championSlot.bottom -
+                      levelTenSlot.bottom
+                    ) * 0.42,
+                  ),
+              ),
+
+            waiting: true,
+            afterChampion: true,
+          };
+        }
+      }
+
+      const slotIndex =
+        localLevel - 1;
 
       const slot =
-        PL1000_SLOT_POSITIONS[slotIndex];
+        PL1000_SLOT_POSITIONS[
+          slotIndex
+        ];
 
       if (!slot) {
         return null;
       }
 
       const state =
-        backendLevelMap.get(localLevel);
+        backendLevelMap.get(
+          localLevel,
+        );
 
       const locked =
         Boolean(state) &&
         !state.available &&
         !state.completed;
 
-      // The avatar walks strictly on the road centre-line while
-      // levels are locked; once a level is playable it jumps ONTO
-      // the circle (handled by the available branch below).
       const roadX = (i) =>
-        (PL1000_ROAD_X[i] != null
-          ? PL1000_ROAD_X[i]
-          : PL1000_SLOT_POSITIONS[i].x);
+        (
+          PL1000_ROAD_X[i] != null
+            ? PL1000_ROAD_X[i]
+            : PL1000_SLOT_POSITIONS[i].x
+        );
 
-      // Level 1 locked (any reason): wait BEFORE Level 1 — down the
-      // road toward the entrance. Extrapolate backwards along the
-      // road centre so the avatar stays on the path, just below it.
-      if (locked && slotIndex === 0) {
+      if (
+        locked &&
+        slotIndex === 0
+      ) {
         const next =
-          PL1000_SLOT_POSITIONS[slotIndex + 1];
+          PL1000_SLOT_POSITIONS[
+            slotIndex + 1
+          ];
 
         if (next) {
           const back = 0.35;
 
           return {
             left:
-              roadX(0) - back * (roadX(1) - roadX(0)),
+              roadX(0) -
+              back *
+                (
+                  roadX(1) -
+                  roadX(0)
+                ),
+
             bottom:
               slot.bottom -
-              back * (next.bottom - slot.bottom),
+              back *
+                (
+                  next.bottom -
+                  slot.bottom
+                ),
+
             waiting: true,
           };
         }
       }
 
-      if (locked && slotIndex >= 1) {
+      if (
+        locked &&
+        slotIndex >= 1
+      ) {
         const prev =
           PL1000_SLOT_POSITIONS[
             slotIndex - 1
           ];
 
-        // Deterministic point ON the black road between the
-        // completed level and the locked one — on the road centre.
         const fraction = 0.42;
 
         return {
           left:
             roadX(slotIndex - 1) +
             fraction *
-              (roadX(slotIndex) - roadX(slotIndex - 1)),
+              (
+                roadX(slotIndex) -
+                roadX(slotIndex - 1)
+              ),
+
           bottom:
             prev.bottom +
             fraction *
-              (slot.bottom - prev.bottom),
+              (
+                slot.bottom -
+                prev.bottom
+              ),
+
           waiting: true,
         };
       }
 
-      // Level is playable → the avatar jumps ONTO the level circle.
       return {
         left: slot.x,
         bottom: slot.bottom,
@@ -855,6 +1125,8 @@ function ChampionshipSection({
       journeyStarted,
       currentGlobalLevel,
       backendLevelMap,
+      worldState,
+      worldNowMs,
     ]);
 
   return (
@@ -1132,6 +1404,21 @@ function ChampionshipSection({
                     {championPrize}
                   </span>
 
+                  {championTimer && (
+                    <span
+                      className="pl1000-champion-countdown"
+                      aria-label={`${championTimer.label} ${championTimer.value}`}
+                    >
+                      <span>
+                        {championTimer.label}
+                      </span>
+
+                      <b>
+                        {championTimer.value}
+                      </b>
+                    </span>
+                  )}
+
                   <small>
                     CHAMPION LEVEL
                   </small>
@@ -1187,16 +1474,48 @@ function ChampionshipSection({
               levelUnlockMs >
                 worldNowMs;
 
-            // Only the user's IMMEDIATE next progression level
-            // (isCurrent) ever shows a countdown. Future locked
-            // levels stay locked but display no timer.
+            // Normally only the user's immediate next progression
+            // level shows a countdown. Exception: while the Champion
+            // window is active, also show the next Championship's
+            // Level 1 countdown (e.g. global Level 11), because its
+            // unlock clock runs alongside the Champion clock.
+            const championNextLevelMs =
+              Date.parse(
+                worldState?.champion
+                  ?.next_level_opens_at ?? '',
+              );
+
+            const isNextChampionshipFirstLevel =
+              localLevel === 1 &&
+              championshipNumber ===
+                currentChampionship + 1;
+
+            const nextChampionshipCountdown =
+              isNextChampionshipFirstLevel &&
+              Number.isFinite(
+                championNextLevelMs,
+              ) &&
+              championNextLevelMs >
+                worldNowMs;
+
             const levelCountdown =
-              hasFutureUnlock && isCurrent
+              hasFutureUnlock &&
+              (
+                isCurrent ||
+                nextChampionshipCountdown
+              )
                 ? formatWorldCountdown(
                     levelUnlockMs,
                     worldNowMs,
                   )
-                : null;
+                : (
+                    nextChampionshipCountdown
+                      ? formatWorldCountdown(
+                          championNextLevelMs,
+                          worldNowMs,
+                        )
+                      : null
+                  );
 
             const canEarlyUnlock =
               canUseTokens &&
@@ -1313,9 +1632,18 @@ function ChampionshipSection({
           <div
             className={[
               'pl1000-progress-avatar',
+
               progressAvatar.waiting
                 ? 'is-waiting'
                 : 'is-at-level',
+
+              progressAvatar.atChampion
+                ? 'is-at-champion'
+                : '',
+
+              progressAvatar.afterChampion
+                ? 'is-after-champion'
+                : '',
             ].join(' ')}
             style={{
               left: `${progressAvatar.left}%`,

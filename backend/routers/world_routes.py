@@ -57,17 +57,17 @@ WORLD_DEFAULT_CURRENCY = "GBP"
 # Champion prize distribution.
 #
 # Final payout:
-#   base rank prize Ãƒâ€” PERSONAL Champion stage.
+#   base rank prize ÃƒÆ’Ã¢â‚¬â€ PERSONAL Champion stage.
 #
 # Champion 1:
-#   1st Ã‚Â£50
-#   2nd Ã‚Â£20
-#   3rd Ã‚Â£15
-#   4th Ã‚Â£10
-#   5th Ã‚Â£5
+#   1st Ãƒâ€šÃ‚Â£50
+#   2nd Ãƒâ€šÃ‚Â£20
+#   3rd Ãƒâ€šÃ‚Â£15
+#   4th Ãƒâ€šÃ‚Â£10
+#   5th Ãƒâ€šÃ‚Â£5
 #
 # Champion 9 example:
-#   4th = Ã‚Â£10 Ãƒâ€” 9 = Ã‚Â£90
+#   4th = Ãƒâ€šÃ‚Â£10 ÃƒÆ’Ã¢â‚¬â€ 9 = Ãƒâ€šÃ‚Â£90
 CHAMPION_BASE_RANK_PRIZES = {
     1: 50,
     2: 20,
@@ -325,6 +325,17 @@ async def ensure_world_indexes():
         ],
         unique=True,
         name="world_champion_attempt_counter_unique",
+    )
+
+    await db.world_champion_stage_counters.create_index(
+        [
+            ("season_id", 1),
+            ("global_contest_number", 1),
+            ("user_id", 1),
+            ("champion_stage", 1),
+        ],
+        unique=True,
+        name="world_champion_stage_counter_unique",
     )
 
     await db.world_token_retry_daily.create_index(
@@ -773,9 +784,9 @@ async def seed_world_engine(request: Request):
     - Does NOT create winners.
     - Does NOT credit wallets.
 
-    Contest 1 is pre-configured with Number Sequence because that is
-    the first game currently being built.
-    Contests 2-100 remain unconfigured until admin assigns their games.
+    Contests 1-11 are pre-configured with the same Number Sequence
+    game pattern, level configuration, and Champion configuration.
+    Contests 12-100 remain unconfigured until admin assigns their games.
     """
     admin = await require_admin(request)
     db = get_db()
@@ -795,12 +806,12 @@ async def seed_world_engine(request: Request):
             "name": f"Champion Contest {number}",
             "game_id": (
                 "number_sequence"
-                if number == 1
+                if 1 <= number <= 11
                 else None
             ),
             "game_config": (
                 {"target_number": 100}
-                if number == 1
+                if 1 <= number <= 11
                 else {}
             ),
             "winner_count": CHAMPION_WINNER_COUNT,
@@ -835,7 +846,61 @@ async def seed_world_engine(request: Request):
 
         # Backfill the new configuration fields without
         # overwriting anything an admin has already saved.
-        if number == 1:
+        if 1 <= number <= 11:
+            # Backfill the top-level Number Sequence game for
+            # existing Championships 1-11 without overwriting
+            # an admin-configured non-empty game.
+            await db.world_global_contests.update_one(
+                {
+                    "season_id": WORLD_SEASON_ID,
+                    "contest_number": number,
+                    "$or": [
+                        {
+                            "game_id": {
+                                "$exists": False,
+                            }
+                        },
+                        {
+                            "game_id": None,
+                        },
+                        {
+                            "game_id": "",
+                        },
+                    ],
+                },
+                {
+                    "$set": {
+                        "game_id": "number_sequence",
+                    }
+                },
+            )
+
+            # Existing holders may already have an empty game_config.
+            # Fill only missing/empty config; preserve custom config.
+            await db.world_global_contests.update_one(
+                {
+                    "season_id": WORLD_SEASON_ID,
+                    "contest_number": number,
+                    "$or": [
+                        {
+                            "game_config": {
+                                "$exists": False,
+                            }
+                        },
+                        {
+                            "game_config": {},
+                        },
+                    ],
+                },
+                {
+                    "$set": {
+                        "game_config": {
+                            "target_number": 100,
+                        },
+                    }
+                },
+            )
+
             await db.world_global_contests.update_one(
                 {
                     "season_id":
@@ -844,9 +909,16 @@ async def seed_world_engine(request: Request):
                     "contest_number":
                         number,
 
-                    "levels_config": {
-                        "$exists": False,
-                    },
+                    "$or": [
+                        {
+                            "levels_config": {
+                                "$exists": False,
+                            }
+                        },
+                        {
+                            "levels_config": [],
+                        },
+                    ],
                 },
                 {
                     "$set": {
@@ -864,9 +936,16 @@ async def seed_world_engine(request: Request):
                     "contest_number":
                         number,
 
-                    "champion_config": {
-                        "$exists": False,
-                    },
+                    "$or": [
+                        {
+                            "champion_config": {
+                                "$exists": False,
+                            }
+                        },
+                        {
+                            "champion_config": {},
+                        },
+                    ],
                 },
                 {
                     "$set": {
@@ -920,7 +999,7 @@ async def seed_world_engine(request: Request):
             "champion_stage": number,
 
             # Locked product rule:
-            # Stage 1 = Ã‚Â£100 ... Stage 50 = Ã‚Â£5,000.
+            # Stage 1 = Ãƒâ€šÃ‚Â£100 ... Stage 50 = Ãƒâ€šÃ‚Â£5,000.
             "amount": number * 100,
             "currency":
                 WORLD_DEFAULT_CURRENCY,
@@ -1762,7 +1841,7 @@ async def admin_world_users(
     qualified: Optional[bool] = None,
 ):
     """Read-only, server-side paginated Free World user progress for admin
-    monitoring. Reuses world_progress + users. Exposes only safe fields Î“Ã‡Ã¶
+    monitoring. Reuses world_progress + users. Exposes only safe fields ÃŽâ€œÃƒâ€¡ÃƒÂ¶
     never passwords, tokens, or KYC. Performs NO mutation.
     """
     await require_admin(request)
@@ -1860,7 +1939,7 @@ async def admin_world_users(
 
 
 # ===========================================================================
-# FREE WORLD PROGRESSION LEVELS â€” ROYAL VILLAGE
+# FREE WORLD PROGRESSION LEVELS Ã¢â‚¬â€ ROYAL VILLAGE
 # ===========================================================================
 #
 # IMPORTANT:
@@ -2240,7 +2319,7 @@ def _validate_world_level_config(
                 status_code=400,
                 detail=(
                     f"Level {level} time limit "
-                    "must be 5â€“900 seconds."
+                    "must be 5Ã¢â‚¬â€œ900 seconds."
                 ),
             )
 
@@ -4351,6 +4430,38 @@ async def free_world_state(
         or ROYAL_VILLAGE_CHAMPION
     )
 
+    champion_stage = int(
+        progress.get(
+            "champion_stage",
+            1,
+        )
+    )
+
+    setting = await db.world_settings.find_one(
+        {
+            "_id":
+                "active_global_contest",
+
+            "season_id":
+                WORLD_SEASON_ID,
+        }
+    )
+
+    season_start = _ensure_aware_datetime(
+        (setting or {}).get(
+            "season_start_at"
+        )
+    )
+
+    champion_schedule = (
+        championship_window(
+            season_start,
+            champion_stage,
+        )
+        if season_start
+        else None
+    )
+
     return {
         "season_id": WORLD_SEASON_ID,
         "arena": 1,
@@ -4412,12 +4523,40 @@ async def free_world_state(
 
         "champion": {
             **champion_config,
+
             "unlocked":
                 bool(
                     progress.get(
                         "champion_ready",
                         False,
                     )
+                ),
+
+            "champion_opens_at":
+                (
+                    champion_schedule[
+                        "champion_opens_at"
+                    ]
+                    if champion_schedule
+                    else None
+                ),
+
+            "champion_closes_at":
+                (
+                    champion_schedule[
+                        "champion_closes_at"
+                    ]
+                    if champion_schedule
+                    else None
+                ),
+
+            "next_level_opens_at":
+                (
+                    champion_schedule[
+                        "next_start_at"
+                    ]
+                    if champion_schedule
+                    else None
                 ),
         },
     }
@@ -5208,7 +5347,7 @@ async def free_world_session_submit(
 
 
 # ===========================================================================
-# FREE WORLD â€” CHAMPION CONTEST GAMEPLAY
+# FREE WORLD Ã¢â‚¬â€ CHAMPION CONTEST GAMEPLAY
 # ===========================================================================
 #
 # GLOBAL CONTEST NUMBER:
@@ -5367,7 +5506,7 @@ async def _ensure_champion_entry(
         "season_id":
             WORLD_SEASON_ID,
 
-        # GLOBAL â€” decides game everyone plays.
+        # GLOBAL Ã¢â‚¬â€ decides game everyone plays.
         "global_contest_number":
             contest_number,
 
@@ -5464,6 +5603,39 @@ async def _champion_attempt_status(
     Free World admin panel later.
     """
 
+    # Champion Level 2 and every later Champion level get ONE free
+    # attempt (then token retry). Scoped to season + contest + user
+    # + champion_stage in a dedicated collection so it never touches
+    # the stage-1 (Champion 1 = 3 free) counters.
+    stage = 1
+    try:
+        stage = int(await _user_champion_stage(db, user_id) or 1)
+    except Exception:
+        stage = 1
+
+    if stage >= 2:
+        scoped = await db.world_champion_stage_counters.find_one(
+            {
+                "season_id": WORLD_SEASON_ID,
+                "global_contest_number": contest_number,
+                "user_id": user_id,
+                "champion_stage": stage,
+            },
+            {"_id": 0},
+        )
+        if not scoped:
+            return {
+                "initial_attempts": 1,
+                "attempts_remaining": 1,
+            }
+        return {
+            "initial_attempts": 1,
+            "attempts_remaining": max(
+                0,
+                int(scoped.get("attempts_remaining", 1)),
+            ),
+        }
+
     counter = await db.world_champion_attempt_counters.find_one(
         {
             "season_id":
@@ -5491,6 +5663,59 @@ async def _champion_attempt_status(
                 initial_attempts,
         }
 
+    # One-time upgrade for counters created under the old
+    # one-free-attempt Championship policy.
+    #
+    # Current Championship has not started consuming attempts,
+    # so a legacy counter is upgraded to the full 3 attempts.
+    if counter.get("free_attempt_policy") != 3:
+        # Migrate ONCE from the old one-free-attempt policy to the new
+        # 3-free policy. Preserve any attempts the user already used:
+        #   consumed  = old_initial(=old policy, default 1) - old_remaining
+        #   remaining = new_initial(3) - consumed  (never negative)
+        old_policy = int(
+            counter.get("free_attempt_policy", 1) or 1
+        )
+        old_remaining = max(
+            0,
+            int(counter.get("attempts_remaining", 0)),
+        )
+        consumed = max(0, old_policy - old_remaining)
+        migrated_remaining = max(0, initial_attempts - consumed)
+
+        result = await db.world_champion_attempt_counters.find_one_and_update(
+            {
+                "season_id":
+                    WORLD_SEASON_ID,
+
+                "global_contest_number":
+                    contest_number,
+
+                "user_id":
+                    user_id,
+
+                "free_attempt_policy": {
+                    "$ne": 3,
+                },
+            },
+            {
+                "$set": {
+                    "attempts_remaining":
+                        migrated_remaining,
+
+                    "free_attempt_policy":
+                        3,
+
+                    "updated_at":
+                        _utcnow(),
+                },
+            },
+            return_document=True,
+        )
+
+        if result:
+            counter = result
+
     remaining = max(
         0,
         int(
@@ -5510,19 +5735,126 @@ async def _champion_attempt_status(
     }
 
 
+async def _consume_champion_stage2_attempt(
+    db,
+    user_id: str,
+    contest_number: int,
+    stage: int,
+    now,
+):
+    """
+    Consume one Champion play for Champion Level 2 and later.
+
+    Policy: ONE free attempt per (season + contest + user + stage),
+    then a purchased token retry (shared level-0 champion entitlement).
+    Atomic; simultaneous begins cannot double-consume.
+    """
+    key = {
+        "season_id": WORLD_SEASON_ID,
+        "global_contest_number": contest_number,
+        "user_id": user_id,
+        "champion_stage": stage,
+    }
+
+    await db.world_champion_stage_counters.update_one(
+        key,
+        {
+            "$setOnInsert": {
+                **key,
+                "attempts_remaining": 1,
+                "free_attempt_policy": 1,
+                "created_at": now,
+            }
+        },
+        upsert=True,
+    )
+
+    # 1. FREE (1 per stage)
+    scoped = await db.world_champion_stage_counters.find_one_and_update(
+        {**key, "attempts_remaining": {"$gt": 0}},
+        {
+            "$inc": {"attempts_remaining": -1},
+            "$set": {"updated_at": now, "last_attempt_at": now},
+        },
+        return_document=True,
+    )
+    if scoped is not None:
+        return max(0, int(scoped.get("attempts_remaining", 0)))
+
+    # 2. PURCHASED CHAMPION RETRY (shared level-0 entitlement)
+    paid = await db.world_token_retry_daily.find_one_and_update(
+        {
+            "season_id": WORLD_SEASON_ID,
+            "user_id": user_id,
+            "level": 0,
+            "entitlement_remaining": {"$gt": 0},
+        },
+        {
+            "$inc": {"entitlement_remaining": -1},
+            "$set": {"used": True, "used_at": now, "updated_at": now},
+        },
+        return_document=True,
+    )
+    if paid:
+        reservation_id = paid.get("granted_reservation_id")
+        if reservation_id:
+            await db.world_token_retry_reservations.update_one(
+                {"reservation_id": reservation_id},
+                {"$set": {"status": "consumed", "consumed_at": now, "updated_at": now}},
+            )
+        return 0
+
+    raise HTTPException(
+        status_code=409,
+        detail={
+            "code": "NO_CHAMPION_ATTEMPTS",
+            "message": (
+                "No Champion attempt is available. "
+                "Purchase a token retry to play again."
+            ),
+        },
+    )
+
+
 async def _consume_champion_attempt(
     db,
     user_id: str,
     contest_number: int,
 ):
     """
-    Atomically consume one Champion attempt.
+    Atomically consume one Champion play entitlement.
 
-    No token retry is connected here yet.
+    Priority:
+      1. Three free Champion attempts per GLOBAL contest.
+      2. One purchased Champion token retry.
+
+    Purchased retries are not stockpiled. After one purchased
+    retry is consumed, the player may purchase another and repeat
+    while the Championship contest remains active.
     """
 
     now = _utcnow()
 
+    # Champion Level 2+ use a dedicated per-stage counter (1 free
+    # attempt, then token retry). Delegate so the stage-1 path below
+    # remains completely unchanged.
+    stage = 1
+    try:
+        stage = int(await _user_champion_stage(db, user_id) or 1)
+    except Exception:
+        stage = 1
+
+    if stage >= 2:
+        return await _consume_champion_stage2_attempt(
+            db,
+            user_id,
+            contest_number,
+            stage,
+            now,
+        )
+
+    # Ensure the three-free-attempt counter exists for this
+    # user + GLOBAL Champion contest.
     await db.world_champion_attempt_counters.update_one(
         {
             "season_id":
@@ -5548,6 +5880,9 @@ async def _consume_champion_attempt(
                 "attempts_remaining":
                     3,
 
+
+                "free_attempt_policy":
+                    3,
                 "created_at":
                     now,
             }
@@ -5555,6 +5890,9 @@ async def _consume_champion_attempt(
         upsert=True,
     )
 
+    # ---------------------------------------------------------
+    # 1. FREE CHAMPIONSHIP ATTEMPTS (3 PER GLOBAL CONTEST)
+    # ---------------------------------------------------------
     result = await db.world_champion_attempt_counters.find_one_and_update(
         {
             "season_id":
@@ -5587,29 +5925,108 @@ async def _consume_champion_attempt(
         return_document=True,
     )
 
-    if not result:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "code":
-                    "NO_CHAMPION_ATTEMPTS",
-
-                "message":
-                    (
-                        "No Champion attempts remain "
-                        "for this contest."
-                    ),
-            },
+    if result:
+        return max(
+            0,
+            int(
+                result.get(
+                    "attempts_remaining",
+                    0,
+                )
+            ),
         )
 
-    return max(
-        0,
-        int(
-            result.get(
-                "attempts_remaining",
+    # ---------------------------------------------------------
+    # 2. PURCHASED CHAMPIONSHIP RETRY
+    #
+    # Champion retry entitlement uses API sentinel level 0.
+    # Champion is NOT a normal World level.
+    # Consume exactly ONE already-paid retry entitlement.
+    # find_one_and_update makes simultaneous begin requests
+    # unable to consume the same entitlement twice.
+    # ---------------------------------------------------------
+    paid = await db.world_token_retry_daily.find_one_and_update(
+        {
+            "season_id":
+                WORLD_SEASON_ID,
+
+            "user_id":
+                user_id,
+
+            "level":
                 0,
+
+            "entitlement_remaining": {
+                "$gt": 0,
+            },
+        },
+        {
+            "$inc": {
+                "entitlement_remaining":
+                    -1,
+            },
+
+            "$set": {
+                "used":
+                    True,
+
+                "used_at":
+                    now,
+
+                "updated_at":
+                    now,
+            },
+        },
+        return_document=True,
+    )
+
+    if paid:
+        reservation_id = paid.get(
+            "granted_reservation_id"
+        )
+
+        # Keep the reservation audit trail synchronized with the
+        # entitlement that has now actually been consumed.
+        if reservation_id:
+            await db.world_token_retry_reservations.update_one(
+                {
+                    "reservation_id":
+                        reservation_id,
+                },
+                {
+                    "$set": {
+                        "status":
+                            "consumed",
+
+                        "consumed_at":
+                            now,
+
+                        "updated_at":
+                            now,
+                    }
+                },
             )
-        ),
+
+        # Champion session/begin currently expects an integer
+        # attempts_remaining value. The free counter remains zero;
+        # this play was authorized by the paid entitlement.
+        return 0
+
+    # ---------------------------------------------------------
+    # No free attempts remaining and no purchased retry.
+    # ---------------------------------------------------------
+    raise HTTPException(
+        status_code=409,
+        detail={
+            "code":
+                "NO_CHAMPION_ATTEMPTS",
+
+            "message":
+                (
+                    "No Champion attempt is available. "
+                    "Purchase a token retry to play again."
+                ),
+        },
     )
 
 
@@ -5914,13 +6331,39 @@ async def champion_session_start(
         contest_number,
     )
 
+    free_champion_attempts = int(
+        attempts[
+            "attempts_remaining"
+        ]
+    )
+
+    # Championship has exactly one free attempt.
+    # After that free attempt is consumed, a purchased
+    # Level-11 token retry may authorize another session.
+    paid_retry = await db.world_token_retry_daily.find_one(
+        {
+            "season_id":
+                WORLD_SEASON_ID,
+
+            "user_id":
+                user["user_id"],
+
+            "level":
+                0,
+
+            "entitlement_remaining": {
+                "$gt": 0,
+            },
+        }
+    )
+
+    paid_retry_available = bool(
+        paid_retry
+    )
+
     if (
-        int(
-            attempts[
-                "attempts_remaining"
-            ]
-        )
-        < 1
+        free_champion_attempts < 1
+        and not paid_retry_available
     ):
         raise HTTPException(
             status_code=409,
@@ -5930,8 +6373,8 @@ async def champion_session_start(
 
                 "message":
                     (
-                        "No Champion attempts remain "
-                        "for this contest."
+                        "No Champion attempts remain. "
+                        "Purchase a token retry to play again."
                     ),
             },
         )
@@ -6964,15 +7407,18 @@ async def champion_my_history(
 
 
 # ===========================================================================
-# PHASE 2C REVISED â€” TOKEN / BEST-TIME / CHAMPION RULES
+# PHASE 2C REVISED Ã¢â‚¬â€ TOKEN / BEST-TIME / CHAMPION RULES
 # ===========================================================================
 
 
 class WorldTokenRetryInput(BaseModel):
+    # Levels 1-11 = normal Free World levels.
+    # Level 0 = Champion retry sentinel used by the frontend
+    # and handled explicitly by reserve_world_token_retry().
     level: int = Field(
         ...,
-        ge=1,
-        le=10,
+        ge=0,
+        le=11,
     )
 
 
@@ -7004,16 +7450,45 @@ def _champion_rank_base_prize(
 def _champion_final_prize(
     rank: int,
     champion_stage: int,
-) -> int:
+):
     """
-    Example:
-      rank 4 base = Â£10
-      Champion 9
-      final = Â£90
+    Authoritative live and final Championship prize.
+
+    Multiplier:
+      Championship 1 = x1
+      Championship 2 = x1.5
+      Championship 3 = x2
+      Championship 4 = x2.5
+      Championship 5 = x3
+
+    Formula:
+      1 + ((champion_stage - 1) * 0.5)
     """
-    return (
+
+    stage = max(
+        1,
+        int(champion_stage),
+    )
+
+    multiplier = (
+        1
+        + (
+            (stage - 1)
+            * 0.5
+        )
+    )
+
+    amount = (
         _champion_rank_base_prize(rank)
-        * max(1, int(champion_stage))
+        * multiplier
+    )
+
+    if float(amount).is_integer():
+        return int(amount)
+
+    return round(
+        amount,
+        2,
     )
 
 
@@ -7050,7 +7525,7 @@ async def _world_best_verified_time(
 
 
 # ===========================================================================
-# TOKEN RETRY â€” RESERVATION HOOK ONLY
+# TOKEN RETRY Ã¢â‚¬â€ RESERVATION HOOK ONLY
 # ===========================================================================
 
 
@@ -7082,40 +7557,88 @@ async def reserve_world_token_retry(
     user_id = user["user_id"]
     level = int(body.level)
 
-    config = await _effective_level_config(
-        db,
-        level,
-    )
-
-    if not bool(
-        config.get(
-            "token_retry_enabled",
-            True,
-        )
-    ):
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "code":
-                    "TOKEN_RETRY_DISABLED",
-
-                "message":
-                    "Token retry is disabled for this level.",
-            },
+    if level != 0:
+        config = await _effective_level_config(
+            db,
+            level,
         )
 
-    status = await _free_attempt_status(
-        db,
-        user_id,
-        level,
-    )
+        if not bool(
+            config.get(
+                "token_retry_enabled",
+                True,
+            )
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code":
+                        "TOKEN_RETRY_DISABLED",
 
-    if int(
-        status.get(
-            "free_attempts_available",
-            0,
+                    "message":
+                        "Token retry is disabled for this level.",
+                },
+            )
+    else:
+        # Champion retry has its own entitlement rules.
+        config = {
+            "token_retry_enabled": True,
+        }
+
+    # Championship uses one free attempt per global contest.
+    # After that attempt is consumed, token retries may be
+    # purchased repeatedly, one retry at a time.
+    if level == 0:
+        champion_contest = await _active_contest(
+            db,
         )
-    ) > 0:
+
+        if not champion_contest:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": "CHAMPIONSHIP_NOT_ACTIVE",
+                    "message": "Championship is not active.",
+                },
+            )
+
+        contest_number = int(
+            champion_contest.get(
+                "global_contest_number",
+                champion_contest.get(
+                    "contest_number",
+                    0,
+                ),
+            )
+        )
+
+        status = await _champion_attempt_status(
+            db,
+            user_id,
+            contest_number,
+        )
+
+        free_attempts_available = int(
+            status.get(
+                "attempts_remaining",
+                0,
+            )
+        )
+    else:
+        status = await _free_attempt_status(
+            db,
+            user_id,
+            level,
+        )
+
+        free_attempts_available = int(
+            status.get(
+                "free_attempts_available",
+                0,
+            )
+        )
+
+    if free_attempts_available > 0:
         raise HTTPException(
             status_code=409,
             detail={
@@ -7630,7 +8153,7 @@ async def reserve_world_token_retry(
 
 
 # ===========================================================================
-# TOKEN LEVEL UNLOCK â€” RESERVATION HOOK ONLY
+# TOKEN LEVEL UNLOCK Ã¢â‚¬â€ RESERVATION HOOK ONLY
 # ===========================================================================
 
 
@@ -7752,7 +8275,7 @@ async def reserve_world_level_unlock(
             },
         )
 
-    # Tokens bypass time only â€” never progression/start/closed rules.
+    # Tokens bypass time only Ã¢â‚¬â€ never progression/start/closed rules.
     if access.get(
         "lock_reason"
     ) != "time":
@@ -8126,7 +8649,7 @@ async def free_world_level_attempt_summary(
 
 
 # ===========================================================================
-# PAID-CONTEST QUALIFICATION EVIDENCE â€” SHADOW MODE
+# PAID-CONTEST QUALIFICATION EVIDENCE Ã¢â‚¬â€ SHADOW MODE
 # ===========================================================================
 #
 # IMPORTANT:
@@ -8943,6 +9466,29 @@ async def public_champion_leaderboard(
             )
         )
 
+        # LIVE provisional winning amount.
+        #
+        # Uses exactly the same authoritative prize formula
+        # as final Champion settlement:
+        #
+        #   rank base prize x player's Champion stage
+        #
+        # Rank 1 = £50
+        # Rank 2 = £20
+        # Rank 3 = £15
+        # Rank 4 = £10
+        # Rank 5 = £5
+        #
+        # Rank 6+ currently has no winning amount.
+        current_win = (
+            _champion_final_prize(
+                rank,
+                champion_stage,
+            )
+            if rank <= CHAMPION_WINNER_COUNT
+            else 0
+        )
+
         item = {
             "rank":
                 rank,
@@ -8968,6 +9514,10 @@ async def public_champion_leaderboard(
                     "duration_ms"
                 ),
 
+            # Public personal Championship.
+            "championship":
+                champion_stage,
+
             "champion_badge": {
                 "stage":
                     champion_stage,
@@ -8976,21 +9526,26 @@ async def public_champion_leaderboard(
                     f"Champion {champion_stage}",
             },
 
+            # LIVE display amount.
+            # This moves automatically whenever rank changes.
+            "current_win":
+                current_win,
+
+            "currency":
+                WORLD_DEFAULT_CURRENCY,
+
             "winner":
                 is_winner,
         }
 
-        # Prize appears only AFTER settlement.
+        # After settlement the frozen winning_amount is
+        # authoritative. Existing settlement logic is unchanged.
         if is_winner:
             item["winning_amount"] = (
                 _champion_final_prize(
                     rank,
                     champion_stage,
                 )
-            )
-
-            item["currency"] = (
-                WORLD_DEFAULT_CURRENCY
             )
 
         leaderboard.append(
@@ -9021,17 +9576,28 @@ async def public_champion_leaderboard(
 
             "settled":
                 settled,
+
+            # Existing authoritative contest timestamps.
+            # Frontend leaderboard countdown uses end_at.
+            "start_at":
+                contest.get(
+                    "start_at"
+                ),
+
+            "end_at":
+                contest.get(
+                    "end_at"
+                ),
         },
 
         "winner_count":
             CHAMPION_WINNER_COUNT,
 
+        # Public calculation reference for the leaderboard UI.
+        # These are BASE amounts; each player's personal
+        # Championship multiplier is applied separately.
         "base_rank_prizes":
-            (
-                CHAMPION_BASE_RANK_PRIZES
-                if settled
-                else None
-            ),
+            CHAMPION_BASE_RANK_PRIZES,
 
         "leaderboard":
             leaderboard,
@@ -10380,7 +10946,7 @@ async def continue_after_champion(
 
 
 # ===========================================================================
-# FREE WORLD â€” LEVEL ACCESS / TIMING
+# FREE WORLD - LEVEL ACCESS / TIMING
 # ===========================================================================
 
 
@@ -10401,6 +10967,38 @@ async def free_world_access(
 
     active = await _active_contest(
         db
+    )
+
+    champion_stage = int(
+        progress.get(
+            "champion_stage",
+            1,
+        )
+    )
+
+    setting = await db.world_settings.find_one(
+        {
+            "_id":
+                "active_global_contest",
+
+            "season_id":
+                WORLD_SEASON_ID,
+        }
+    )
+
+    season_start = _ensure_aware_datetime(
+        (setting or {}).get(
+            "season_start_at"
+        )
+    )
+
+    champion_schedule = (
+        championship_window(
+            season_start,
+            champion_stage,
+        )
+        if season_start
+        else None
     )
 
     levels = []
@@ -10456,13 +11054,36 @@ async def free_world_access(
             ),
 
         "personal_champion_stage":
-            int(
-                progress.get(
-                    "champion_stage",
-                    1,
-                )
+            champion_stage,
+
+        "champion_opens_at":
+            (
+                champion_schedule[
+                    "champion_opens_at"
+                ]
+                if champion_schedule
+                else None
+            ),
+
+        "champion_closes_at":
+            (
+                champion_schedule[
+                    "champion_closes_at"
+                ]
+                if champion_schedule
+                else None
+            ),
+
+        "next_level_opens_at":
+            (
+                champion_schedule[
+                    "next_start_at"
+                ]
+                if champion_schedule
+                else None
             ),
 
         "levels":
             levels,
     }
+

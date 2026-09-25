@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from deps import get_db
+from routers.wallet_routes import _apply_tx, _apply_tx_idempotent
 from auth import get_current_user, require_admin
 
 logger = logging.getLogger("winnings")
@@ -22,7 +23,7 @@ router = APIRouter(prefix="/api/winnings", tags=["winnings"])
 admin_router = APIRouter(prefix="/api/admin/winnings", tags=["admin-winnings"])
 
 CHALLENGE_ID = "something-special-100"
-CHALLENGE_REWARD_PENCE = 5000  # £50.00 — fixed server-side, never from client
+CHALLENGE_REWARD_PENCE = 50000  # £500.00 — fixed server-side, never from client
 CHALLENGE_DURATION_MS = 60_000
 EXPECTED_SEQUENCE = list(range(1, 101))
 CURRENCY = "GBP"
@@ -107,8 +108,24 @@ async def _audit(db, action, actor_id, target, meta=None):
 async def start_challenge(request: Request):
     user = await get_current_user(request)
     db = get_db()
+
+
     await _ensure_indexes(db)
     attempt_id = uuid.uuid4().hex
+
+    # Impossible Challenge entry fee.
+    # One token per newly-created attempt.
+    # The attempt ID is also the idempotency key so a
+    # repeated request cannot debit this attempt twice.
+    await _apply_tx_idempotent(
+        db,
+        user['user_id'],
+        'spend',
+        -1.0,
+        note='Impossible Challenge entry - 1 token',
+        ref_order_id=f'impossible_challenge_entry:{attempt_id}',
+    )
+
     await db.special_challenge_attempts.insert_one({
         "attempt_id": attempt_id,
         "challenge_id": CHALLENGE_ID,

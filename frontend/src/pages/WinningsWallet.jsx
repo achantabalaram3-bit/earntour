@@ -58,18 +58,18 @@ export default function WinningsWallet() {
         </div>
         <h2 className="text-2xl font-extrabold text-slate-900 mt-1">100 Number Sequence Challenge 🎁</h2>
         <p className="text-sm text-slate-600 mt-2">
-          Complete the 100-number sequence correctly within 90 seconds to earn £50.
-          Unlimited attempts. One £50 reward per eligible user.
+          Complete the 100-number sequence correctly within 90 seconds to earn £500.
+          Unlimited attempts. One £500 reward per eligible user.
         </p>
         {alreadyWon ? (
           <div className="mt-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-emerald-800 font-bold text-sm"
             data-testid="challenge-already-won">
-            Challenge completed — £50 credited to your Winnings Wallet. You can still play for practice (no further reward).
+            Challenge completed — £500 credited to your Winnings Wallet. You can still play for practice (no further reward).
           </div>
         ) : null}
         <Button className="mt-4 bg-amber-500 hover:bg-amber-600 text-white font-extrabold"
           onClick={() => navigate('/challenge')} data-testid="start-challenge-button">
-          {alreadyWon ? 'Play again (practice)' : 'Play for £50'}
+          {alreadyWon ? 'Play again (practice)' : 'Play for £500'}
         </Button>
       </div>
 
