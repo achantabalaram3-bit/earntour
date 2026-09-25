@@ -199,15 +199,15 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <div className="pl-global-lb-pc-left">
             <div className="pl-global-lb-sectlbl">PRIZE CALCULATION</div>
             <div className="pl-global-lb-prizes">
-              <span className="pl-global-lb-prz"><i className="m1"><Crown size={11} /></i> 1st <b>£50</b></span>
+              <span className="pl-global-lb-prz"><i className="m1"><Crown size={11} /></i><span className="ord">1st</span> <b>£50</b></span>
               <span className="pl-global-lb-dot" />
-              <span className="pl-global-lb-prz"><i className="m2">2</i> 2nd <b>£20</b></span>
+              <span className="pl-global-lb-prz"><i className="m2">2</i><span className="ord">2nd</span> <b>£20</b></span>
               <span className="pl-global-lb-dot" />
-              <span className="pl-global-lb-prz"><i className="m3">3</i> 3rd <b>£15</b></span>
+              <span className="pl-global-lb-prz"><i className="m3">3</i><span className="ord">3rd</span> <b>£15</b></span>
               <span className="pl-global-lb-dot" />
-              <span className="pl-global-lb-prz">4th <b>£10</b></span>
+              <span className="pl-global-lb-prz"><i className="m4">4</i><span className="ord">4th</span> <b>£10</b></span>
               <span className="pl-global-lb-dot" />
-              <span className="pl-global-lb-prz">5th <b>£5</b></span>
+              <span className="pl-global-lb-prz"><i className="m5">5</i><span className="ord">5th</span> <b>£5</b></span>
             </div>
             <p className="pl-global-lb-pc-note">Base prizes × championship multiplier = final prize</p>
           </div>
