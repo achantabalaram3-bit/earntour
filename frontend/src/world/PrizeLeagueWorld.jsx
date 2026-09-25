@@ -23,6 +23,7 @@ import {
 
 import {
   worldAPI,
+  worldContestAPI,
 } from '../lib/api';
 
 import {
@@ -224,6 +225,20 @@ export default function PrizeLeagueWorld() {
           const champion =
             state?.champion || {};
 
+          // Authoritative Champion attempts (3 free for Champion 1,
+          // 1 free for Champion 2+). Injected into the level so the
+          // entry + "ready to play" screens show the correct count
+          // BEFORE the official session starts.
+          let championAttempts = null;
+          try {
+            const champStatus =
+              await worldContestAPI.championStatus();
+            championAttempts =
+              champStatus?.attempts || null;
+          } catch (statusError) {
+            championAttempts = null;
+          }
+
           if (
             champion?.unlocked !== true
           ) {
@@ -288,6 +303,11 @@ export default function PrizeLeagueWorld() {
               demo_skippable:
                 champion
                   ?.demo_skippable !== false,
+
+              attempts:
+                championAttempts || {
+                  free_attempts_available: 0,
+                },
             },
           });
 
