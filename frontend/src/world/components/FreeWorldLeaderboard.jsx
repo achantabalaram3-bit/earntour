@@ -46,6 +46,16 @@ function winningsOf(r) {
   const w = r?.winning_amount ?? r?.current_win ?? r?.prize_amount ?? null;
   return w == null || Number(w) <= 0 ? null : gbp2(w);
 }
+// Backend stores contest timestamps as naive UTC (no tz suffix). Parse them
+// as UTC so the countdown matches the real championship close time in every
+// browser timezone (e.g. London BST).
+function parseUtcMs(s) {
+  if (!s) return null;
+  const str = String(s);
+  const hasTz = /[zZ]$|[+-]\d{2}:?\d{2}$/.test(str);
+  const t = new Date(hasTz ? str : `${str}Z`).getTime();
+  return Number.isNaN(t) ? null : t;
+}
 
 export default function FreeWorldLeaderboard({ open, onClose }) {
   const auth = useAuth();
@@ -83,7 +93,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   }, [open, onClose, showMult]);
 
   const contest = data?.contest || {};
-  const endAt = contest?.end_at ? new Date(contest.end_at).getTime() : null;
+  const endAt = parseUtcMs(contest?.end_at);
 
   useEffect(() => {
     if (!open || !endAt) { setEndsIn(''); endHandledRef.current = false; return undefined; }
