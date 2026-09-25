@@ -3075,6 +3075,7 @@ export default function WorldCanvas({
 
         <button
           type="button"
+          data-testid="world-nav-leaderboard"
           className={[
             'pl2d-bottom-token',
             leaderboardActive

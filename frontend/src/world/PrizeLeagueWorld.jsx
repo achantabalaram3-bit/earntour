@@ -506,6 +506,7 @@ export default function PrizeLeagueWorld() {
 
         <button
           type="button"
+          data-testid="plworld-nav-leaderboard"
           className={
             showWorldLeaderboard
               ? 'is-active'

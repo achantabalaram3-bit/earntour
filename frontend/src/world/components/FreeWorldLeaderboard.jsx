@@ -1,18 +1,31 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown } from 'lucide-react';
-import { worldAPI, worldContestAPI } from '../../lib/api';
+import {
+  Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown, Coins, ChevronRight,
+} from 'lucide-react';
+import { worldAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/pl-global-lb.css';
 
-// App prize model (same formula the World Map uses): championDisplayPrize = 50*(n+1)
-const championPrize = (n) => 50 * (Number(n) + 1);
-const TOTAL_PRIZE_POOL = Array.from({ length: 100 }, (_, i) => championPrize(i + 1))
+const LOGO_URL = '/logo.png?v=5';
+const CHAMPIONSHIP_COUNT = 100;
+
+/* Authoritative prize model (mirrors backend _champion_final_prize):
+   base rank prize x championship multiplier, multiplier = 1 + (stage-1)*0.5 */
+const BASE_PRIZES = { 1: 50, 2: 20, 3: 15, 4: 10, 5: 5 };
+const WINNER_RANKS = [1, 2, 3, 4, 5];
+const champMultiplier = (stage) => 1 + (Math.max(1, Number(stage) || 1) - 1) * 0.5;
+const finalPrize = (rank, stage) => (BASE_PRIZES[rank] || 0) * champMultiplier(stage);
+
+// Displayed total prize pool (matches the seeded season pool of £257,500).
+const TOTAL_PRIZE_POOL = Array.from({ length: CHAMPIONSHIP_COUNT }, (_, i) => 50 * (i + 2))
   .reduce((t, p) => t + p, 0);
+
 const gbp0 = (v) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(Number(v) || 0);
 const gbp2 = (v) => {
   const n = Number(v) || 0;
   return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 }).format(n);
 };
+const fmtMult = (m) => `${Number.isInteger(m) ? m : m.toFixed(1)}x`;
 
 function nameOf(r) { return r?.user_name || r?.username || r?.display_name || 'Player'; }
 function initials(name) {
@@ -25,9 +38,13 @@ function fmtTime(ms) {
   const s = Math.floor(v / 1000);
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
-function rowWinnings(r) {
-  const w = r?.prize_amount ?? r?.winnings ?? r?.prize ?? null;
-  return w == null ? null : gbp2(w);
+function champOf(r) {
+  const stage = r?.championship ?? r?.champion_badge?.stage ?? r?.champion_stage ?? null;
+  return stage ? `C${stage}` : '—';
+}
+function winningsOf(r) {
+  const w = r?.winning_amount ?? r?.current_win ?? r?.prize_amount ?? null;
+  return w == null || Number(w) <= 0 ? null : gbp2(w);
 }
 
 export default function FreeWorldLeaderboard({ open, onClose }) {
@@ -35,18 +52,19 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   const myId = auth?.user?.user_id || auth?.user?.id || null;
   const myName = auth?.user?.name || auth?.user?.user_name || null;
 
-  const [mode, setMode] = useState('global');
+  const [champN, setChampN] = useState('all');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [data, setData] = useState(null);
   const [endsIn, setEndsIn] = useState('');
+  const [showMult, setShowMult] = useState(false);
+  const [exStage, setExStage] = useState(2);
 
   const load = useCallback(async (which) => {
     setLoading(true); setError('');
     try {
-      const res = which === 'championship'
-        ? await worldAPI.championLeaderboard()
-        : await worldContestAPI.leaderboard();
+      const n = which === 'all' ? undefined : Number(which);
+      const res = await worldAPI.championLeaderboard(n);
       setData(res || { contest: null, leaderboard: [] });
     } catch (e) {
       setError('Leaderboard is temporarily unavailable.');
@@ -54,14 +72,14 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
     } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { if (open) load(mode); }, [open, mode, load]);
+  useEffect(() => { if (open) load(champN); }, [open, champN, load]);
 
   useEffect(() => {
     if (!open) return undefined;
-    const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
+    const onKey = (e) => { if (e.key === 'Escape') { if (showMult) setShowMult(false); else onClose?.(); } };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, onClose, showMult]);
 
   const contest = data?.contest || {};
   const endAt = contest?.end_at ? new Date(contest.end_at).getTime() : null;
@@ -87,14 +105,14 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
     [myId, myName],
   );
 
+  const myRow = useMemo(() => rows.find(isMine) || null, [rows, isMine]);
+  const isLive = String(contest?.status || '').toLowerCase() === 'active';
+  const titleLbl = champN === 'all' ? 'GLOBAL RANKINGS' : `CHAMPION ${champN} RANKINGS`;
+
   if (!open) return null;
 
-  const myRow = rows.find(isMine) || null;
-  const champLabel = contest?.contest_number ? `C${contest.contest_number}` : '—';
-  const isLive = String(contest?.status || '').toLowerCase() === 'active';
-
   const rankBadge = (rank) => {
-    if (rank === 1) return <span className="pl-global-lb-rk gold"><Crown size={13} /></span>;
+    if (rank === 1) return <span className="pl-global-lb-rk gold"><Crown size={12} /></span>;
     if (rank === 2) return <span className="pl-global-lb-rk silver">2</span>;
     if (rank === 3) return <span className="pl-global-lb-rk bronze">3</span>;
     return null;
@@ -105,13 +123,14 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
     if (error) return (
       <div className="pl-global-lb-state" data-testid="lb-error">
         <h4>Couldn’t load the leaderboard</h4><p>{error}</p>
-        <button className="pl-global-lb-refresh" onClick={() => load(mode)} data-testid="lb-retry"><RefreshCw size={15} /> Try again</button>
+        <button className="pl-global-lb-refresh" onClick={() => load(champN)} data-testid="lb-retry"><RefreshCw size={15} /> Try again</button>
       </div>
     );
     if (rows.length === 0) return (
       <div className="pl-global-lb-state" data-testid="lb-empty">
-        <Trophy size={30} strokeWidth={1.6} /><h4>No rankings yet</h4>
-        <p>Be the first to set a score in {mode === 'championship' ? 'this Championship' : 'Free World'}.</p>
+        <div className="pl-global-lb-emptytr"><Trophy size={28} strokeWidth={1.6} /></div>
+        <h4>No rankings yet</h4>
+        <p>Be the first to set a score in {champN === 'all' ? 'Free World' : `Championship ${champN}`}.</p>
       </div>
     );
     return (
@@ -120,16 +139,21 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <span>#</span><span>PLAYER</span><span>CHAMP</span><span>TIME</span><span className="ta-r">WINNINGS</span>
         </div>
         {rows.map((r) => {
-          const win = rowWinnings(r);
+          const win = winningsOf(r);
+          const top = r.rank <= 3;
           return (
-            <div key={r.user_id || r.rank} className={`pl-global-lb-tr ${isMine(r) ? 'is-me' : ''}`} data-testid={isMine(r) ? 'lb-row-me' : 'lb-row'}>
+            <div
+              key={r.user_id || r.rank}
+              className={`pl-global-lb-tr ${top ? `top top-${r.rank}` : ''} ${isMine(r) ? 'is-me' : ''}`}
+              data-testid={isMine(r) ? 'lb-row-me' : 'lb-row'}
+            >
               <span className="pl-global-lb-rankcell"><b>{r.rank}</b>{rankBadge(r.rank)}</span>
               <span className="pl-global-lb-player">
-                <span className="pl-global-lb-av">{initials(nameOf(r))}</span>
+                <span className={`pl-global-lb-av r${r.rank <= 3 ? r.rank : ''}`}>{initials(nameOf(r))}</span>
                 <span className="pl-global-lb-pn">{nameOf(r)}{isMine(r) && <em>YOU</em>}</span>
               </span>
-              <span className="pl-global-lb-champ"><Trophy size={13} /> {r.champ || champLabel}</span>
-              <span className="pl-global-lb-time"><Clock size={13} /> {fmtTime(r.duration_ms)}</span>
+              <span className="pl-global-lb-champ"><Trophy size={12} /> {champOf(r)}</span>
+              <span className="pl-global-lb-time"><Clock size={12} /> {fmtTime(r.duration_ms)}</span>
               <span className="pl-global-lb-win ta-r">{win || '—'}</span>
             </div>
           );
@@ -140,30 +164,29 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
 
   return (
     <section className="pl-global-lb-shell" role="dialog" aria-modal="true" aria-label="Global leaderboard" data-testid="global-leaderboard">
-      <div className="pl-global-lb-inner">
-        {/* HEADER */}
-        <div className="pl-global-lb-card pl-global-lb-header">
-          <div className="pl-global-lb-trophy"><Trophy size={30} /></div>
-          <div className="pl-global-lb-htext">
-            <span className="pl-global-lb-eyebrow">FREE WORLD</span>
-            <h1>GLOBAL LEADERBOARD</h1>
-            <p>Compete with players worldwide and win amazing prizes!</p>
-          </div>
-          {isLive && <span className="pl-global-lb-livepill" data-testid="lb-live"><i /> LIVE</span>}
-          <button className="pl-global-lb-x" onClick={() => onClose?.()} data-testid="lb-close" aria-label="Close"><X size={20} /></button>
+      {/* SLIM PRIZE LEAGUE BRAND BAR */}
+      <header className="pl-global-lb-topbar" data-testid="lb-topbar">
+        <div className="pl-global-lb-brand">
+          <img src={LOGO_URL} alt="Prize League" className="pl-global-lb-logo" />
+          <span className="pl-global-lb-wordmark"><b>PRIZE</b> LEAGUE</span>
         </div>
+        <button className="pl-global-lb-back" onClick={() => onClose?.()} data-testid="lb-close" aria-label="Close leaderboard">
+          <X size={18} /> <span>Back</span>
+        </button>
+      </header>
 
-        {/* STATS */}
+      <div className="pl-global-lb-inner">
+        {/* PRIZE POOL + TIMER (side by side) */}
         <div className="pl-global-lb-stats">
           <div className="pl-global-lb-card pl-global-lb-pool">
-            <span className="pl-global-lb-coins">🪙</span>
+            <span className="pl-global-lb-poolicon"><Coins size={26} /></span>
             <div>
               <div className="pl-global-lb-poolamt" data-testid="lb-prize-pool">{gbp0(TOTAL_PRIZE_POOL)}</div>
               <div className="pl-global-lb-poollbl">Total Prize Pool</div>
             </div>
           </div>
           <div className="pl-global-lb-card pl-global-lb-ends">
-            <Clock size={26} className="pl-global-lb-endsicon" />
+            <span className="pl-global-lb-endsicon"><Clock size={26} /></span>
             <div>
               <div className="pl-global-lb-endsval" data-testid="lb-ends-in">{endsIn || '—'}</div>
               <div className="pl-global-lb-endslbl">Ends In</div>
@@ -173,59 +196,137 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
 
         {/* PRIZE CALCULATION */}
         <div className="pl-global-lb-card pl-global-lb-prizecalc">
-          <div className="pl-global-lb-sectlbl">PRIZE CALCULATION</div>
-          <div className="pl-global-lb-prizes">
-            <span className="pl-global-lb-prz"><i className="m1">1</i> 1st</span>
-            <span className="pl-global-lb-dot" />
-            <span className="pl-global-lb-prz"><i className="m2">2</i> 2nd</span>
-            <span className="pl-global-lb-dot" />
-            <span className="pl-global-lb-prz"><i className="m3">3</i> 3rd</span>
-            <span className="pl-global-lb-dot" />
-            <span className="pl-global-lb-prz">4th</span>
-            <span className="pl-global-lb-dot" />
-            <span className="pl-global-lb-prz">5th</span>
-            <span className="pl-global-lb-note">Top {contest?.winner_count || 5} win</span>
+          <div className="pl-global-lb-pc-left">
+            <div className="pl-global-lb-sectlbl">PRIZE CALCULATION</div>
+            <div className="pl-global-lb-prizes">
+              <span className="pl-global-lb-prz"><i className="m1"><Crown size={11} /></i> 1st <b>£50</b></span>
+              <span className="pl-global-lb-dot" />
+              <span className="pl-global-lb-prz"><i className="m2">2</i> 2nd <b>£20</b></span>
+              <span className="pl-global-lb-dot" />
+              <span className="pl-global-lb-prz"><i className="m3">3</i> 3rd <b>£15</b></span>
+              <span className="pl-global-lb-dot" />
+              <span className="pl-global-lb-prz">4th <b>£10</b></span>
+              <span className="pl-global-lb-dot" />
+              <span className="pl-global-lb-prz">5th <b>£5</b></span>
+            </div>
+            <p className="pl-global-lb-pc-note">Base prizes × championship multiplier = final prize</p>
           </div>
+          <button className="pl-global-lb-more" onClick={() => setShowMult(true)} data-testid="lb-more-multipliers">
+            More <ChevronRight size={15} />
+          </button>
         </div>
 
-        {/* VIEW SELECTOR */}
-        <div className="pl-global-lb-card pl-global-lb-viewrow">
-          <div className="pl-global-lb-select">
-            <Trophy size={16} />
-            <select value={mode} onChange={(e) => setMode(e.target.value)} data-testid="lb-mode-select" aria-label="View">
-              <option value="global">All Championships (Global)</option>
-              <option value="championship">Current Championship</option>
-            </select>
-            <ChevronDown size={16} className="pl-global-lb-selchev" />
+        {/* VIEW CHAMPIONSHIP */}
+        <div className="pl-global-lb-card pl-global-lb-viewcard">
+          <div className="pl-global-lb-sectlbl">VIEW CHAMPIONSHIP</div>
+          <div className="pl-global-lb-viewrow">
+            <div className="pl-global-lb-select">
+              <Trophy size={15} />
+              <select value={champN} onChange={(e) => setChampN(e.target.value)} data-testid="lb-champ-select" aria-label="View championship">
+                <option value="all">All Championships (Global)</option>
+                {Array.from({ length: CHAMPIONSHIP_COUNT }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={String(n)}>Champion {n}</option>
+                ))}
+              </select>
+              <ChevronDown size={15} className="pl-global-lb-selchev" />
+            </div>
+            {isLive && <span className="pl-global-lb-livepill green" data-testid="lb-live"><Radio size={12} /> LIVE</span>}
+            <button className="pl-global-lb-refresh" onClick={() => load(champN)} data-testid="lb-refresh"><RefreshCw size={14} /> Refresh</button>
           </div>
-          {isLive && <span className="pl-global-lb-livepill green"><Radio size={13} /> LIVE</span>}
-          <button className="pl-global-lb-refresh" onClick={() => load(mode)} data-testid="lb-refresh"><RefreshCw size={15} /> Refresh</button>
         </div>
 
         {/* YOUR POSITION */}
-        {myRow && (
+        {myRow ? (
           <div className="pl-global-lb-card pl-global-lb-you" data-testid="lb-your-rank">
-            <div className="pl-global-lb-sectlbl">YOUR POSITION</div>
+            <div className="pl-global-lb-sectlbl purple">YOUR POSITION</div>
             <div className="pl-global-lb-yourow">
               <span className="pl-global-lb-yourank">#{myRow.rank}</span>
-              <span className="pl-global-lb-av sm"><User size={16} /></span>
+              <span className="pl-global-lb-av you">{initials(nameOf(myRow))}</span>
               <span className="pl-global-lb-yn">{nameOf(myRow)}</span>
-              <span className="pl-global-lb-champ"><Trophy size={13} /> {myRow.champ || champLabel}</span>
-              <span className="pl-global-lb-time"><Clock size={13} /> {fmtTime(myRow.duration_ms)}</span>
-              <span className="pl-global-lb-win">{rowWinnings(myRow) || '—'}</span>
+              <span className="pl-global-lb-champ"><Trophy size={12} /> {champOf(myRow)}</span>
+              <span className="pl-global-lb-time"><Clock size={12} /> {fmtTime(myRow.duration_ms)}</span>
+              <span className="pl-global-lb-win">{winningsOf(myRow) || '—'}</span>
             </div>
+          </div>
+        ) : (
+          <div className="pl-global-lb-card pl-global-lb-you empty" data-testid="lb-your-rank-empty">
+            <div className="pl-global-lb-sectlbl purple">YOUR POSITION</div>
+            <p className="pl-global-lb-youempty"><User size={15} /> Set a score in Free World to claim your spot on the board.</p>
           </div>
         )}
 
         {/* RANKINGS */}
         <div className="pl-global-lb-card pl-global-lb-rankings">
           <div className="pl-global-lb-rankhead">
-            <h2>{mode === 'championship' ? 'CHAMPIONSHIP RANKINGS' : 'GLOBAL RANKINGS'}</h2>
-            {isLive && <span className="pl-global-lb-updates"><i /> UPDATES LIVE</span>}
+            <h2>{titleLbl}</h2>
+            {isLive && <span className="pl-global-lb-updates" data-testid="lb-updates"><i /> UPDATES LIVE</span>}
           </div>
           <RankingsBody />
         </div>
       </div>
+
+      {/* MULTIPLIERS MODAL */}
+      {showMult && (
+        <div className="pl-global-lb-modal" role="dialog" aria-modal="true" aria-label="Championship prize multipliers" data-testid="lb-mult-modal">
+          <div className="pl-global-lb-modal-bg" onClick={() => setShowMult(false)} />
+          <div className="pl-global-lb-modal-card">
+            <div className="pl-global-lb-modal-head">
+              <div>
+                <span className="pl-global-lb-sectlbl">CHAMPIONSHIP PRIZES</span>
+                <h3>100 Championship Prize Multipliers</h3>
+              </div>
+              <button className="pl-global-lb-x" onClick={() => setShowMult(false)} data-testid="lb-mult-close" aria-label="Close"><X size={18} /></button>
+            </div>
+
+            <p className="pl-global-lb-modal-desc">
+              Championship prizes are calculated by multiplying the base finishing-position prize by the Championship multiplier.
+            </p>
+            <div className="pl-global-lb-formula">
+              <span>BASE PRIZE</span><b>×</b><span>CHAMPIONSHIP MULTIPLIER</span><b>=</b><span className="fin">FINAL PRIZE</span>
+            </div>
+
+            {/* WORKED EXAMPLE */}
+            <div className="pl-global-lb-example">
+              <div className="pl-global-lb-example-head">
+                <span>Prize example</span>
+                <div className="pl-global-lb-select sm">
+                  <Trophy size={13} />
+                  <select value={exStage} onChange={(e) => setExStage(Number(e.target.value))} data-testid="lb-mult-example-select" aria-label="Example championship">
+                    {Array.from({ length: CHAMPIONSHIP_COUNT }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>Champion {n} — {fmtMult(champMultiplier(n))}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={13} className="pl-global-lb-selchev" />
+                </div>
+              </div>
+              <div className="pl-global-lb-example-rows">
+                {WINNER_RANKS.map((rk) => (
+                  <div key={rk} className="pl-global-lb-example-row">
+                    <span className="rk">{rk === 1 ? '1st' : rk === 2 ? '2nd' : rk === 3 ? '3rd' : `${rk}th`}</span>
+                    <span className="calc">{gbp0(BASE_PRIZES[rk])} × {fmtMult(champMultiplier(exStage))}</span>
+                    <b className="res">{gbp2(finalPrize(rk, exStage))}</b>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FULL 1..100 GRID */}
+            <div className="pl-global-lb-multgrid" data-testid="lb-mult-grid">
+              {Array.from({ length: CHAMPIONSHIP_COUNT }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  className={`pl-global-lb-multtile ${n === exStage ? 'active' : ''}`}
+                  onClick={() => setExStage(n)}
+                  data-testid={`lb-mult-tile-${n}`}
+                >
+                  <span className="c">Champion {n}</span>
+                  <b className="x">{fmtMult(champMultiplier(n))}</b>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
