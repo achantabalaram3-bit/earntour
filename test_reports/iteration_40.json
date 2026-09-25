@@ -1,0 +1,38 @@
+{
+  "summary": "Iteration 40 – Backend & Frontend testing for Free World attempts/champion rules + new Global Leaderboard UI + token retry. Backend: 7/7 PASS (champion/status returns initial=3, remaining=3; normal /world/attempts grants 3 free, stable across reloads; /world/token/retry/reserve NEVER returns 500 for either champion (level=0) or normal level – now returns proper 409 JSON `FREE_ATTEMPT_AVAILABLE`; public leaderboard endpoints 200 with valid JSON). Frontend: NEW global leaderboard opens/closes correctly (Escape + lb-close), Championship tab loads and shows polished lb-empty ('No rankings yet'), responsive at 320/390 no overflow, map covered by fixed full-screen container. HOWEVER **GLOBAL tab is BROKEN** – lb-error always renders and no network request is made because `worldAPI.leaderboard` is undefined (see RCA). Token retry modal in FreeWorldNumberSequenceV3 was not reachable because player1 login did not persist a `gz_token` in localStorage on this preview session.",
+  "backend_issues": {"critical": [], "minor": [
+    {"endpoint": "/api/world/attempts/{level}", "issue": "Level 10 returns initial_free_attempts=1 (admin override in DB) – Rule 1 says ALL normal levels should be 3. Likely a stale admin config, not a code bug."}
+  ]},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "FreeWorldLeaderboard.jsx (GLOBAL tab)", "issue": "worldAPI.leaderboard is not a function → caught immediately, sets error state. Zero HTTP request is ever made; direct fetch to /api/world/public/leaderboard returns 200 fine. Global tab therefore ALWAYS shows lb-error 'Couldn\u2019t load the leaderboard'. Championship tab works because worldAPI.championLeaderboard IS defined.", "selector": "[data-testid=\"lb-error\"]", "priority": "HIGH"},
+      {"component": "FreeWorldLeaderboard.jsx", "issue": "The full-screen container has transparent background (rgba(0,0,0,0)); site header/marquee is visible through the leaderboard even though it is position:fixed top:0 with 100% w/h and z-index:3000. Minor cosmetic – children provide their own bg but the top region still leaks the site chrome.", "selector": "[data-testid=\"global-leaderboard\"]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [
+      {"flow": "Player1 login via /login (email tab) does NOT persist gz_token in localStorage after clicking 'Log in →'. /api/auth/me subsequently 401s. The header still shows 'Sign in'. Unclear whether this is Turnstile/captcha requirement or a submit-handler bug – warrants investigation. It blocks any authenticated frontend flow (game session start, token retry modal, YOUR RANK highlight in leaderboard).", "issue": "login token not stored", "affected_selectors": ["input[type=email]","input[type=password]","button:has-text('Log in')"]}
+    ],
+    "design_issues": [
+      {"screen": "Global Leaderboard overlay", "issues": ["Container is transparent so site header/marquee bleeds through at top of full-screen overlay."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_world_attempts_retry.py", "/app/test_reports/pytest/iter40.xml"],
+  "action_items": [
+    "HIGH: Add `leaderboard: (contestNumber, limit = 100) => api.get('/world/public/leaderboard', {params: {...}})` to the exported `worldAPI` object at /app/frontend/src/lib/api.js line 313 (or change FreeWorldLeaderboard.jsx to import `worldContestAPI` for the .leaderboard() call). This will fix the Global tab.",
+    "MEDIUM: Give the .pl-global-lb-* root a solid background (e.g., linear-gradient/opaque color) or ensure inner panel covers the whole viewport so the World Map / site header does not bleed through.",
+    "MEDIUM: Investigate why player1 email/password login does not persist `gz_token` – suspected missing captcha submission on /login form (Turnstile). If captcha is optional, submit-handler may be swallowing the response.",
+    "LOW: Level 10 admin override showing initial_free_attempts=1 – restore or document override policy so Rule 1 (3 free per normal level) is not violated for any of the 1000 levels."
+  ],
+  "critical_code_review_comments": [
+    "api.js exports two overlapping objects – `worldContestAPI` (lines 196-256) and `worldAPI` (lines 313-388). `worldAPI.leaderboard` is missing while `worldContestAPI.leaderboard` exists. This dual-object pattern is confusing and directly caused the current Global-tab bug. Consider consolidating.",
+    "FreeWorldLeaderboard.jsx line 54: generic `catch (e) { setError('Leaderboard is temporarily unavailable.'); }` hides the real reason. Log e (or set error to e?.message) so bugs like a missing method surface immediately.",
+    "world_routes.py `_free_attempt_status` may honour an admin override that reduces initial_free_attempts below 3 – Rule 1 mandates 3 free for ALL 1000 normal levels, so this override should be clamped server-side."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (7/7)", "frontend": "60% (Global tab broken, login flow broken, others OK)"},
+  "test_credentials": "player1@example.com / Player@12345 (login form does not persist token in preview)",
+  "seed_data_creation": "None.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "After main agent fixes `worldAPI.leaderboard` (add it to the exported worldAPI object or switch import in FreeWorldLeaderboard.jsx to worldContestAPI), re-open leaderboard and confirm Global tab shows lb-empty (there are no scores yet) rather than lb-error, and network tab has GET /api/world/public/leaderboard 200. Also verify login flow – localStorage should contain `gz_token` after Log in. Backend tests suite `/app/backend/tests/test_world_attempts_retry.py` can be re-run any time (all 7 currently green). Preview world map DB has only 10 levels defined (ROYAL_VILLAGE_LEVELS) even though season claims 1000 – calling /api/world/attempts/{level} for level >10 returns 404 (not a bug per se, but Rule 1 mentions 1000 levels).",
+  "rca of the issue": "GLOBAL LEADERBOARD 'Couldn\u2019t load the leaderboard' error – RCA: In /app/frontend/src/lib/api.js there are TWO worldAPI-related exports. `worldContestAPI` (line 196) contains `leaderboard()` (line 244), while the separately-exported `worldAPI` (line 313) contains `championLeaderboard()` (line 371) but is missing a `leaderboard()` method. FreeWorldLeaderboard.jsx line 3 imports `worldAPI` and line 52 calls `await worldAPI.leaderboard()`. Because that property is undefined, the call throws `TypeError: worldAPI.leaderboard is not a function` which the generic try/catch at line 54 swallows into the 'temporarily unavailable' error state – so NO HTTP request is ever issued (confirmed via network trace and by direct fetch to /api/world/public/leaderboard returning 200 with valid empty leaderboard JSON). Championship tab works because `worldAPI.championLeaderboard` IS defined. Fix: either (a) add a `leaderboard` method to the `worldAPI` object at line 313 mirroring worldContestAPI.leaderboard, or (b) change the import in FreeWorldLeaderboard.jsx to use `worldContestAPI` (and switch both calls to that object)."
+}

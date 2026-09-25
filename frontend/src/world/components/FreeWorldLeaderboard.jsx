@@ -1,36 +1,33 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Globe, X, Crown, Trophy, RefreshCw, Users } from 'lucide-react';
-import { worldAPI } from '../../lib/api';
+import { Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown } from 'lucide-react';
+import { worldAPI, worldContestAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/pl-global-lb.css';
 
-const TABS = [
-  { id: 'global', label: 'Global' },
-  { id: 'championship', label: 'Current Championship' },
-];
+// App prize model (same formula the World Map uses): championDisplayPrize = 50*(n+1)
+const championPrize = (n) => 50 * (Number(n) + 1);
+const TOTAL_PRIZE_POOL = Array.from({ length: 100 }, (_, i) => championPrize(i + 1))
+  .reduce((t, p) => t + p, 0);
+const gbp0 = (v) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(Number(v) || 0);
+const gbp2 = (v) => {
+  const n = Number(v) || 0;
+  return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 }).format(n);
+};
 
-function fmtScore(v) {
-  const n = Number(v);
-  if (!Number.isFinite(n)) return '0';
-  return Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2);
-}
-
-function nameOf(row) {
-  return row?.user_name || row?.username || row?.display_name || 'Player';
-}
-
+function nameOf(r) { return r?.user_name || r?.username || r?.display_name || 'Player'; }
 function initials(name) {
-  const parts = String(name || 'P').trim().split(/\s+/).slice(0, 2);
-  return parts.map((p) => p[0]).join('').toUpperCase() || 'P';
+  const p = String(name || 'P').trim().split(/\s+/).slice(0, 2);
+  return (p.map((x) => x[0]).join('') || 'P').toUpperCase();
 }
-
-function contestLabel(contest) {
-  if (!contest) return '';
-  return (
-    contest.name ||
-    contest.title ||
-    (contest.contest_number ? `Championship ${contest.contest_number}` : '')
-  );
+function fmtTime(ms) {
+  const v = Math.max(0, Number(ms) || 0);
+  if (!v) return '—';
+  const s = Math.floor(v / 1000);
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+}
+function rowWinnings(r) {
+  const w = r?.prize_amount ?? r?.winnings ?? r?.prize ?? null;
+  return w == null ? null : gbp2(w);
 }
 
 export default function FreeWorldLeaderboard({ open, onClose }) {
@@ -38,28 +35,26 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   const myId = auth?.user?.user_id || auth?.user?.id || null;
   const myName = auth?.user?.name || auth?.user?.user_name || null;
 
-  const [tab, setTab] = useState('global');
+  const [mode, setMode] = useState('global');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [data, setData] = useState(null);
+  const [endsIn, setEndsIn] = useState('');
 
   const load = useCallback(async (which) => {
-    setLoading(true);
-    setError('');
+    setLoading(true); setError('');
     try {
       const res = which === 'championship'
         ? await worldAPI.championLeaderboard()
-        : await worldAPI.leaderboard();
+        : await worldContestAPI.leaderboard();
       setData(res || { contest: null, leaderboard: [] });
     } catch (e) {
       setError('Leaderboard is temporarily unavailable.');
       setData(null);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { if (open) load(tab); }, [open, tab, load]);
+  useEffect(() => { if (open) load(mode); }, [open, mode, load]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -68,144 +63,168 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  const rows = useMemo(
-    () => (Array.isArray(data?.leaderboard) ? data.leaderboard : []),
-    [data],
-  );
+  const contest = data?.contest || {};
+  const endAt = contest?.end_at ? new Date(contest.end_at).getTime() : null;
 
+  useEffect(() => {
+    if (!open || !endAt) { setEndsIn(''); return undefined; }
+    const tick = () => {
+      const diff = endAt - Date.now();
+      if (diff <= 0) { setEndsIn('00:00:00'); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setEndsIn(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [open, endAt]);
+
+  const rows = useMemo(() => (Array.isArray(data?.leaderboard) ? data.leaderboard : []), [data]);
   const isMine = useCallback(
-    (row) => (myId && String(row.user_id) === String(myId)) ||
-      (!!myName && !myId && nameOf(row) === myName),
+    (r) => (myId && String(r.user_id) === String(myId)) || (!myId && myName && nameOf(r) === myName),
     [myId, myName],
   );
 
   if (!open) return null;
 
-  const contest = data?.contest || {};
-  const top3 = rows.slice(0, 3);
-  const rest = rows.slice(3);
   const myRow = rows.find(isMine) || null;
-  const myInTop = myRow && rows.indexOf(myRow) < 3;
-  const clabel = contestLabel(contest);
+  const champLabel = contest?.contest_number ? `C${contest.contest_number}` : '—';
+  const isLive = String(contest?.status || '').toLowerCase() === 'active';
 
-  const Body = () => {
-    if (loading) {
-      return (
-        <div className="pl-global-lb-state" data-testid="lb-loading">
-          <div className="pl-global-lb-spinner" />
-          <p>Loading rankings…</p>
-        </div>
-      );
-    }
-    if (error) {
-      return (
-        <div className="pl-global-lb-state" data-testid="lb-error">
-          <h3>Couldn’t load the leaderboard</h3>
-          <p>{error}</p>
-          <button className="pl-global-lb-btn" onClick={() => load(tab)} data-testid="lb-retry">
-            <RefreshCw size={15} /> Try again
-          </button>
-        </div>
-      );
-    }
-    if (rows.length === 0) {
-      return (
-        <div className="pl-global-lb-state" data-testid="lb-empty">
-          <Users size={34} strokeWidth={1.6} />
-          <h3>No rankings yet</h3>
-          <p>Be the first to set a score in {tab === 'championship' ? 'this Championship' : 'Free World'}.</p>
-        </div>
-      );
-    }
+  const rankBadge = (rank) => {
+    if (rank === 1) return <span className="pl-global-lb-rk gold"><Crown size={13} /></span>;
+    if (rank === 2) return <span className="pl-global-lb-rk silver">2</span>;
+    if (rank === 3) return <span className="pl-global-lb-rk bronze">3</span>;
+    return null;
+  };
+
+  const RankingsBody = () => {
+    if (loading) return <div className="pl-global-lb-state" data-testid="lb-loading"><span className="pl-global-lb-spin" /><p>Loading rankings…</p></div>;
+    if (error) return (
+      <div className="pl-global-lb-state" data-testid="lb-error">
+        <h4>Couldn’t load the leaderboard</h4><p>{error}</p>
+        <button className="pl-global-lb-refresh" onClick={() => load(mode)} data-testid="lb-retry"><RefreshCw size={15} /> Try again</button>
+      </div>
+    );
+    if (rows.length === 0) return (
+      <div className="pl-global-lb-state" data-testid="lb-empty">
+        <Trophy size={30} strokeWidth={1.6} /><h4>No rankings yet</h4>
+        <p>Be the first to set a score in {mode === 'championship' ? 'this Championship' : 'Free World'}.</p>
+      </div>
+    );
     return (
-      <>
-        <div className="pl-global-lb-podium" data-testid="lb-podium">
-          {[top3[1], top3[0], top3[2]].map((row, i) => {
-            if (!row) return <div key={`empty-${i}`} />;
-            const place = row === top3[0] ? 1 : row === top3[1] ? 2 : 3;
-            return (
-              <div key={row.user_id || place} className={`pl-global-lb-pod p${place}`}>
-                {place === 1 && <div className="pl-global-lb-crown">👑</div>}
-                <div className="pl-global-lb-av">{initials(nameOf(row))}</div>
-                <div className="pl-global-lb-medal">#{place}</div>
-                <div className="pl-global-lb-name">{nameOf(row)}{isMine(row) ? ' (You)' : ''}</div>
-                <div className="pl-global-lb-score">{fmtScore(row.score)}<small> pts</small></div>
-              </div>
-            );
-          })}
+      <div className="pl-global-lb-tablewrap" data-testid="lb-list">
+        <div className="pl-global-lb-thead">
+          <span>#</span><span>PLAYER</span><span>CHAMP</span><span>TIME</span><span className="ta-r">WINNINGS</span>
         </div>
-
-        <div className="pl-global-lb-list" data-testid="lb-list">
-          {rest.map((row) => (
-            <div
-              key={row.user_id || row.rank}
-              className={`pl-global-lb-row ${isMine(row) ? 'is-me' : ''}`}
-              data-testid={isMine(row) ? 'lb-row-me' : 'lb-row'}
-            >
-              <div className="pl-global-lb-rank">{row.rank}</div>
-              <div className="pl-global-lb-rowav">{initials(nameOf(row))}</div>
-              <div className="pl-global-lb-rowname">
-                {nameOf(row)}
-                {isMine(row) && <span className="pl-global-lb-youtag">YOU</span>}
-              </div>
-              <div className="pl-global-lb-rowscore">{fmtScore(row.score)}<small>points</small></div>
+        {rows.map((r) => {
+          const win = rowWinnings(r);
+          return (
+            <div key={r.user_id || r.rank} className={`pl-global-lb-tr ${isMine(r) ? 'is-me' : ''}`} data-testid={isMine(r) ? 'lb-row-me' : 'lb-row'}>
+              <span className="pl-global-lb-rankcell"><b>{r.rank}</b>{rankBadge(r.rank)}</span>
+              <span className="pl-global-lb-player">
+                <span className="pl-global-lb-av">{initials(nameOf(r))}</span>
+                <span className="pl-global-lb-pn">{nameOf(r)}{isMine(r) && <em>YOU</em>}</span>
+              </span>
+              <span className="pl-global-lb-champ"><Trophy size={13} /> {r.champ || champLabel}</span>
+              <span className="pl-global-lb-time"><Clock size={13} /> {fmtTime(r.duration_ms)}</span>
+              <span className="pl-global-lb-win ta-r">{win || '—'}</span>
             </div>
-          ))}
-        </div>
-
-        {myRow && !myInTop && (
-          <div className="pl-global-lb-you" data-testid="lb-your-rank">
-            <div className="pl-global-lb-rank">{myRow.rank}</div>
-            <div className="pl-global-lb-rowav">{initials(nameOf(myRow))}</div>
-            <div className="pl-global-lb-rowname">Your rank</div>
-            <div className="pl-global-lb-rowscore">{fmtScore(myRow.score)}<small>points</small></div>
-          </div>
-        )}
-      </>
+          );
+        })}
+      </div>
     );
   };
 
   return (
-    <section
-      className="pl-global-lb-shell"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Global leaderboard"
-      data-testid="global-leaderboard"
-    >
+    <section className="pl-global-lb-shell" role="dialog" aria-modal="true" aria-label="Global leaderboard" data-testid="global-leaderboard">
       <div className="pl-global-lb-inner">
-        <header className="pl-global-lb-head">
-          <div className="pl-global-lb-globe"><Globe size={24} strokeWidth={2.2} /></div>
-          <div className="pl-global-lb-title">
+        {/* HEADER */}
+        <div className="pl-global-lb-card pl-global-lb-header">
+          <div className="pl-global-lb-trophy"><Trophy size={30} /></div>
+          <div className="pl-global-lb-htext">
+            <span className="pl-global-lb-eyebrow">FREE WORLD</span>
             <h1>GLOBAL LEADERBOARD</h1>
-            <p>Compete across Free World and climb the global rankings.</p>
+            <p>Compete with players worldwide and win amazing prizes!</p>
           </div>
-          <button className="pl-global-lb-close" onClick={() => onClose?.()} data-testid="lb-close">
-            <X size={16} /> Close
-          </button>
-        </header>
-
-        <div className="pl-global-lb-tabs" role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={tab === t.id}
-              className={`pl-global-lb-tab ${tab === t.id ? 'is-active' : ''}`}
-              onClick={() => setTab(t.id)}
-              data-testid={`lb-tab-${t.id}`}
-            >
-              {t.id === 'championship' ? <Trophy size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} /> : null}
-              {t.label}
-            </button>
-          ))}
+          {isLive && <span className="pl-global-lb-livepill" data-testid="lb-live"><i /> LIVE</span>}
+          <button className="pl-global-lb-x" onClick={() => onClose?.()} data-testid="lb-close" aria-label="Close"><X size={20} /></button>
         </div>
 
-        {clabel && !loading && !error && rows.length > 0 && (
-          <div className="pl-global-lb-contest" data-testid="lb-contest-label">{clabel}</div>
+        {/* STATS */}
+        <div className="pl-global-lb-stats">
+          <div className="pl-global-lb-card pl-global-lb-pool">
+            <span className="pl-global-lb-coins">🪙</span>
+            <div>
+              <div className="pl-global-lb-poolamt" data-testid="lb-prize-pool">{gbp0(TOTAL_PRIZE_POOL)}</div>
+              <div className="pl-global-lb-poollbl">Total Prize Pool</div>
+            </div>
+          </div>
+          <div className="pl-global-lb-card pl-global-lb-ends">
+            <Clock size={26} className="pl-global-lb-endsicon" />
+            <div>
+              <div className="pl-global-lb-endsval" data-testid="lb-ends-in">{endsIn || '—'}</div>
+              <div className="pl-global-lb-endslbl">Ends In</div>
+            </div>
+          </div>
+        </div>
+
+        {/* PRIZE CALCULATION */}
+        <div className="pl-global-lb-card pl-global-lb-prizecalc">
+          <div className="pl-global-lb-sectlbl">PRIZE CALCULATION</div>
+          <div className="pl-global-lb-prizes">
+            <span className="pl-global-lb-prz"><i className="m1">1</i> 1st</span>
+            <span className="pl-global-lb-dot" />
+            <span className="pl-global-lb-prz"><i className="m2">2</i> 2nd</span>
+            <span className="pl-global-lb-dot" />
+            <span className="pl-global-lb-prz"><i className="m3">3</i> 3rd</span>
+            <span className="pl-global-lb-dot" />
+            <span className="pl-global-lb-prz">4th</span>
+            <span className="pl-global-lb-dot" />
+            <span className="pl-global-lb-prz">5th</span>
+            <span className="pl-global-lb-note">Top {contest?.winner_count || 5} win</span>
+          </div>
+        </div>
+
+        {/* VIEW SELECTOR */}
+        <div className="pl-global-lb-card pl-global-lb-viewrow">
+          <div className="pl-global-lb-select">
+            <Trophy size={16} />
+            <select value={mode} onChange={(e) => setMode(e.target.value)} data-testid="lb-mode-select" aria-label="View">
+              <option value="global">All Championships (Global)</option>
+              <option value="championship">Current Championship</option>
+            </select>
+            <ChevronDown size={16} className="pl-global-lb-selchev" />
+          </div>
+          {isLive && <span className="pl-global-lb-livepill green"><Radio size={13} /> LIVE</span>}
+          <button className="pl-global-lb-refresh" onClick={() => load(mode)} data-testid="lb-refresh"><RefreshCw size={15} /> Refresh</button>
+        </div>
+
+        {/* YOUR POSITION */}
+        {myRow && (
+          <div className="pl-global-lb-card pl-global-lb-you" data-testid="lb-your-rank">
+            <div className="pl-global-lb-sectlbl">YOUR POSITION</div>
+            <div className="pl-global-lb-yourow">
+              <span className="pl-global-lb-yourank">#{myRow.rank}</span>
+              <span className="pl-global-lb-av sm"><User size={16} /></span>
+              <span className="pl-global-lb-yn">{nameOf(myRow)}</span>
+              <span className="pl-global-lb-champ"><Trophy size={13} /> {myRow.champ || champLabel}</span>
+              <span className="pl-global-lb-time"><Clock size={13} /> {fmtTime(myRow.duration_ms)}</span>
+              <span className="pl-global-lb-win">{rowWinnings(myRow) || '—'}</span>
+            </div>
+          </div>
         )}
 
-        <Body />
+        {/* RANKINGS */}
+        <div className="pl-global-lb-card pl-global-lb-rankings">
+          <div className="pl-global-lb-rankhead">
+            <h2>{mode === 'championship' ? 'CHAMPIONSHIP RANKINGS' : 'GLOBAL RANKINGS'}</h2>
+            {isLive && <span className="pl-global-lb-updates"><i /> UPDATES LIVE</span>}
+          </div>
+          <RankingsBody />
+        </div>
       </div>
     </section>
   );
