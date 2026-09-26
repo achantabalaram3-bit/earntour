@@ -199,6 +199,12 @@ export const worldContestAPI = {
       '/world/champion/status',
     ).then(r => r.data),
 
+  reserveChampionTokenRetry: () =>
+    api.post(
+      '/world/token/retry/reserve',
+      { level: 0 },
+    ).then(r => r.data),
+
   startChampionSession: () =>
     api.post(
       '/world/champion/session/start',

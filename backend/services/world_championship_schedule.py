@@ -34,6 +34,7 @@ SEASON_CHAMPIONSHIP_COUNT = 100
 LEVELS_PER_CHAMPIONSHIP = 10
 
 CHAMPIONSHIP_CYCLE_DAYS = 12
+CURRENT_CHAMPIONSHIP_EXTENSION_DAYS = 1
 CHAMPION_OPEN_DAY = 10
 CHAMPION_CLOSE_DAY = 11
 
@@ -113,9 +114,17 @@ def championship_start_day(
             "Invalid Championship number."
         )
 
+    # One-time Season 1 extension: Championship 1 receives one
+    # extra day. Championships 2-100 keep their normal 12-day
+    # duration but start one day later.
     return (
-        number - 1
-    ) * CHAMPIONSHIP_CYCLE_DAYS
+        (number - 1) * CHAMPIONSHIP_CYCLE_DAYS
+        + (
+            CURRENT_CHAMPIONSHIP_EXTENSION_DAYS
+            if number >= 2
+            else 0
+        )
+    )
 
 
 def championship_window(
@@ -159,7 +168,12 @@ def championship_window(
         london_calendar_datetime(
             season_start,
             base_day +
-                CHAMPION_CLOSE_DAY,
+                CHAMPION_CLOSE_DAY +
+                (
+                    CURRENT_CHAMPIONSHIP_EXTENSION_DAYS
+                    if number == 1
+                    else 0
+                ),
             hour=CHAMPION_CLOSE_HOUR,
             minute=
                 CHAMPION_CLOSE_MINUTE,
@@ -170,7 +184,12 @@ def championship_window(
         london_calendar_datetime(
             season_start,
             base_day +
-                CHAMPIONSHIP_CYCLE_DAYS,
+                CHAMPIONSHIP_CYCLE_DAYS +
+                (
+                    CURRENT_CHAMPIONSHIP_EXTENSION_DAYS
+                    if number == 1
+                    else 0
+                ),
         )
         if number <
             SEASON_CHAMPIONSHIP_COUNT
@@ -256,10 +275,20 @@ def championship_for_time(
         start_local_date
     ).days
 
-    number = (
-        elapsed_days //
+    first_cycle_days = (
         CHAMPIONSHIP_CYCLE_DAYS
-    ) + 1
+        + CURRENT_CHAMPIONSHIP_EXTENSION_DAYS
+    )
+
+    if elapsed_days < first_cycle_days:
+        number = 1
+    else:
+        number = (
+            (
+                elapsed_days
+                - first_cycle_days
+            ) // CHAMPIONSHIP_CYCLE_DAYS
+        ) + 2
 
     if number > SEASON_CHAMPIONSHIP_COUNT:
         final_window = (

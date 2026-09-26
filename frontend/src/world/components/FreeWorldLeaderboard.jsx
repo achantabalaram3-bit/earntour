@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown, Coins, ChevronRight,
 } from 'lucide-react';
@@ -35,8 +35,10 @@ function initials(name) {
 function fmtTime(ms) {
   const v = Math.max(0, Number(ms) || 0);
   if (!v) return '—';
-  const s = Math.floor(v / 1000);
-  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  const totalMs = Math.floor(v);
+  const s = Math.floor(totalMs / 1000);
+  const millis = totalMs % 1000;
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
 }
 function champOf(r) {
   const stage = r?.championship ?? r?.champion_badge?.stage ?? r?.champion_stage ?? null;

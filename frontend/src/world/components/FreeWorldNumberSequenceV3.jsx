@@ -23,7 +23,6 @@ import {
   walletAPI,
 } from '../../lib/api';
 
-import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 
 import { useNavigate } from 'react-router-dom';
@@ -279,6 +278,19 @@ export default function FreeWorldNumberSequenceV3({
     );
 
 
+  const totalAttemptsAvailable =
+    Number(
+      attempts
+        ?.total_attempts_available ??
+      freeAttempts,
+    );
+
+
+  const canTokenRetry =
+    freeAttempts < 1 &&
+    attempts?.token_retry_available === true;
+
+
   const columns =
     useMemo(
       () => {
@@ -515,12 +527,12 @@ export default function FreeWorldNumberSequenceV3({
    * Production backend remains authoritative.
    */
   const prepareOfficial =
-    async (internalRetry = false) => {
+    async () => {
       if (
-        (!internalRetry && busy) ||
+        busy ||
         (
           !championMode &&
-          freeAttempts < 1
+          totalAttemptsAvailable < 1
         )
       ) {
         return;
@@ -1128,20 +1140,7 @@ if (
             ),
           );
 
-          if (championMode) {
-            /*
-             * Champion token retry has already been reserved by
-             * the backend using sentinel level 0.
-             *
-             * Start a NEW official Champion session immediately.
-             * internalRetry=true bypasses only this component's
-             * busy guard; backend attempt validation remains
-             * authoritative.
-             */
-            await prepareOfficial(true);
-          } else {
-            retryFree();
-          }
+          retryFree();
         }
       } catch (requestError) {
         const message =
@@ -1244,16 +1243,6 @@ if (
         );
 
 
-  const attemptTotal =
-    Number(
-      resultAttempts
-        ?.initial_attempts ??
-      resultAttempts
-        ?.initial_free_attempts ??
-      3,
-    ) || 3;
-
-
   const attemptUsed =
     Math.max(
       1,
@@ -1264,7 +1253,7 @@ if (
           ?.attempts_used ??
         Math.max(
           1,
-          attemptTotal -
+          3 -
           resultFreeAttempts,
         ),
       ),
@@ -1629,6 +1618,9 @@ if (
                     <button
                       key={number}
                       type="button"
+                      style={{
+                        fontSize: 'clamp(1rem, 2.4vw, 1.35rem)',
+                      }}
                       disabled={done}
                       className={
                         done
@@ -1813,14 +1805,12 @@ if (
                 busy ||
                 (
                   !championMode &&
-                  freeAttempts < 1
+                  totalAttemptsAvailable < 1 &&
+                  !canTokenRetry
                 )
               }
               onClick={() => {
-                if (
-                  championMode &&
-                  freeAttempts < 1
-                ) {
+                if (canTokenRetry) {
                   loadBalance();
                   setRetryConfirmOpen(true);
                   return;
@@ -1830,13 +1820,7 @@ if (
               }}
             >
               <Play size={18} />
-
-              {
-                championMode &&
-                freeAttempts < 1
-                  ? 'RETRY ATTEMPT WITH TOKEN'
-                  : 'START ATTEMPT'
-              }
+              {canTokenRetry ? 'RETRY ATTEMPT WITH TOKEN' : 'START ATTEMPT'}
             </button>
 
           </section>
@@ -1844,7 +1828,8 @@ if (
 
           {
             !championMode &&
-            freeAttempts < 1 && (
+            totalAttemptsAvailable < 1 &&
+            !canTokenRetry && (
               <div className="fwv3-error">
                 No free attempt is
                 currently available.
@@ -1860,6 +1845,77 @@ if (
               </div>
             )
           }
+
+          {retryConfirmOpen && (
+            <div
+              className="fwv3-token-modal-backdrop"
+              data-testid="retry-confirm-modal"
+              onClick={() => {
+                if (!busy) setRetryConfirmOpen(false);
+              }}
+            >
+              <section
+                className="fwv3-token-modal"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="fwv3-token-modal-kicker">
+                  RETRY WITH TOKENS
+                </div>
+
+                <h3>
+                  {selectedLevel?.name || `Level ${selectedLevel?.level}`}
+                </h3>
+
+                <p className="fwv3-token-modal-lead">
+                  You have used all your free attempts. Spend tokens to play this level again.
+                </p>
+
+                <div className="fwv3-token-modal-rows">
+                  <div>
+                    <span>Token cost</span>
+                    <strong data-testid="retry-cost">{retryCost} 🪙</strong>
+                  </div>
+                  <div>
+                    <span>Current balance</span>
+                    <strong data-testid="retry-current-balance">
+                      {walletBalance === null ? '…' : `${walletBalance} 🪙`}
+                    </strong>
+                  </div>
+                  <div>
+                    <span>Remaining balance</span>
+                    <strong data-testid="retry-remaining-balance">
+                      {walletBalance === null ? '…' : `${Math.max(0, walletBalance - retryCost)} 🪙`}
+                    </strong>
+                  </div>
+                </div>
+
+                {walletBalance !== null && walletBalance < retryCost ? (
+                  <>
+                    <div className="fwv3-token-modal-insufficient" data-testid="retry-insufficient">
+                      Not enough tokens
+                    </div>
+                    <div className="fwv3-token-modal-actions">
+                      <button type="button" className="fwv3-button fwv3-button-outline" onClick={() => setRetryConfirmOpen(false)}>
+                        Cancel
+                      </button>
+                      <button type="button" className="fwv3-button fwv3-button-primary" data-testid="retry-topup" onClick={() => navigate('/my-account/wallet')}>
+                        Add Tokens
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="fwv3-token-modal-actions">
+                    <button type="button" className="fwv3-button fwv3-button-outline" disabled={busy} onClick={() => setRetryConfirmOpen(false)}>
+                      Cancel
+                    </button>
+                    <button type="button" className="fwv3-button fwv3-button-primary" data-testid="retry-confirm" disabled={busy || walletBalance === null} onClick={retryWithToken}>
+                      {busy ? 'Please wait…' : 'Confirm'}
+                    </button>
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
 
         </section>
 
@@ -2018,6 +2074,9 @@ if (
                     <button
                       key={number}
                       type="button"
+                      style={{
+                        fontSize: 'clamp(1rem, 2.4vw, 1.35rem)',
+                      }}
                       disabled={
                         done ||
                         busy
@@ -2214,7 +2273,7 @@ if (
               </span>
 
               <strong>
-                {attemptUsed} of {attemptTotal}
+                {attemptUsed} of 3
               </strong>
 
             </div>
@@ -2223,48 +2282,7 @@ if (
 
 
           {
-            resultFreeAttempts > 0 ? (
-              <button
-                type="button"
-                className="fwv3-button fwv3-button-primary fwv3-full"
-                onClick={retryFree}
-              >
-                PLAY AGAIN - {
-                  resultFreeAttempts
-                } FREE
-              </button>
-            ) : (
-              championMode ||
-              resultAttempts
-                ?.token_retry_available
-            ) ? (
-              <button
-                type="button"
-                className="fwv3-button fwv3-button-primary fwv3-full"
-                data-testid="retry-with-tokens-button"
-                disabled={busy}
-                onClick={() => {
-                  loadBalance();
-                  setRetryConfirmOpen(true);
-                }}
-              >
-                {
-                  championMode && success
-                    ? 'RETRY FOR A BETTER POSITION'
-                    : `RETRY ATTEMPT WITH TOKEN - ${Number(
-                        resultAttempts
-                          ?.token_retry_cost ?? 1,
-                      )} ${
-                        Number(
-                          resultAttempts
-                            ?.token_retry_cost ?? 1,
-                        ) === 1
-                          ? 'TOKEN'
-                          : 'TOKENS'
-                      }`
-                }
-              </button>
-            ) : (
+            success ? (
               <button
                 type="button"
                 className="fwv3-button fwv3-button-primary fwv3-full"
@@ -2278,7 +2296,47 @@ if (
               >
                 CONTINUE
               </button>
-            )
+            ) : resultFreeAttempts > 0 ? (
+              <button
+                type="button"
+                className="fwv3-button fwv3-button-primary fwv3-full"
+                onClick={
+                  retryFree
+                }
+              >
+                PLAY AGAIN - {
+                  resultFreeAttempts
+                } FREE
+              </button>
+            ) : (
+              resultAttempts
+                ?.token_retry_available
+            ) ? (
+              <button
+                type="button"
+                className="fwv3-button fwv3-button-primary fwv3-full"
+                data-testid="retry-with-tokens-button"
+                disabled={busy}
+                onClick={() => {
+                  loadBalance();
+                  setRetryConfirmOpen(true);
+                }}
+              >
+                RETRY WITH TOKENS - {
+                  Number(
+                    resultAttempts
+                      ?.token_retry_cost ?? 1,
+                  )
+                } {
+                  Number(
+                    resultAttempts
+                      ?.token_retry_cost ?? 1,
+                  ) === 1
+                    ? 'TOKEN'
+                    : 'TOKENS'
+                }
+              </button>
+            ) : null
           }
 
 
@@ -2332,7 +2390,7 @@ if (
             )
           }
 
-          {retryConfirmOpen && createPortal(
+          {retryConfirmOpen && (
             <div
               className="fwv3-token-modal-backdrop"
               data-testid="retry-confirm-modal"
@@ -2353,12 +2411,8 @@ if (
                 </div>
 
                 <h3>
-                  {championMode
-                    ? 'CHAMPIONSHIP'
-                    : (
-                        selectedLevel?.name ||
-                        `Level ${selectedLevel?.level}`
-                      )}
+                  {selectedLevel?.name ||
+                    `Level ${selectedLevel?.level}`}
                 </h3>
 
                 <p className="fwv3-token-modal-lead">
@@ -2461,8 +2515,7 @@ if (
                   </div>
                 )}
               </section>
-            </div>,
-            document.body,
+            </div>
           )}
 
         </section>

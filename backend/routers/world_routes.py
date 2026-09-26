@@ -2356,7 +2356,7 @@ def _validate_world_level_config(
         free_attempts = int(
             item.get(
                 "initial_free_attempts",
-                3 if level <= 5 else 1,
+                3,
             )
         )
 
@@ -2920,8 +2920,12 @@ async def _world_unlock_context(
     # A purchased unlock bypasses only this level's scheduled
     # time gate. Contest-open and progression requirements remain.
     time_available = bool(
-        scheduled_time_available
-        or token_unlocked
+        True
+        if 1 <= level <= 10
+        else (
+            scheduled_time_available
+            or token_unlocked
+        )
     )
 
     contest_started = (
@@ -2937,7 +2941,9 @@ async def _world_unlock_context(
     )
 
     sequence_available = (
-        level <= highest_unlocked
+        True
+        if 1 <= level <= 10
+        else level <= highest_unlocked
     )
 
     available = bool(
@@ -3223,6 +3229,9 @@ async def _effective_level_config(
         locked_times[level]
     )
 
+    # Normal Free World levels 1-10 always have 3 initial free attempts.
+    merged["initial_free_attempts"] = 3
+
     return merged
 
 
@@ -3417,6 +3426,13 @@ async def _free_attempt_counter(
         "level": level,
 
         "initial_remaining":
+            int(
+                config[
+                    "initial_free_attempts"
+                ]
+            ),
+
+        "free_attempt_policy":
             int(
                 config[
                     "initial_free_attempts"
@@ -3641,13 +3657,97 @@ async def _free_attempt_status(
                 int(
                     config.get(
                         "initial_free_attempts",
-                        3 if level <= 5 else 1,
+                        3,
+                    )
+                ),
+
+            "free_attempt_policy":
+                int(
+                    config.get(
+                        "initial_free_attempts",
+                        3,
                     )
                 ),
 
             "next_free_at":
                 None,
         }
+
+    elif (
+        6 <= level <= 10
+        and int(
+            config.get(
+                "initial_free_attempts",
+                3,
+            )
+        ) == 3
+        and counter.get(
+            "free_attempt_policy"
+        ) != 3
+        and int(
+            counter.get(
+                "initial_remaining",
+                0,
+            )
+        ) <= 1
+    ):
+        migrated_remaining = min(
+            3,
+            max(
+                0,
+                int(
+                    counter.get(
+                        "initial_remaining",
+                        0,
+                    )
+                ),
+            ) + 2,
+        )
+
+        result = await db.world_attempt_counters.find_one_and_update(
+            {
+                "season_id":
+                    WORLD_SEASON_ID,
+
+                "user_id":
+                    user_id,
+
+                "level":
+                    level,
+
+                "free_attempt_policy": {
+                    "$ne": 3,
+                },
+
+                "initial_remaining": {
+                    "$lte": 1,
+                },
+            },
+            {
+                "$set": {
+                    "initial_remaining":
+                        migrated_remaining,
+
+                    "free_attempt_policy":
+                        3,
+
+                    "updated_at":
+                        _utcnow(),
+                },
+
+                "$unset": {
+                    "initial_exhausted_at":
+                        "",
+
+                    "refresh_next_at":
+                        "",
+                },
+            },
+            return_document=True,
+        )
+
+        if result:
+            counter = result
 
     initial_remaining = max(
         0,
@@ -3656,7 +3756,7 @@ async def _free_attempt_status(
                 "initial_remaining",
                 config.get(
                     "initial_free_attempts",
-                    3 if level <= 5 else 1,
+                    3,
                 ),
             )
         ),
@@ -3790,7 +3890,7 @@ async def _free_attempt_status(
             int(
                 config.get(
                     "initial_free_attempts",
-                    3 if level <= 5 else 1,
+                    3,
                 )
             ),
 
@@ -7572,10 +7672,11 @@ async def reserve_world_token_retry(
         # Champion retry has its own entitlement rules.
         config = {
             "token_retry_enabled": True,
+            "token_retry_cost": 1,
         }
 
-    # Championship uses one free attempt per global contest.
-    # After that attempt is consumed, token retries may be
+    # Championship uses three free attempts per global contest.
+    # After those attempts are consumed, token retries may be
     # purchased repeatedly, one retry at a time.
     if level == 0:
         champion_contest = await _active_contest(
@@ -7936,8 +8037,9 @@ async def reserve_world_token_retry(
         "spend",
         -float(token_cost),
         note=(
-            f"Free World Level {level} "
-            f"token retry"
+            "Free World Champion token retry"
+            if level == 0
+            else f"Free World Level {level} token retry"
         ),
         ref_order_id=
             reservation_id,
@@ -11075,4 +11177,3 @@ async def free_world_access(
         "levels":
             levels,
     }
-
