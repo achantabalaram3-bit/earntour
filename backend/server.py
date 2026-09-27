@@ -225,10 +225,13 @@ from routers.user360_routes import router as user360_router
 from routers.admin_referrals_routes import router as admin_referrals_router
 from routers.influencer_promo_routes import router as influencer_promo_router
 from routers.winnings_routes import router as winnings_router, admin_router as winnings_admin_router
+from routers.cashout_routes import router as cashout_router, admin_router as cashout_admin_router
 
 app.include_router(auth_router)
 app.include_router(winnings_router)
 app.include_router(winnings_admin_router)
+app.include_router(cashout_router)
+app.include_router(cashout_admin_router)
 app.include_router(contest_router)
 app.include_router(order_router)
 app.include_router(admin_router)

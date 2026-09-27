@@ -14,7 +14,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from deps import get_db
-from routers.wallet_routes import _apply_tx, _apply_tx_idempotent
+from routers.wallet_routes import _apply_tx, _apply_tx_idempotent, credit_withdrawable, _get_or_create_wallet
 from auth import get_current_user, require_admin
 
 logger = logging.getLogger("winnings")
@@ -202,14 +202,12 @@ async def complete_challenge(body: CompleteBody, request: Request):
                 "credited_at": now,
                 "created_at": now,
             })
-            # Unique insert succeeded → first ever reward → credit atomically.
-            await _get_wallet(db, user["user_id"])
-            await db.winnings_wallets.update_one(
-                {"user_id": user["user_id"]},
-                {"$inc": {
-                    "available_pence": CHALLENGE_REWARD_PENCE,
-                    "total_won_pence": CHALLENGE_REWARD_PENCE,
-                }, "$set": {"updated_at": now}},
+            # Unique insert succeeded → first ever reward → credit as
+            # WITHDRAWABLE tokens in the main token wallet (1 token = £1).
+            await credit_withdrawable(
+                db, user["user_id"], CHALLENGE_REWARD_PENCE / 100.0,
+                note="Something Special challenge winnings",
+                ref_order_id=f"challenge_reward:{body.attempt_id}",
             )
             await _ledger(db, user["user_id"], "challenge_reward",
                           CHALLENGE_REWARD_PENCE, reference=body.attempt_id)
@@ -224,13 +222,13 @@ async def complete_challenge(body: CompleteBody, request: Request):
                 logger.warning(f"reward credit issue: {e}")
                 already_rewarded = True
 
-    wallet = await _get_wallet(db, user["user_id"])
+    wallet = await _get_or_create_wallet(db, user["user_id"])
     return {
         "result": "success" if success else "fail",
         "elapsed_ms": elapsed_ms,
         "reward_pence": reward_pence,
         "already_rewarded": already_rewarded,
-        "available_pence": wallet["available_pence"],
+        "available_pence": int(round(wallet["available_to_cash_out"] * 100)),
     }
 
 

@@ -167,6 +167,22 @@ export const walletAPI = {
   topup: (amount) => api.post('/wallet/topup', { amount }).then(r => r.data),
 };
 
+export const cashoutAPI = {
+  config: () => api.get('/cashout/config').then(r => r.data),
+  summary: () => api.get('/cashout/summary').then(r => r.data),
+  banks: () => api.get('/cashout/bank-accounts').then(r => r.data),
+  addBank: (data) => api.post('/cashout/bank-accounts', data).then(r => r.data),
+  request: (data) => api.post('/cashout/request', data).then(r => r.data),
+  myRequests: () => api.get('/cashout/requests').then(r => r.data),
+  // admin
+  adminConfig: () => api.get('/admin/cashout/config').then(r => r.data),
+  adminUpdateConfig: (data) => api.put('/admin/cashout/config', data).then(r => r.data),
+  adminList: (status) => api.get('/admin/cashout/withdrawals', { params: status ? { status } : {} }).then(r => r.data),
+  adminDetail: (id) => api.get(`/admin/cashout/withdrawals/${id}`).then(r => r.data),
+  adminMarkPaid: (id) => api.post(`/admin/cashout/withdrawals/${id}/mark-paid`).then(r => r.data),
+  adminReject: (id, reason) => api.post(`/admin/cashout/withdrawals/${id}/reject`, { reason }).then(r => r.data),
+};
+
 export const uploadsAPI = {
   image: (file) => {
     const fd = new FormData();

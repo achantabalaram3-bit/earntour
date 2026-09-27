@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import PrizeLeagueLogo from '../layout/PrizeLeagueLogo';
+import CashOutCard from './CashOutCard';
 
 const MIN_TOPUP = 5;   // tokens (1 token = £1)
 const MAX_TOPUP = 1000;
@@ -32,6 +33,10 @@ const TX_LABELS = {
  refund: 'Refund',
  admin_adjust: 'Admin adjustment',
  referral_bonus: 'Referral bonus',
+ signup_bonus: 'Signup bonus',
+ influencer_bonus: 'Influencer bonus',
+ champion_prize: 'Championship prize',
+ winnings: 'Winnings',
 };
 
 function TxReceipt({ tx, open, onClose, walletBefore }) {
@@ -213,12 +218,11 @@ export default function WalletPanel({ wallet, walletTxs, setWallet, setWalletTxs
  <div className="text-[10px] uppercase tracking-wider text-white/70">Spent ({filter})</div>
  <div className="font-bold text-lg mt-0.5">{fmtTokens(stats.spending)}</div>
  </div>
- <div className="bg-white/10 backdrop-blur rounded-xl p-3 col-span-2 md:col-span-1">
- <div className="text-[10px] uppercase tracking-wider text-white/70">Cash out</div>
- <button disabled className="font-bold text-lg mt-0.5 text-white/60 cursor-not-allowed">Coming soon</button>
  </div>
  </div>
- </div>
+
+ {/* WALLET BREAKDOWN + CASH OUT */}
+ <CashOutCard />
 
  {/* TOPUP PANEL */}
  {showTopup && (

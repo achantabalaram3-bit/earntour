@@ -47,6 +47,7 @@ import UserDetailsPage from './pages/admin/UserDetailsPage';
 import ReferralsBonusesAdmin from './pages/admin/ReferralsBonusesAdmin';
 import FreeWorldAdmin from './pages/admin/FreeWorldAdmin';
 import WinningsPayoutsAdmin from './pages/admin/WinningsPayoutsAdmin';
+import CashOutAdmin from './pages/admin/CashOutAdmin';
 import LegalDocPage from './pages/legal/LegalDocPage';
 import PlayGame from './pages/PlayGame';
 import GameArena from './pages/GameArena';
@@ -148,6 +149,7 @@ function AppRouter() {
           path="winnings-payouts"
           element={<WinningsPayoutsAdmin />}
         />
+        <Route path="cash-out" element={<CashOutAdmin />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="winners" element={<AdminWinners />} />

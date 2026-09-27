@@ -17,6 +17,7 @@ const LINKS = [
  { to: '/admin/free-world', label: 'Free World', icon: Trophy },
  { to: '/admin/wallets', label: 'Wallets', icon: WalletIcon },
  { to: '/admin/winnings-payouts', label: 'Winnings Payouts', icon: Banknote },
+ { to: '/admin/cash-out', label: 'Cash Out', icon: Banknote },
  { to: '/admin/orders', label: 'Orders', icon: ShoppingBag },
  { to: '/admin/payments', label: 'Payments', icon: CreditCard },
  { to: '/admin/winners', label: 'Winners', icon: Trophy },

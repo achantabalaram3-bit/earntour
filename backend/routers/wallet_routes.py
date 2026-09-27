@@ -40,10 +40,98 @@ async def _get_or_create_wallet(db, user_id: str) -> dict:
     w = await db.wallets.find_one({'user_id': user_id}, {'_id': 0})
     if not w:
         new_w = Wallet(user_id=user_id).model_dump()
+        new_w['bonus'] = 0.0
+        new_w['withdrawable'] = 0.0
+        new_w['source_migrated'] = True
         await db.wallets.insert_one(new_w)
-        # Re-fetch to strip _id if driver mutated the dict
         w = await db.wallets.find_one({'user_id': user_id}, {'_id': 0})
+    elif not w.get('source_migrated'):
+        w = await _migrate_wallet_sources(db, user_id, w)
     return _with_tokens(w)
+
+
+async def _migrate_wallet_sources(db, user_id: str, w: dict) -> dict:
+    """One-time, idempotent backfill of source sub-counters for a legacy
+    wallet. Bonus = min(current balance, sum of historical bonus credits).
+    Withdrawable defaults to 0 (existing balances are NON-withdrawable per
+    the cash-out safety rule) unless already set. Runs lazily on first
+    wallet access after deploy."""
+    balance = round(float(w.get('balance', 0) or 0), 2)
+    bonus_credited = 0.0
+    async for tx in db.wallet_tx.find(
+        {'user_id': user_id, 'kind': {'$in': list(BONUS_TX_KINDS)}, 'amount': {'$gt': 0}},
+        {'_id': 0, 'amount': 1},
+    ):
+        bonus_credited += float(tx.get('amount', 0) or 0)
+    bonus = round(min(balance, max(0.0, bonus_credited)), 2)
+    withdrawable = round(float(w.get('withdrawable', 0) or 0), 2)
+    await db.wallets.update_one(
+        {'user_id': user_id, 'source_migrated': {'$ne': True}},
+        {'$set': {'bonus': bonus, 'withdrawable': withdrawable, 'source_migrated': True}},
+    )
+    return await db.wallets.find_one({'user_id': user_id}, {'_id': 0})
+
+
+def _split_debit(balance: float, bonus: float, withdrawable: float, withdrawable_pending: float, amount: float):
+    """Return (d_bonus, d_withdrawable) to consume `amount` in the protected
+    spend order: bonus -> purchased -> withdrawable. Reserved cash-out funds
+    (withdrawable_pending) are never spendable. Purchased is derived
+    (balance - bonus - withdrawable - withdrawable_pending)."""
+    amt = round(float(amount), 2)
+    bonus = max(0.0, round(bonus, 2))
+    withdrawable = max(0.0, round(withdrawable, 2))
+    pending = max(0.0, round(withdrawable_pending, 2))
+    d_bonus = min(bonus, amt)
+    rem = round(amt - d_bonus, 2)
+    purchased = max(0.0, round(balance - bonus - withdrawable - pending, 2))
+    d_purch = min(purchased, rem)
+    rem2 = round(rem - d_purch, 2)
+    d_withdrawable = min(withdrawable, rem2)
+    return round(d_bonus, 2), round(d_withdrawable, 2)
+
+
+async def reserve_withdrawable(db, user_id: str, amount: float) -> bool:
+    """Atomically lock `amount` of unreserved withdrawable tokens for a
+    cash-out request (withdrawable -> withdrawable_pending). Returns False if
+    the user does not have enough unreserved withdrawable balance."""
+    amt = round(float(amount), 2)
+    now = datetime.now(timezone.utc)
+    res = await db.wallets.update_one(
+        {'user_id': user_id, 'withdrawable': {'$gte': amt}},
+        {'$inc': {'withdrawable': -amt, 'withdrawable_pending': amt}, '$set': {'updated_at': now}},
+    )
+    return res.modified_count == 1
+
+
+async def settle_withdrawable_paid(db, user_id: str, amount: float) -> bool:
+    """Cash-out paid: remove reserved tokens from the wallet permanently
+    (they became real GBP). withdrawable_pending -= amt AND balance -= amt."""
+    amt = round(float(amount), 2)
+    now = datetime.now(timezone.utc)
+    res = await db.wallets.update_one(
+        {'user_id': user_id, 'withdrawable_pending': {'$gte': amt}},
+        {'$inc': {'withdrawable_pending': -amt, 'balance': -amt}, '$set': {'updated_at': now}},
+    )
+    return res.modified_count == 1
+
+
+async def release_withdrawable(db, user_id: str, amount: float) -> bool:
+    """Cash-out rejected/cancelled: return reserved tokens to available
+    withdrawable (withdrawable_pending -> withdrawable)."""
+    amt = round(float(amount), 2)
+    now = datetime.now(timezone.utc)
+    res = await db.wallets.update_one(
+        {'user_id': user_id, 'withdrawable_pending': {'$gte': amt}},
+        {'$inc': {'withdrawable_pending': -amt, 'withdrawable': amt}, '$set': {'updated_at': now}},
+    )
+    return res.modified_count == 1
+
+
+async def credit_withdrawable(db, user_id: str, amount: float, note: str, ref_order_id: str) -> dict:
+    """Credit championship/challenge winnings as withdrawable tokens
+    (idempotent). 1 token = £1."""
+    return await _apply_tx_idempotent(db, user_id, 'winnings', round(float(amount), 2),
+                                      note=note, ref_order_id=ref_order_id)
 
 
 def _with_tokens(w: Optional[dict]) -> Optional[dict]:
@@ -65,12 +153,18 @@ def _with_tokens(w: Optional[dict]) -> Optional[dict]:
     total = float(w.get('balance', 0) or 0)
     bonus = float(w.get('bonus', 0) or 0)
     withdrawable = float(w.get('withdrawable', 0) or 0)
+    pending = float(w.get('withdrawable_pending', 0) or 0)
+    spendable = max(0.0, total - bonus - withdrawable - pending)
     w['tokens'] = int(round(total))
     w['total_tokens'] = int(round(total))
     w['bonus_tokens'] = int(round(bonus))
+    # "Tokens" line = purchased + championship = total - bonus
     w['spendable_tokens'] = int(round(max(0.0, total - bonus)))
+    w['purchased_tokens'] = int(round(spendable))
     w['withdrawable_tokens'] = int(round(withdrawable))
+    w['withdrawable_pending_tokens'] = int(round(pending))
     w['available_to_cash_out'] = round(withdrawable, 2)
+    w['pending_cash_out'] = round(pending, 2)
     w['lifetime_tokens_bought'] = int(round(w.get('lifetime_topup', 0) or 0))
     w['lifetime_tokens_spent'] = int(round(w.get('lifetime_spend', 0) or 0))
     return w
@@ -113,20 +207,52 @@ async def _apply_tx(db, user_id: str, kind: str, amount: float, note: str = '', 
     delta = round(float(amount), 2)
     now = datetime.now(timezone.utc)
 
-    # Build atomic mutation. Lifetime counters must also change in-doc so no
-    # separate read+set exists in this function.
+    # DEBIT: consume tokens in the protected order bonus -> purchased ->
+    # withdrawable, using optimistic concurrency (guard on the exact values
+    # we read) so sub-counters can never drift negative under races.
+    if delta < 0:
+        amt = round(abs(delta), 2)
+        new_balance = None
+        for _ in range(6):
+            cur = await db.wallets.find_one(
+                {'user_id': user_id},
+                {'_id': 0, 'balance': 1, 'bonus': 1, 'withdrawable': 1, 'withdrawable_pending': 1},
+            ) or {}
+            bal = round(float(cur.get('balance', 0) or 0), 2)
+            bon = round(float(cur.get('bonus', 0) or 0), 2)
+            wd = round(float(cur.get('withdrawable', 0) or 0), 2)
+            wp = round(float(cur.get('withdrawable_pending', 0) or 0), 2)
+            if round(bal - wp, 2) + 1e-9 < amt:
+                raise HTTPException(status_code=400, detail='Insufficient wallet balance')
+            d_bonus, d_wd = _split_debit(bal, bon, wd, wp, amt)
+            inc = {'balance': delta, 'bonus': -d_bonus, 'withdrawable': -d_wd}
+            if kind == 'spend':
+                inc['lifetime_spend'] = amt
+            updated = await db.wallets.find_one_and_update(
+                {'user_id': user_id, 'balance': bal, 'bonus': bon, 'withdrawable': wd, 'withdrawable_pending': wp},
+                {'$inc': inc, '$set': {'updated_at': now}},
+                return_document=True,
+                projection={'_id': 0, 'balance': 1},
+            )
+            if updated:
+                new_balance = round(updated['balance'], 2)
+                break
+        if new_balance is None:
+            raise HTTPException(status_code=400, detail='Insufficient wallet balance')
+        tx = WalletTx(
+            user_id=user_id, kind=kind, amount=delta,
+            balance_after=new_balance, note=note, ref_order_id=ref_order_id,
+        )
+        await db.wallet_tx.insert_one(tx.model_dump())
+        return {'balance': new_balance, 'tx': tx.model_dump()}
+
+    # CREDIT path.
     inc = {'balance': delta}
     if delta > 0 and kind == 'topup':
         inc['lifetime_topup'] = round(delta, 2)
-    elif delta < 0 and kind == 'spend':
-        inc['lifetime_spend'] = round(abs(delta), 2)
     inc.update(_source_inc_for_credit(kind, delta))
 
     filt = {'user_id': user_id}
-    if delta < 0:
-        # Prevent overdraft under concurrency: only debit if we still have the
-        # money at the exact moment we mutate.
-        filt['balance'] = {'$gte': abs(delta)}
 
     updated = await db.wallets.find_one_and_update(
         filt,
@@ -231,6 +357,26 @@ async def _apply_tx_idempotent(
         )
 
     inc.update(_source_inc_for_credit(kind, delta))
+
+    if delta < 0:
+        # Consume in protected order bonus -> purchased -> withdrawable.
+        _cur = await db.wallets.find_one(
+            {"user_id": user_id},
+            {"_id": 0, "balance": 1, "bonus": 1, "withdrawable": 1, "withdrawable_pending": 1},
+        ) or {}
+        _bal = round(float(_cur.get("balance", 0) or 0), 2)
+        _wp = round(float(_cur.get("withdrawable_pending", 0) or 0), 2)
+        if round(_bal - _wp, 2) + 1e-9 < abs(delta):
+            raise HTTPException(status_code=400, detail="Insufficient wallet balance")
+        _d_bonus, _d_wd = _split_debit(
+            _bal,
+            round(float(_cur.get("bonus", 0) or 0), 2),
+            round(float(_cur.get("withdrawable", 0) or 0), 2),
+            _wp,
+            abs(delta),
+        )
+        inc["bonus"] = -_d_bonus
+        inc["withdrawable"] = -_d_wd
 
     filt = {
         "user_id":
