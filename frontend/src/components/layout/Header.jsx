@@ -567,7 +567,7 @@ const minimalWorldHeader =
  </div>
  </div>
 
- {pathname.startsWith('/world') ? <AnnouncementTicker mode="winners" /> : <AnnouncementTicker mode="promo" />}
+ <AnnouncementTicker mode="winners" />
  </header>
 
  {/* Mobile drawer */}
