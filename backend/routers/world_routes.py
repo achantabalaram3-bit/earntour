@@ -9752,10 +9752,28 @@ async def public_champion_winners():
         {"_id": 0},
     ).sort("rank", 1).to_list(length=CHAMPION_WINNER_COUNT)
 
+    # Resolve each winner's CURRENT public/display name from their profile
+    # (matches the public leaderboard). The frozen award remains the source of
+    # truth for user_id, rank, prize amount and Championship; only the display
+    # name is refreshed. Falls back to the stored snapshot name if unavailable.
+    award_user_ids = [a.get("user_id") for a in awards if a.get("user_id")]
+    current_names = {}
+    if award_user_ids:
+        async for u in db.users.find(
+            {"user_id": {"$in": award_user_ids}},
+            {"_id": 0, "user_id": 1, "name": 1},
+        ):
+            if u.get("name"):
+                current_names[u["user_id"]] = u["name"]
+
     winners = [
         {
             "rank": int(a.get("rank") or 0),
-            "user_name": a.get("user_name") or "Player",
+            "user_name": (
+                current_names.get(a.get("user_id"))
+                or a.get("user_name")
+                or "Player"
+            ),
             "prize_amount": float(a.get("winning_amount") or 0),
             "currency": a.get("currency") or WORLD_DEFAULT_CURRENCY,
         }
