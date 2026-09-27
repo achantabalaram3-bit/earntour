@@ -88,10 +88,10 @@ export default function CashOutCard() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Stat testid="wallet-total" icon={<Coins className="w-4 h-4" />} label="Total Tokens" value={summary?.total_tokens ?? 0} tone="slate" />
-        <Stat testid="wallet-tokens" icon={<Coins className="w-4 h-4" />} label="Tokens" value={summary?.tokens ?? 0} tone="violet" />
-        <Stat testid="wallet-bonus" icon={<Gift className="w-4 h-4" />} label="Bonus Tokens" value={summary?.bonus_tokens ?? 0} tone="amber" />
-        <Stat testid="wallet-available" icon={<Banknote className="w-4 h-4" />} label="Available to Cash Out" value={gbp(available)} tone="emerald" />
+        <Stat testid="wallet-total" icon={<Coins className="w-4 h-4" />} label="Total Tokens" value={summary ? summary.total_tokens : '—'} tone="slate" />
+        <Stat testid="wallet-tokens" icon={<Coins className="w-4 h-4" />} label="Tokens" value={summary ? summary.tokens : '—'} tone="violet" />
+        <Stat testid="wallet-bonus" icon={<Gift className="w-4 h-4" />} label="Bonus Tokens" value={summary ? summary.bonus_tokens : '—'} tone="amber" />
+        <Stat testid="wallet-available" icon={<Banknote className="w-4 h-4" />} label="Available to Cash Out" value={summary ? gbp(available) : '—'} tone="emerald" />
       </div>
 
       {summary?.pending_cash_out > 0 && (

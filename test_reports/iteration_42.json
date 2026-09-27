@@ -1,0 +1,35 @@
+{
+  "summary": "End-to-end verification of the new Cash-Out / Championship Prize / Manual Cash-Out system. Backend pytest suite (8 tests, all PASS) covers flag gating, over-withdraw, request lifecycle, admin mark-paid idempotency, reject-releases-tokens, and security (normal user cannot hit admin endpoints; /cashout/requests never returns full account_number). Frontend Playwright drove the full UX: disabled -> Coming Soon; admin toggle ON + review URLs saved; user cash-out modal 3-step flow (£20 -> bank add/select -> confirm -> success screen with WD-ID + Google & Trustpilot review links); wallet reflects Available -> £30 -> £10 with 'Pending cash out: £20'; admin filter processing, detail modal showing full bank payout, mark-paid, and reject-with-reason all succeed. Wallet math verified: Tokens = Total - Bonus (379 = 379 - 0). Regression: token top-up (+) button still present, transaction history renders, login flows unaffected. Flag reset to OFF at end.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/my-account/wallet", "issues": ["On initial mount the Wallet card renders all-zeros (Total 0, Tokens 0, Bonus 0, £0.00) for ~200-500ms before the /cashout/summary call resolves — a subtle flash. Consider a skeleton or hiding numbers until summary loads."]},
+      {"screen": "/admin/cash-out", "issues": ["Toggle uses window.confirm and reject uses window.prompt — functional but not on-brand vs the rest of the admin (shadcn dialogs are used elsewhere)."]},
+      {"screen": "/my-account/wallet", "issues": ["Two overlapping concepts on same page: purple 'TOKEN BALANCE' hero (379 tokens) and new 'Wallet' breakdown card just below (Total Tokens 379). Slightly redundant — could unify or clearly re-label the hero."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_cashout_iter42.py",
+    "/app/test_reports/pytest/cashout_iter42.xml",
+    "/app/test_reports/cashout_success2.jpg"
+  ],
+  "action_items": [
+    "(Optional polish) Hide zero-state numbers on CashOutCard until first summary load resolves (small loading state) to avoid the flash.",
+    "(Optional polish) Replace window.confirm / window.prompt in CashOutAdmin with shadcn dialogs for on-brand UX."
+  ],
+  "critical_code_review_comments": [
+    "cashout_routes.py: reserve_withdrawable is called BEFORE the insert of the cashout_requests record. If the DB write fails after reserving, tokens would stay reserved without a linked request. Low-risk (Mongo insert is atomic and next line), but consider wrapping in try/except-release for defense-in-depth.",
+    "cashout_routes.py: mark_paid and reject rely on 'status=processing' guard for idempotency — this is correct, but a repeat mark-paid returns 200 with 'idempotent: True' regardless of whether the final status is 'paid' or 'rejected'. If a request was rejected and admin later hits mark-paid it will silently return 'rejected, idempotent'. Consider distinguishing 'not-in-processing' from truly idempotent.",
+    "CashOutCard.jsx: cashoutAPI.myRequests() and banks() both re-fetched on every load() call after each add/submit — fine at current scale, but if history grows large consider paginating.",
+    "CashOutAdmin.jsx: no debounce/limit on RefreshCw button; multiple fast clicks can queue duplicate loads."
+  ],
+  "updated_files": ["/app/backend/tests/test_cashout_iter42.py"],
+  "success_rate": {"backend": "100% (8/8 pytest)", "frontend": "100% functionally verified via UI (all data-testids present, all flows completed, screenshot evidence)"},
+  "test_credentials": "player1@example.com/Player@12345, bachanta8@gmail.com/Herts@910022 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Multiple TEST_ bank accounts added for player1; several WD-* cashout requests created and processed (paid/rejected) during testing. Player1 wallet ended at Total 379, Bonus 0, Available £10 (from 50 seeded — £20 paid, £20 pending settled, plus rejects released). Flag reset to OFF at end.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Cash-Out feature backend & frontend fully verified in iteration 42. Test suite at /app/backend/tests/test_cashout_iter42.py can be re-run any time. Only cosmetic polish items remain (loading state on wallet card, shadcn dialogs instead of window.confirm/prompt in admin). player1 available balance is now around £10 (down from the seeded £50) due to test-driven paid withdrawals."
+}

@@ -203,26 +203,31 @@ async def create_cashout(body: CashOutBody, request: Request):
 
     wid = "WD-" + uuid.uuid4().hex[:12].upper()
     now = _now()
-    await db.cashout_requests.insert_one({
-        "withdrawal_id": wid,
-        "user_id": user["user_id"],
-        "amount_tokens": amount,
-        "amount_gbp": round(amount * RATE, 2),
-        "conversion_rate": RATE,
-        "currency": CURRENCY,
-        "status": "processing",
-        "bank_account_id": body.bank_account_id,
-        "account_holder": acct.get("account_holder"),
-        "sort_code": acct.get("sort_code"),
-        "account_number": acct.get("account_number"),  # restricted
-        "kyc_status_snapshot": kyc_status,
-        "created_at": now,
-        "updated_at": now,
-        "paid_at": None,
-        "admin_id": None,
-        "admin_notes": None,
-        "reject_reason": None,
-    })
+    try:
+        await db.cashout_requests.insert_one({
+            "withdrawal_id": wid,
+            "user_id": user["user_id"],
+            "amount_tokens": amount,
+            "amount_gbp": round(amount * RATE, 2),
+            "conversion_rate": RATE,
+            "currency": CURRENCY,
+            "status": "processing",
+            "bank_account_id": body.bank_account_id,
+            "account_holder": acct.get("account_holder"),
+            "sort_code": acct.get("sort_code"),
+            "account_number": acct.get("account_number"),  # restricted
+            "kyc_status_snapshot": kyc_status,
+            "created_at": now,
+            "updated_at": now,
+            "paid_at": None,
+            "admin_id": None,
+            "admin_notes": None,
+            "reject_reason": None,
+        })
+    except Exception:
+        # Defense-in-depth: never leave tokens reserved without a request.
+        await release_withdrawable(db, user["user_id"], float(amount))
+        raise HTTPException(500, "Could not create cash-out request")
     await _audit(db, "cashout_request", user["user_id"], wid,
                  {"amount_tokens": amount, "kyc": kyc_status})
     return {
