@@ -50,6 +50,7 @@ export const contestsAPI = {
   verifySkill: (slug, answer, challenge_token) =>
     api.post(`/contests/${slug}/verify-skill`, { answer, challenge_token }).then(r => r.data),
   recentWinners: () => api.get('/public/winners').then(r => r.data),
+  championWinners: () => api.get('/world/public/champion-winners').then(r => r.data),
 };
 
 export const ordersAPI = {

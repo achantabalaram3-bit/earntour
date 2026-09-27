@@ -9713,6 +9713,62 @@ async def public_champion_leaderboard(
     }
 
 
+@public_router.get("/champion-winners")
+async def public_champion_winners():
+    """
+    Global Championship Winners ticker source.
+
+    Returns ONLY the winners of the LATEST fully-finalized Championship,
+    read from the immutable `world_winner_awards` ledger (status == "paid").
+    Never uses provisional leaderboard positions and never recalculates
+    prizes: the stored `winning_amount` is the source of truth.
+
+    Auto-replacement is inherent: because we always select the highest
+    `global_contest_number` that has paid awards, a newer settled
+    Championship automatically supersedes the previous one.
+    """
+    db = get_db()
+
+    latest = await db.world_winner_awards.find_one(
+        {
+            "season_id": WORLD_SEASON_ID,
+            "status": "paid",
+        },
+        {"_id": 0, "global_contest_number": 1},
+        sort=[("global_contest_number", -1)],
+    )
+
+    if not latest:
+        return {"contest_number": None, "winners": []}
+
+    contest_number = int(latest["global_contest_number"])
+
+    awards = await db.world_winner_awards.find(
+        {
+            "season_id": WORLD_SEASON_ID,
+            "global_contest_number": contest_number,
+            "status": "paid",
+        },
+        {"_id": 0},
+    ).sort("rank", 1).to_list(length=CHAMPION_WINNER_COUNT)
+
+    winners = [
+        {
+            "rank": int(a.get("rank") or 0),
+            "user_name": a.get("user_name") or "Player",
+            "prize_amount": float(a.get("winning_amount") or 0),
+            "currency": a.get("currency") or WORLD_DEFAULT_CURRENCY,
+        }
+        for a in awards
+    ]
+
+    return {
+        "contest_number": contest_number,
+        "winners": winners,
+    }
+
+
+
 # ===========================================================================
 # CHAMPION CONTEST SETTLEMENT
 # ===========================================================================
