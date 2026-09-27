@@ -51,13 +51,49 @@ def _with_tokens(w: Optional[dict]) -> Optional[dict]:
     `lifetime_tokens_spent` fields. 1 token = £1, so these are just the
     integer views of the underlying float `balance` etc. — the frontend
     labels them as tokens without any client-side maths.
+
+    Source split (1 token = £1):
+      total_tokens          = balance (purchased + championship + bonus)
+      bonus_tokens          = free/promotional (non-withdrawable)
+      tokens                = total (kept for backward compat / Home total)
+      spendable_tokens      = total - bonus  (the user-facing "Tokens" line)
+      withdrawable_tokens   = unused championship-prize tokens (cash-outable)
+      available_to_cash_out = withdrawable_tokens (£, 1:1)
     """
     if not w:
         return w
-    w['tokens'] = int(round(w.get('balance', 0) or 0))
+    total = float(w.get('balance', 0) or 0)
+    bonus = float(w.get('bonus', 0) or 0)
+    withdrawable = float(w.get('withdrawable', 0) or 0)
+    w['tokens'] = int(round(total))
+    w['total_tokens'] = int(round(total))
+    w['bonus_tokens'] = int(round(bonus))
+    w['spendable_tokens'] = int(round(max(0.0, total - bonus)))
+    w['withdrawable_tokens'] = int(round(withdrawable))
+    w['available_to_cash_out'] = round(withdrawable, 2)
     w['lifetime_tokens_bought'] = int(round(w.get('lifetime_topup', 0) or 0))
     w['lifetime_tokens_spent'] = int(round(w.get('lifetime_spend', 0) or 0))
     return w
+
+
+# Kinds whose positive credits are BONUS (free / non-withdrawable) tokens.
+BONUS_TX_KINDS = {
+    'signup_bonus', 'referral_bonus', 'referral', 'bonus', 'bonus_credit',
+    'influencer_bonus', 'promo', 'promo_bonus', 'reward', 'free_tokens',
+}
+# Kinds whose positive credits are WITHDRAWABLE championship-prize tokens.
+WITHDRAWABLE_TX_KINDS = {'champion_prize', 'championship_prize', 'winnings'}
+
+
+def _source_inc_for_credit(kind: str, delta: float) -> dict:
+    """Extra $inc sub-counters to tag a positive credit by source."""
+    extra = {}
+    if delta > 0:
+        if kind in BONUS_TX_KINDS:
+            extra['bonus'] = round(delta, 2)
+        elif kind in WITHDRAWABLE_TX_KINDS:
+            extra['withdrawable'] = round(delta, 2)
+    return extra
 
 
 async def _apply_tx(db, user_id: str, kind: str, amount: float, note: str = '', ref_order_id: Optional[str] = None) -> dict:
@@ -84,6 +120,7 @@ async def _apply_tx(db, user_id: str, kind: str, amount: float, note: str = '', 
         inc['lifetime_topup'] = round(delta, 2)
     elif delta < 0 and kind == 'spend':
         inc['lifetime_spend'] = round(abs(delta), 2)
+    inc.update(_source_inc_for_credit(kind, delta))
 
     filt = {'user_id': user_id}
     if delta < 0:
@@ -192,6 +229,8 @@ async def _apply_tx_idempotent(
                 2,
             )
         )
+
+    inc.update(_source_inc_for_credit(kind, delta))
 
     filt = {
         "user_id":
