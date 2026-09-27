@@ -2175,6 +2175,45 @@ export default function WorldCanvas({
     };
   }, [previewState, refreshBalance]);
 
+  // Avatar position fix: advance the user's PERSONAL Champion stage once their
+  // Championship has become available (their matching global Championship has
+  // closed). This uses the existing personal-progression endpoint only; the
+  // backend advances champion_stage -> next and resets current_level to 1, so
+  // the avatar (derived from champion_stage + current_level) moves to Level 1
+  // of the next Championship instead of sitting on the stale Level 10 of the
+  // just-completed one. Backend guards make this a no-op (409) until the
+  // Championship period has actually closed, and champion_ready flips to false
+  // after a successful advance, so this never loops or resets new users.
+  useEffect(() => {
+    if (previewState) return undefined;
+    const progress = worldState?.progress;
+    if (!progress) return undefined;
+    if (progress.champion_ready !== true) return undefined;
+    if (progress.season_complete === true) return undefined;
+
+    let cancelled = false;
+    worldAPI
+      .continueAfterChampion()
+      .then(() => (cancelled ? null : worldAPI.state()))
+      .then((fresh) => {
+        if (!cancelled && fresh) setStateAndCountdowns(fresh);
+      })
+      .catch(() => {
+        /* Championship period not closed yet (or already advanced): leave the
+           avatar where it is; it will advance on the next visit once closed. */
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    previewState,
+    worldState?.progress?.champion_ready,
+    worldState?.progress?.champion_stage,
+    worldState?.progress?.season_complete,
+  ]);
+
+
   const confirmEarlyUnlock = async () => {
     if (!unlockModal || unlockBusy) {
       return;
