@@ -446,6 +446,11 @@ export const worldAPI = {
     api.post(
       '/world/champion/continue',
     ).then(r => r.data),
+
+  skipLevel: (level) =>
+    api.post(
+      `/world/level/${level}/skip`,
+    ).then(r => r.data),
 };
 
 export const gamesAPI = {

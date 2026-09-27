@@ -1499,11 +1499,7 @@ function ChampionshipSection({
                 worldNowMs;
 
             const levelCountdown =
-              hasFutureUnlock &&
-              (
-                isCurrent ||
-                nextChampionshipCountdown
-              )
+              hasFutureUnlock
                 ? formatWorldCountdown(
                     levelUnlockMs,
                     worldNowMs,
@@ -1525,6 +1521,11 @@ function ChampionshipSection({
               backendState?.sequence_available === true &&
               backendState?.token_unlock_enabled !== false &&
               Number(localLevel) >= 2;
+
+            const skippable =
+              Boolean(
+                backendState?.skippable,
+              );
 
             return (
               <button
@@ -1621,6 +1622,33 @@ function ChampionshipSection({
                   !completed && (
                     <span className="pl1000-play">
                       PLAY
+                    </span>
+                  )}
+
+                {isCurrent &&
+                  skippable && (
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="pl1000-skip"
+                      data-testid={
+                        `free-world-skip-${globalLevel}`
+                      }
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        window.dispatchEvent(
+                          new CustomEvent(
+                            'pl-world-level-skip',
+                            {
+                              detail: {
+                                level: localLevel,
+                              },
+                            },
+                          ),
+                        );
+                      }}
+                    >
+                      SKIP
                     </span>
                   )}
               </button>
@@ -2174,6 +2202,43 @@ export default function WorldCanvas({
       );
     };
   }, [previewState, refreshBalance]);
+
+  // Catch-up SKIP: old users who fell behind may skip remaining old levels.
+  // Server validates eligibility; we just call it and refresh authoritative
+  // state (which then triggers the stage-advance effect below if Level 10 was
+  // passed). SKIP consumes no attempt/token and grants no reward.
+  useEffect(() => {
+    const onSkip = (event) => {
+      if (previewState) return;
+      const level = Number(event?.detail?.level);
+      if (!level) return;
+      worldAPI
+        .skipLevel(level)
+        .then((res) => {
+          toast.success(`Level ${level} skipped`, {
+            description: 'Advanced to the next level.',
+          });
+          return worldAPI.state();
+        })
+        .then((fresh) => {
+          if (fresh) setStateAndCountdowns(fresh);
+        })
+        .catch((error) => {
+          const detail = error?.response?.data?.detail;
+          const message =
+            typeof detail === 'string'
+              ? detail
+              : detail?.message || 'Unable to skip this level.';
+          toast.error(message);
+        });
+    };
+
+    window.addEventListener('pl-world-level-skip', onSkip);
+    return () => {
+      window.removeEventListener('pl-world-level-skip', onSkip);
+    };
+  }, [previewState]);
+
 
   // Avatar position fix: advance the user's PERSONAL Champion stage once their
   // Championship has become available (their matching global Championship has

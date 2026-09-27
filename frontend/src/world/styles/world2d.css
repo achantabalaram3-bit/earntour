@@ -6248,6 +6248,67 @@
 }
 
 
+.pl1000-skip {
+  position: absolute;
+
+  left: 50%;
+  top: 150px;
+
+  transform:
+    translateX(-50%);
+
+  min-width: 75px;
+
+  padding:
+    6px 14px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(15, 12, 30, 0.82);
+
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.55);
+
+  color:
+    #fff;
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .08em;
+
+  white-space:
+    nowrap;
+
+  cursor: pointer;
+
+  z-index: 11;
+
+  box-shadow:
+    0 6px 15px
+      rgba(0,0,0,.32);
+
+  transition:
+    background-color .15s ease,
+    transform .15s ease;
+}
+
+.pl1000-skip:hover {
+  background:
+    rgba(30, 24, 55, 0.95);
+
+  transform:
+    translateX(-50%) translateY(-1px);
+}
+
+
+
 /* ---------------------------------------------------------
    CURRENT AVATAR
    --------------------------------------------------------- */
