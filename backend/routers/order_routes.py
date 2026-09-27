@@ -278,6 +278,18 @@ async def my_orders(request: Request, limit: int = 50):
     return orders
 
 
+@router.get('/my-joined-contest-ids')
+async def my_joined_contest_ids(request: Request):
+    """Distinct contest_ids the current user holds a ticket for.
+    Used by the client to render a "Joined" badge on contest tiles."""
+    user = await get_current_user(request)
+    from deps import get_db
+    db = get_db()
+    contest_ids = await db.tickets.distinct('contest_id', {'user_id': user['user_id']})
+    return {'contest_ids': contest_ids}
+
+
+
 @router.get('/my-tickets')
 async def my_tickets(request: Request, limit: int = 200):
     """Return the user's tickets ENRICHED with contest title/image/slug/game_type
