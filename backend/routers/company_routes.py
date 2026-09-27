@@ -442,8 +442,8 @@ async def contest_leaderboard(
         row['public_id'] = user.get('public_id')
         row['username'] = user.get('username')
         row['user_name'] = (
-            user.get('username')
-            or user.get('name')
+            user.get('name')
+            or user.get('username')
             or row.get('user_name')
             or 'Player'
         )

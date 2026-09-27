@@ -114,22 +114,40 @@ export const adminAPI = {
   bulkLaunch: (filter = {}) => api.post('/admin/contests/bulk/launch', filter).then(r => r.data),
   bulkPause: (filter = {}) => api.post('/admin/contests/bulk/pause', filter).then(r => r.data),
   deleteContest: (contestId) => api.delete(`/admin/contests/${contestId}`).then(r => r.data),
+
   // Winner selection
   wsEligibleTickets: (cid) => api.get(`/admin/winners/${cid}/eligible-tickets`).then(r => r.data),
   wsDraw: (cid) => api.post(`/admin/winners/${cid}/draw`).then(r => r.data),
   wsManual: (cid, ticket_number, reason) => api.post(`/admin/winners/${cid}/manual`, { ticket_number, reason }).then(r => r.data),
   wsPublish: (cid) => api.post(`/admin/winners/${cid}/publish`).then(r => r.data),
   wsCorrect: (cid, ticket_number, reason) => api.post(`/admin/winners/${cid}/correct`, { ticket_number, reason }).then(r => r.data),
+
   auditLogs: (limit = 200) => api.get('/admin/audit-logs', { params: { limit } }).then(r => r.data),
   supportCases: (status) => api.get('/admin/support/cases', { params: status ? { status } : {} }).then(r => r.data),
   supportReply: (case_id, message) => api.post(`/admin/support/cases/${case_id}/reply`, { message }).then(r => r.data),
   supportStatus: (case_id, status) => api.post(`/admin/support/cases/${case_id}/status`, { status }).then(r => r.data),
   wsAudit: (cid) => api.get(`/admin/winners/${cid}/audit`).then(r => r.data),
+
   kycList: (status = 'all') => api.get('/admin/kyc', { params: { status } }).then(r => r.data),
   kycApprove: (id) => api.post(`/admin/kyc/${id}/approve`).then(r => r.data),
   kycReject: (id, reason) => api.post(`/admin/kyc/${id}/reject`, { reason }).then(r => r.data),
+
   getSettings: () => api.get('/admin/settings').then(r => r.data),
   updateSettings: (data) => api.put('/admin/settings', data).then(r => r.data),
+
+  // Admin alerts
+  alertCampaigns: (limit = 50) =>
+    api.get('/admin/users/alerts/campaigns', { params: { limit } }).then(r => r.data),
+
+  createAlertCampaign: (data) =>
+    api.post('/admin/users/alerts/campaigns', data).then(r => r.data),
+
+  alertCampaign: (campaignId) =>
+    api.get(`/admin/users/alerts/campaigns/${campaignId}`).then(r => r.data),
+
+  alertDeliveries: (campaignId, params = {}) =>
+    api.get(`/admin/users/alerts/campaigns/${campaignId}/deliveries`, { params }).then(r => r.data),
+
   // Legal documents
   legalList: () => api.get('/admin/legal/documents').then(r => r.data),
   legalGet: (slug) => api.get(`/admin/legal/documents/${slug}`).then(r => r.data),
@@ -155,13 +173,17 @@ export const uploadsAPI = {
     fd.append('file', file);
     return api.post('/admin/uploads/image', fd, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data);
   },
+
   contestImage: (file, { focal_x = 0.5, focal_y = 0.5, alt = '' } = {}) => {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('focal_x', String(focal_x));
     fd.append('focal_y', String(focal_y));
     fd.append('alt', alt);
-    return api.post('/admin/uploads/contest-image', fd, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data);
+
+    return api.post('/admin/uploads/contest-image', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data);
   },
 };
 
@@ -170,21 +192,38 @@ export const paymentsAPI = {
     lookup_key,
     origin_url: window.location.origin,
   }).then(r => r.data),
+
   createCheckoutSession: (lookup_key, origin_url) => api.post('/payments/wallet-topup/checkout', {
     lookup_key,
     origin_url: origin_url || window.location.origin,
-  }).then(r => ({ url: r.data.checkout_url, session_id: r.data.session_id })),
+  }).then(r => ({
+    url: r.data.checkout_url,
+    session_id: r.data.session_id,
+  })),
+
   createCustomTopup: (amount, origin_url) => api.post('/payments/wallet-topup/custom', {
     amount,
     origin_url: origin_url || window.location.origin,
-  }).then(r => ({ url: r.data.checkout_url, session_id: r.data.session_id })),
-  status: (session_id) => api.get(`/payments/status/${session_id}`).then(r => r.data),
+  }).then(r => ({
+    url: r.data.checkout_url,
+    session_id: r.data.session_id,
+  })),
+
+  status: (session_id) =>
+    api.get(`/payments/status/${session_id}`).then(r => r.data),
 };
 
 export const adminWalletAPI = {
   list: () => api.get('/admin/wallets').then(r => r.data),
-  adjust: (user_id, amount, note) => api.post('/admin/wallets/adjust', { user_id, amount, note }).then(r => r.data),
-  userTransactions: (user_id) => api.get(`/admin/wallets/${user_id}/transactions`).then(r => r.data),
+  adjust: (user_id, amount, note) =>
+    api.post('/admin/wallets/adjust', {
+      user_id,
+      amount,
+      note,
+    }).then(r => r.data),
+
+  userTransactions: (user_id) =>
+    api.get(`/admin/wallets/${user_id}/transactions`).then(r => r.data),
 };
 
 export const referralAPI = {
@@ -356,7 +395,6 @@ export const worldAPI = {
       },
     ).then(r => r.data),
 
-
   attemptSummary: (level) =>
     api.get(
       `/world/attempts/${level}`,
@@ -395,25 +433,56 @@ export const worldAPI = {
 
 export const gamesAPI = {
   types: () => api.get('/games/types').then(r => r.data),
-  submit: (data) => api.post('/games/submit', data).then(r => r.data),
-  myAttempts: (ticket_id) => api.get(`/games/attempts/${ticket_id}`).then(r => r.data),
-  leaderboard: (contest_id, limit = 25) => api.get(`/contests/${contest_id}/leaderboard`, { params: { limit } }).then(r => r.data),
+
+  submit: (data) =>
+    api.post('/games/submit', data).then(r => r.data),
+
+  myAttempts: (ticket_id) =>
+    api.get(`/games/attempts/${ticket_id}`).then(r => r.data),
+
+  leaderboard: (contest_id, limit = 25) =>
+    api.get(`/contests/${contest_id}/leaderboard`, {
+      params: { limit },
+    }).then(r => r.data),
 };
 
-
 export const winningsAPI = {
-  startChallenge: () => api.post('/winnings/challenge/start').then(r => r.data),
+  startChallenge: () =>
+    api.post('/winnings/challenge/start').then(r => r.data),
+
   completeChallenge: (attempt_id, sequence) =>
-    api.post('/winnings/challenge/complete', { attempt_id, sequence }).then(r => r.data),
-  wallet: () => api.get('/winnings/wallet').then(r => r.data),
-  ledger: () => api.get('/winnings/ledger').then(r => r.data),
-  withdraw: (payload) => api.post('/winnings/withdraw', payload).then(r => r.data),
-  myWithdrawals: () => api.get('/winnings/withdrawals').then(r => r.data),
+    api.post('/winnings/challenge/complete', {
+      attempt_id,
+      sequence,
+    }).then(r => r.data),
+
+  wallet: () =>
+    api.get('/winnings/wallet').then(r => r.data),
+
+  ledger: () =>
+    api.get('/winnings/ledger').then(r => r.data),
+
+  withdraw: (payload) =>
+    api.post('/winnings/withdraw', payload).then(r => r.data),
+
+  myWithdrawals: () =>
+    api.get('/winnings/withdrawals').then(r => r.data),
 };
 
 export const winningsAdminAPI = {
-  list: (status) => api.get('/admin/winnings/withdrawals', { params: status ? { status } : {} }).then(r => r.data),
-  bank: (id) => api.get(`/admin/winnings/withdrawals/${id}/bank`).then(r => r.data),
-  markPaid: (id) => api.post(`/admin/winnings/withdrawals/${id}/mark-paid`).then(r => r.data),
-  reject: (id, reason) => api.post(`/admin/winnings/withdrawals/${id}/reject`, { reason }).then(r => r.data),
+  list: (status) =>
+    api.get('/admin/winnings/withdrawals', {
+      params: status ? { status } : {},
+    }).then(r => r.data),
+
+  bank: (id) =>
+    api.get(`/admin/winnings/withdrawals/${id}/bank`).then(r => r.data),
+
+  markPaid: (id) =>
+    api.post(`/admin/winnings/withdrawals/${id}/mark-paid`).then(r => r.data),
+
+  reject: (id, reason) =>
+    api.post(`/admin/winnings/withdrawals/${id}/reject`, {
+      reason,
+    }).then(r => r.data),
 };

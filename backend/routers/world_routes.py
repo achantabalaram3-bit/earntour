@@ -9533,6 +9533,21 @@ async def public_champion_leaderboard(
         )
     )
 
+    # Resolve current account names so admin profile-name changes
+    # are reflected on the public Champion leaderboard.
+    user_ids = [
+        row.get("user_id")
+        for row in rows
+        if row.get("user_id")
+    ]
+    current_names = {}
+    if user_ids:
+        async for current_user in db.users.find(
+            {"user_id": {"$in": user_ids}},
+            {"_id": 0, "user_id": 1, "name": 1},
+        ):
+            current_names[current_user["user_id"]] = current_user.get("name")
+
     leaderboard = []
 
     for index, row in enumerate(
@@ -9590,7 +9605,10 @@ async def public_champion_leaderboard(
                 ),
 
             "user_name":
-                row.get(
+                current_names.get(
+                    row.get("user_id")
+                )
+                or row.get(
                     "user_name"
                 )
                 or "Player",

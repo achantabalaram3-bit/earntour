@@ -208,6 +208,18 @@ async def global_leaderboard(limit: int = 50):
         {'$limit': int(limit)},
     ]
     rows = await db.game_scores.aggregate(pipeline).to_list(int(limit))
+
+    # Use the user's current profile name on the leaderboard.
+    user_ids = [r.get('_id') for r in rows if r.get('_id')]
+    if user_ids:
+        current_names = {}
+        async for user in db.users.find(
+            {'user_id': {'$in': user_ids}},
+            {'_id': 0, 'user_id': 1, 'name': 1},
+        ):
+            current_names[user['user_id']] = user.get('name')
+        for r in rows:
+            r['user_name'] = current_names.get(r.get('_id')) or r.get('user_name')
     # Normalize to 0-100 relative to the top-ranked user's total.
     if rows:
         best_total = max((r.get('total_points') or 0) for r in rows) or 1

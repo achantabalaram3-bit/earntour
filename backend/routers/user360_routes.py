@@ -513,3 +513,293 @@ async def erase_user(user_id: str, payload: DeleteRequest, request: Request):
         'at': now,
     })
     return {'ok': True}
+
+
+# ============================================================================
+# Admin Alerts / Campaigns
+# Uses the existing db.notifications collection so current player notification
+# endpoints continue to work unchanged.
+# ============================================================================
+
+from typing import List, Literal
+from pydantic import Field
+
+
+class AdminAlertCreateRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=160)
+    message: str = Field(min_length=1, max_length=4000)
+    alert_type: str = Field(default='custom', max_length=80)
+    user_from: int = Field(default=1, ge=1)
+    user_to: int = Field(default=1000, ge=1)
+    channels: List[Literal['in_app', 'email', 'sms']] = Field(
+        default_factory=lambda: ['in_app']
+    )
+
+
+def _alert_public(doc: dict) -> dict:
+    d = dict(doc or {})
+    d.pop('_id', None)
+    return d
+
+
+@router.post('/alerts/campaigns')
+async def create_alert_campaign(
+    payload: AdminAlertCreateRequest,
+    request: Request,
+):
+    """
+    Create an alert campaign for a stable 1-based registration range.
+
+    Example: user_from=1, user_to=1000 targets the first 1000 registered
+    non-erased users. The same ordering is used for preview and send.
+
+    In-app delivery is performed immediately using the existing notifications
+    collection. Email/SMS are recorded as pending until a delivery provider is
+    connected; they are never falsely reported as sent.
+    """
+    admin = await require_admin(request)
+
+    if payload.user_to < payload.user_from:
+        raise HTTPException(
+            status_code=400,
+            detail='user_to must be greater than or equal to user_from',
+        )
+
+    # Safety cap: one request may target at most 10,000 users.
+    target_count = payload.user_to - payload.user_from + 1
+    if target_count > 10000:
+        raise HTTPException(
+            status_code=400,
+            detail='A single campaign can target at most 10,000 users',
+        )
+
+    from deps import get_db
+    db = get_db()
+
+    now = datetime.now(timezone.utc)
+    campaign_id = f'alt_{uuid.uuid4().hex[:16]}'
+
+    # Stable audience order. created_at is preferred; user_id breaks ties.
+    users = await db.users.find(
+        {'erased': {'$ne': True}},
+        {
+            '_id': 0,
+            'user_id': 1,
+            'email': 1,
+            'phone': 1,
+            'phone_verified': 1,
+            'created_at': 1,
+        },
+    ).sort([('created_at', 1), ('user_id', 1)]).skip(
+        payload.user_from - 1
+    ).limit(target_count).to_list(target_count)
+
+    campaign = {
+        'campaign_id': campaign_id,
+        'title': payload.title.strip(),
+        'message': payload.message.strip(),
+        'alert_type': payload.alert_type.strip() or 'custom',
+        'user_from': payload.user_from,
+        'user_to': payload.user_to,
+        'requested_count': target_count,
+        'targeted_count': len(users),
+        'channels': list(dict.fromkeys(payload.channels)),
+        'created_by_user_id': admin.get('user_id'),
+        'created_by_email': admin.get('email'),
+        'created_at': now,
+        'status': 'processing',
+    }
+    await db.alert_campaigns.insert_one(dict(campaign))
+
+    notification_docs = []
+    delivery_docs = []
+
+    for position, user in enumerate(users, start=payload.user_from):
+        user_id = user.get('user_id')
+        if not user_id:
+            continue
+
+        for channel in campaign['channels']:
+            delivery_id = f'ald_{uuid.uuid4().hex[:18]}'
+
+            if channel == 'in_app':
+                notification_id = f'ntf_{uuid.uuid4().hex[:18]}'
+                notification_docs.append({
+                    'notification_id': notification_id,
+                    'user_id': user_id,
+                    'kind': 'admin_alert',
+                    'type': campaign['alert_type'],
+                    'title': campaign['title'],
+                    'message': campaign['message'],
+                    'read': False,
+                    'campaign_id': campaign_id,
+                    'created_at': now,
+                })
+                status = 'sent'
+                reason = None
+            elif channel == 'email':
+                # Do not claim delivery until an email provider is connected.
+                status = 'pending' if user.get('email') else 'skipped'
+                reason = None if user.get('email') else 'no_email'
+            else:  # sms
+                has_verified_phone = bool(
+                    user.get('phone') and user.get('phone_verified')
+                )
+                # Do not claim delivery until an SMS messaging provider is connected.
+                status = 'pending' if has_verified_phone else 'skipped'
+                reason = None if has_verified_phone else 'no_verified_phone'
+
+            delivery_docs.append({
+                'delivery_id': delivery_id,
+                'campaign_id': campaign_id,
+                'user_id': user_id,
+                'user_position': position,
+                'channel': channel,
+                'status': status,
+                'reason': reason,
+                'created_at': now,
+                'updated_at': now,
+            })
+
+    if notification_docs:
+        await db.notifications.insert_many(notification_docs)
+
+    if delivery_docs:
+        await db.alert_deliveries.insert_many(delivery_docs)
+
+    counts = {}
+    for d in delivery_docs:
+        channel = d['channel']
+        status = d['status']
+        counts.setdefault(channel, {})
+        counts[channel][status] = counts[channel].get(status, 0) + 1
+
+    await db.alert_campaigns.update_one(
+        {'campaign_id': campaign_id},
+        {
+            '$set': {
+                'status': 'created',
+                'delivery_counts': counts,
+                'completed_at': datetime.now(timezone.utc),
+            }
+        },
+    )
+
+    await db.audit_log.insert_one({
+        'audit_id': f'aud_{uuid.uuid4().hex[:12]}',
+        'kind': 'admin_alert_campaign_created',
+        'admin_email': admin.get('email'),
+        'admin_user_id': admin.get('user_id'),
+        'campaign_id': campaign_id,
+        'user_from': payload.user_from,
+        'user_to': payload.user_to,
+        'targeted_count': len(users),
+        'channels': campaign['channels'],
+        'at': now,
+    })
+
+    return {
+        'ok': True,
+        'campaign_id': campaign_id,
+        'targeted_count': len(users),
+        'counts': counts,
+    }
+
+
+@router.get('/alerts/campaigns')
+async def list_alert_campaigns(
+    request: Request,
+    limit: int = 50,
+):
+    await require_admin(request)
+    from deps import get_db
+    db = get_db()
+
+    limit = max(1, min(int(limit), 200))
+    docs = await db.alert_campaigns.find(
+        {},
+        {'_id': 0},
+    ).sort('created_at', -1).limit(limit).to_list(limit)
+
+    return {'campaigns': docs}
+
+
+@router.get('/alerts/campaigns/{campaign_id}')
+async def get_alert_campaign(
+    campaign_id: str,
+    request: Request,
+):
+    await require_admin(request)
+    from deps import get_db
+    db = get_db()
+
+    campaign = await db.alert_campaigns.find_one(
+        {'campaign_id': campaign_id},
+        {'_id': 0},
+    )
+    if not campaign:
+        raise HTTPException(status_code=404, detail='Campaign not found')
+
+    pipeline = [
+        {'$match': {'campaign_id': campaign_id}},
+        {
+            '$group': {
+                '_id': {
+                    'channel': '$channel',
+                    'status': '$status',
+                },
+                'count': {'$sum': 1},
+            }
+        },
+    ]
+    grouped = await db.alert_deliveries.aggregate(pipeline).to_list(100)
+
+    counts = {}
+    for row in grouped:
+        channel = row['_id']['channel']
+        status = row['_id']['status']
+        counts.setdefault(channel, {})
+        counts[channel][status] = row['count']
+
+    campaign['delivery_counts'] = counts
+    return campaign
+
+
+@router.get('/alerts/campaigns/{campaign_id}/deliveries')
+async def get_alert_deliveries(
+    campaign_id: str,
+    request: Request,
+    status: Optional[str] = None,
+    channel: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100,
+):
+    await require_admin(request)
+    from deps import get_db
+    db = get_db()
+
+    q = {'campaign_id': campaign_id}
+    if status:
+        q['status'] = status
+    if channel:
+        if channel not in ('in_app', 'email', 'sms'):
+            raise HTTPException(status_code=400, detail='Invalid channel')
+        q['channel'] = channel
+
+    skip = max(0, int(skip))
+    limit = max(1, min(int(limit), 500))
+
+    total = await db.alert_deliveries.count_documents(q)
+    docs = await db.alert_deliveries.find(
+        q,
+        {'_id': 0},
+    ).sort([('user_position', 1), ('channel', 1)]).skip(
+        skip
+    ).limit(limit).to_list(limit)
+
+    return {
+        'deliveries': docs,
+        'total': total,
+        'skip': skip,
+        'limit': limit,
+    }

@@ -27,6 +27,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/UsersPage';
+import AdminAlerts from './pages/admin/AlertsAdmin';
 import AdminCompetitions from './pages/admin/CompetitionsAdmin';
 import AdminOrders from './pages/admin/OrdersPage';
 import AdminWinners from './pages/admin/WinnersAdmin';
@@ -71,9 +72,11 @@ import WinnersFeed from './pages/production/WinnersFeed';
 
 function AppRouter() {
   const location = useLocation();
+
   if (location.hash && location.hash.includes('session_id=')) {
     return <AuthCallback />;
   }
+
   return (
     <Routes>
       <Route element={<PublicLayout />}>
@@ -94,14 +97,24 @@ function AppRouter() {
         <Route path="/my-account" element={<MyAccount />} />
         <Route path="/my-account/:section" element={<MyAccount />} />
         <Route path="/legal/:slug" element={<LegalDocPage />} />
-        <Route path="/cart" element={<CartErrorBoundary><Cart /></CartErrorBoundary>} />
+        <Route
+          path="/cart"
+          element={
+            <CartErrorBoundary>
+              <Cart />
+            </CartErrorBoundary>
+          }
+        />
         <Route path="/free-entry" element={<FreeEntry />} />
         <Route path="/verify" element={<VerifyFeed />} />
         <Route path="/play/:contestId/:ticketId" element={<PlayGame />} />
         <Route path="/games" element={<GameArena />} />
         <Route path="/games/:gameId" element={<GamePreview />} />
         <Route path="/leaderboard" element={<LeaderboardIndex />} />
-        <Route path="/leaderboard/:contestId" element={<ContestLeaderboard />} />
+        <Route
+          path="/leaderboard/:contestId"
+          element={<ContestLeaderboard />}
+        />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/refer" element={<ReferPage />} />
         <Route path="/terms" element={<TermsPage />} />
@@ -124,17 +137,24 @@ function AppRouter() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="alerts" element={<AdminAlerts />} />
         <Route path="referrals" element={<ReferralsBonusesAdmin />} />
         <Route path="kyc" element={<AdminKyc />} />
         <Route path="competitions" element={<AdminCompetitions />} />
         <Route path="games" element={<AdminGames />} />
         <Route path="free-world" element={<FreeWorldAdmin />} />
         <Route path="wallets" element={<AdminWallets />} />
-        <Route path="winnings-payouts" element={<WinningsPayoutsAdmin />} />
+        <Route
+          path="winnings-payouts"
+          element={<WinningsPayoutsAdmin />}
+        />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="winners" element={<AdminWinners />} />
-        <Route path="winner-selection" element={<WinnerSelectionAdmin />} />
+        <Route
+          path="winner-selection"
+          element={<WinnerSelectionAdmin />}
+        />
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="roles" element={<AdminRoles />} />
         <Route path="settings" element={<AdminSettings />} />
@@ -142,7 +162,10 @@ function AppRouter() {
         <Route path="legal" element={<AdminLegalDocs />} />
         <Route path="company" element={<CompanySettingsAdmin />} />
         <Route path="postal" element={<PostalEntriesAdmin />} />
-        <Route path="users/:user_id" element={<UserDetailsPage />} />
+        <Route
+          path="users/:user_id"
+          element={<UserDetailsPage />}
+        />
       </Route>
 
       <Route path="/production" element={<ProductionLayout />}>
@@ -164,7 +187,11 @@ function App() {
           <AppRouter />
           <TermsGate />
           <Toaster />
-          <SonnerToaster position="top-center" richColors closeButton />
+          <SonnerToaster
+            position="top-center"
+            richColors
+            closeButton
+          />
         </BrowserRouter>
       </AuthProvider>
     </div>
@@ -172,4 +199,3 @@ function App() {
 }
 
 export default App;
-

@@ -388,7 +388,7 @@ export default function PrizeLeagueWorld() {
             <Gift />
           </span>
           <span className="pl-special-fab-amount">{'\u00A3'}500</span>
-          <span className="pl-special-fab-tag">SPECIAL</span>
+          <span className="pl-special-fab-tag">INSTANT</span>
         </span>
       </button>
 

@@ -477,6 +477,8 @@ async def google_session(request: Request):
         public_id = await allocate_user_public_id(db)
         user_obj = User(
             email=email,
+            email_verified=True,
+            email_verified_at=datetime.now(timezone.utc),
             name=data.get('name') or email,
             public_id=public_id,
             picture=data.get('picture'),
@@ -490,7 +492,10 @@ async def google_session(request: Request):
         await db.users.update_one({'user_id': user['user_id']}, {'$set': {
             'name': data.get('name') or user['name'],
             'picture': data.get('picture') or user.get('picture'),
+            'email_verified': True,
+            'email_verified_at': user.get('email_verified_at') or datetime.now(timezone.utc),
         }})
+        user = await db.users.find_one({'user_id': user['user_id']}, {'_id': 0})
 
     session_token = data['session_token']
     expires_at = datetime.now(timezone.utc) + timedelta(days=7)
