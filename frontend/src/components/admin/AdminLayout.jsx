@@ -23,6 +23,7 @@ const LINKS = [
  { to: '/admin/winners', label: 'Winners', icon: Trophy },
  { to: '/admin/winner-selection', label: 'Winner Selection', icon: Trophy },
  { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+ { to: '/admin/acquisition', label: 'Acquisition', icon: BarChart3 },
  { to: '/admin/settings', label: 'Settings', icon: SettingsIcon },
  { to: '/admin/audit-logs', label: 'Audit logs', icon: ClipboardList },
  { to: '/admin/legal', label: 'Legal Docs', icon: FileText },

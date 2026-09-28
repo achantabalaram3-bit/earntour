@@ -14,6 +14,7 @@ import { gbp } from '../../lib/format';
 import {
   User as UserIcon, ShieldCheck, Wallet, Ticket, Trophy, LifeBuoy,
   AlertTriangle, Ban, RotateCcw, Trash2, Clock, Mail, Gift, CheckCircle2,
+  Map as MapIcon, Coins, Swords,
 } from 'lucide-react';
 
 const Section = ({ title, icon: Icon, children }) => (
@@ -525,7 +526,7 @@ export default function UserDetailsPage() {
     identity, kyc, wallet, stats, orders, tickets, scores,
     wallet_transactions, notifications, support_cases, referrals,
     referral_joined_via, referrer_user, signup_bonus,
-    sessions, admin_actions
+    sessions, admin_actions, world,
   } = data;
   const suspended = !!identity.suspended;
   const erased = !!identity.erased;
@@ -830,6 +831,144 @@ export default function UserDetailsPage() {
           )}
         </div>
       </Section>
+
+      {/* Free World history — read-only */}
+      {world && (
+        <section className="bg-white rounded-2xl border border-slate-200 p-5" data-testid="user-360-world-history">
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="w-4 h-4 text-indigo-600" />
+            <h2 className="font-display font-bold text-base">Free World history</h2>
+          </div>
+
+          {/* Progression summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+            <StatCard label="Championship" value={world.stats?.champion_stage ?? '—'} tone="indigo" />
+            <StatCard label="Current level" value={world.stats?.current_level ?? '—'} tone="teal" />
+            <StatCard label="Winnings" value={gbp(world.winnings_total || 0)} tone="emerald" />
+            <StatCard label="Token events" value={world.stats?.token_events_count ?? 0} tone="amber" />
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-5">
+            {/* Championship progression */}
+            <div className="rounded-xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 font-bold text-sm mb-3">
+                <MapIcon className="w-4 h-4 text-violet-600" /> Championship progression
+              </div>
+              {!world.progress ? (
+                <div className="text-xs text-slate-400">No Free World progress yet.</div>
+              ) : (
+                <dl className="text-xs space-y-1.5">
+                  <div className="flex justify-between"><dt className="text-slate-500">Championship stage</dt><dd className="font-semibold">{world.progress.champion_stage ?? 1}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Current level</dt><dd className="font-semibold">{world.progress.current_level ?? 1}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Highest unlocked</dt><dd className="font-semibold">{world.progress.highest_unlocked_level ?? 1}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Completed (this stage)</dt><dd className="font-semibold">{(world.progress.completed_levels || []).join(', ') || '—'}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Skipped (this stage)</dt><dd className="font-semibold">{(world.progress.skipped_levels || []).join(', ') || '—'}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Champion ready</dt><dd className="font-semibold">{world.progress.champion_ready ? 'Yes' : 'No'}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Season complete</dt><dd className="font-semibold">{world.progress.season_complete ? 'Yes' : 'No'}</dd></div>
+                  <div className="flex justify-between"><dt className="text-slate-500">Last updated</dt><dd>{world.progress.updated_at ? new Date(world.progress.updated_at).toLocaleString('en-GB') : '—'}</dd></div>
+                </dl>
+              )}
+
+              {!!world.level_skips?.length && (
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase mb-1.5">Catch-up skips</div>
+                  <div className="max-h-32 overflow-y-auto text-xs space-y-1">
+                    {world.level_skips.map((s, i) => (
+                      <div key={i} className="flex items-center justify-between border-b border-slate-100 py-1">
+                        <span>C{s.champion_stage} · Level {s.level}</span>
+                        <span className="text-slate-400">{s.skipped_at ? new Date(s.skipped_at).toLocaleString('en-GB') : '—'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Levels history */}
+            <div className="rounded-xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 font-bold text-sm mb-3">
+                <Swords className="w-4 h-4 text-indigo-600" /> Levels history ({world.stats?.level_attempts_count || 0})
+              </div>
+              {!world.level_attempts?.length ? (
+                <div className="text-xs text-slate-400">No level attempts recorded.</div>
+              ) : (
+                <div className="max-h-72 overflow-y-auto text-xs space-y-1">
+                  {world.level_attempts.map((a, i) => (
+                    <div key={a.attempt_id || i} className="flex items-center justify-between border-b border-slate-100 py-1.5 gap-2">
+                      <div>
+                        <div className="font-semibold">Level {a.level} · <span className="text-slate-500">{a.source || 'attempt'}</span></div>
+                        <div className="text-slate-400">{a.created_at ? new Date(a.created_at).toLocaleString('en-GB') : '—'}</div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className={`px-2 py-0.5 rounded-full font-bold ${a.passed === true ? 'bg-emerald-100 text-emerald-700' : a.passed === false ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'}`}>
+                          {a.passed === true ? 'Passed' : a.passed === false ? 'Failed' : (a.status || 'started')}
+                        </span>
+                        {a.score != null && <div className="text-slate-400 mt-0.5">{a.score} pts</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Winnings history */}
+            <div className="rounded-xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 font-bold text-sm mb-3">
+                <Trophy className="w-4 h-4 text-emerald-600" /> Winnings history ({world.stats?.winnings_count || 0})
+              </div>
+              {!world.winnings?.length ? (
+                <div className="text-xs text-slate-400">No Championship winnings.</div>
+              ) : (
+                <div className="max-h-72 overflow-y-auto text-xs space-y-1">
+                  {world.winnings.map((w, i) => (
+                    <div key={i} className="flex items-center justify-between border-b border-slate-100 py-1.5 gap-2">
+                      <div>
+                        <div className="font-semibold">Championship {w.global_contest_number} · Rank {w.rank}</div>
+                        <div className="text-slate-400">{(w.paid_at || w.frozen_at) ? new Date(w.paid_at || w.frozen_at).toLocaleString('en-GB') : '—'}</div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="font-bold text-emerald-700">{gbp(w.winning_amount || 0)}</div>
+                        <span className={`px-2 py-0.5 rounded-full font-bold ${w.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                          {w.status === 'paid' ? 'Paid' : 'Pending'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Token history */}
+            <div className="rounded-xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 font-bold text-sm mb-3">
+                <Coins className="w-4 h-4 text-amber-600" /> Token history ({world.stats?.token_events_count || 0})
+              </div>
+              {!world.token_history?.length ? (
+                <div className="text-xs text-slate-400">No token unlocks or retries.</div>
+              ) : (
+                <div className="max-h-72 overflow-y-auto text-xs space-y-1">
+                  {world.token_history.map((t, i) => (
+                    <div key={i} className="flex items-center justify-between border-b border-slate-100 py-1.5 gap-2">
+                      <div>
+                        <div className="font-semibold">
+                          {t.kind === 'level_unlock' ? 'Early unlock' : 'Retry'} · C{t.champion_stage ?? '—'} L{t.level ?? '—'}
+                        </div>
+                        <div className="text-slate-400">{t.at ? new Date(t.at).toLocaleString('en-GB') : '—'}</div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="font-bold text-amber-700">{t.token_cost ?? 1} 🪙</div>
+                        <span className={`px-2 py-0.5 rounded-full font-bold ${t.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                          {t.paid ? 'Paid' : (t.status || 'reserved')}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       <Section title="Admin actions history" icon={Clock}>
         {admin_actions.length === 0 ? <div className="text-xs text-slate-400">No admin actions recorded.</div> :

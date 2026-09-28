@@ -1,0 +1,104 @@
+/*
+ * Prize League PWA install popup.
+ * Fixed, sitting just above the Free World bottom nav Home button.
+ */
+.pl-install-prompt {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  z-index: 4200;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: min(94vw, 430px);
+  padding: 10px 12px;
+
+  background: linear-gradient(135deg, #1b1440 0%, #2a1c63 100%);
+  border: 1px solid rgba(255, 213, 74, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+
+  color: #fff;
+  animation: pl-install-rise 0.35s ease both;
+}
+
+@keyframes pl-install-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.pl-install-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8b5cff, #6c2bff);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(108, 43, 255, 0.45);
+}
+
+.pl-install-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  flex: 1;
+  min-width: 0;
+}
+
+.pl-install-copy strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pl-install-copy span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.pl-install-ios {
+  color: rgba(255, 213, 74, 0.95) !important;
+}
+
+.pl-install-cta {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1b1440;
+  background: linear-gradient(180deg, #ffe27a, #ffd54a);
+  box-shadow: 0 6px 16px rgba(255, 213, 74, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pl-install-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 20px rgba(255, 213, 74, 0.5);
+}
+
+.pl-install-close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pl-install-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}

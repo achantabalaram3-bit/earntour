@@ -33,6 +33,8 @@ import AdminOrders from './pages/admin/OrdersPage';
 import AdminWinners from './pages/admin/WinnersAdmin';
 import WinnerSelectionAdmin from './pages/admin/WinnerSelectionAdmin';
 import AdminAnalytics from './pages/admin/AnalyticsPage';
+import AcquisitionAdmin from './pages/admin/AcquisitionAdmin';
+import AcquisitionTracker from './components/AcquisitionTracker';
 import AdminKyc from './pages/admin/KycPage';
 import AdminPayments from './pages/admin/PaymentsPage';
 import AdminSettings from './pages/admin/SettingsPage';
@@ -158,6 +160,7 @@ function AppRouter() {
           element={<WinnerSelectionAdmin />}
         />
         <Route path="analytics" element={<AdminAnalytics />} />
+        <Route path="acquisition" element={<AcquisitionAdmin />} />
         <Route path="roles" element={<AdminRoles />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="audit-logs" element={<AdminAuditLogs />} />
@@ -186,6 +189,7 @@ function App() {
     <div className="App">
       <AuthProvider>
         <BrowserRouter>
+          <AcquisitionTracker />
           <AppRouter />
           <TermsGate />
           <Toaster />

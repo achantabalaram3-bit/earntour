@@ -2154,8 +2154,11 @@ def _default_world_level_config(
         "token_retry_cost":
             1,
 
+        # Early token unlock is available by default on the immediate-next
+        # time-locked level (Levels 2-10). Admin may still disable it per level
+        # via levels_config (token_unlock_enabled: false).
         "token_unlock_enabled":
-            False,
+            True,
 
         "token_unlock_cost":
             1,
@@ -4762,10 +4765,64 @@ async def free_world_state(
         else None
     )
 
+    # -------------------------------------------------------------------
+    # PREVIOUS CHAMPIONSHIP MAP HISTORY (read-only, display only).
+    #
+    # For every personal Championship the user has already advanced past
+    # (stage < current champion_stage), all 10 levels were passed to reach
+    # the next stage. Levels recorded in world_level_skips were catch-up
+    # SKIPPED; every other level is a genuine COMPLETED. This never changes
+    # progression, scores, attempts, prizes or historical records — it only
+    # lets the map render past sections correctly instead of "locked".
+    # -------------------------------------------------------------------
+    championship_history = []
+
+    if user and champion_stage > 1:
+        skip_rows = await db.world_level_skips.find(
+            {
+                "season_id": WORLD_SEASON_ID,
+                "user_id": user["user_id"],
+            },
+            {
+                "_id": 0,
+                "champion_stage": 1,
+                "level": 1,
+            },
+        ).to_list(4000)
+
+        skipped_by_stage = {}
+        for row in skip_rows:
+            st = int(row.get("champion_stage") or 0)
+            lv = int(row.get("level") or 0)
+            if st and lv:
+                skipped_by_stage.setdefault(st, set()).add(lv)
+
+        for stage_number in range(1, champion_stage):
+            stage_skips = skipped_by_stage.get(stage_number, set())
+            championship_history.append(
+                {
+                    "championship": stage_number,
+                    "levels": [
+                        {
+                            "level": lv,
+                            "status": (
+                                "skipped"
+                                if lv in stage_skips
+                                else "completed"
+                            ),
+                        }
+                        for lv in range(1, 11)
+                    ],
+                    "champion_status": "completed",
+                }
+            )
+
     return {
         "season_id": WORLD_SEASON_ID,
         "arena": 1,
         "arena_name": "Royal Village",
+
+        "championship_history": championship_history,
 
         "progress": {
             "current_level":

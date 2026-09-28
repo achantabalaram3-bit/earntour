@@ -130,6 +130,66 @@ async def user_360(user_id: str, request: Request):
         {'target_user_id': user_id}, {'_id': 0},
     ).sort('at', -1).limit(50).to_list(50)
 
+    # ------------------------------------------------------------------
+    # Free World history (read-only): progression, per-level attempts,
+    # catch-up skips, Championship winnings, and token spends — all with
+    # timings. Aggregated from existing collections; nothing is mutated.
+    # ------------------------------------------------------------------
+    world_progress = await db.world_progress.find_one(
+        {'user_id': user_id}, {'_id': 0},
+    )
+
+    world_level_attempts = await db.world_level_attempts.find(
+        {'user_id': user_id}, {'_id': 0},
+    ).sort('created_at', -1).limit(200).to_list(200)
+
+    world_level_skips = await db.world_level_skips.find(
+        {'user_id': user_id}, {'_id': 0},
+    ).sort('skipped_at', -1).limit(200).to_list(200)
+
+    world_winnings = await db.world_winner_awards.find(
+        {'user_id': user_id}, {'_id': 0},
+    ).sort('created_at', -1).limit(200).to_list(200)
+
+    world_level_unlocks = await db.world_level_unlock_reservations.find(
+        {'user_id': user_id}, {'_id': 0},
+    ).sort('created_at', -1).limit(200).to_list(200)
+
+    world_token_retries = await db.world_token_retry_reservations.find(
+        {'user_id': user_id}, {'_id': 0},
+    ).sort('created_at', -1).limit(200).to_list(200)
+
+    # Normalise token history into a single, sorted, display-friendly list.
+    world_token_history = []
+    for r in world_level_unlocks:
+        world_token_history.append({
+            'kind': 'level_unlock',
+            'champion_stage': r.get('champion_stage'),
+            'level': r.get('level'),
+            'token_cost': r.get('token_cost'),
+            'status': r.get('status'),
+            'paid': bool(r.get('token_payment_verified')),
+            'at': r.get('created_at'),
+        })
+    for r in world_token_retries:
+        world_token_history.append({
+            'kind': 'level_retry',
+            'champion_stage': r.get('champion_stage'),
+            'level': r.get('level'),
+            'token_cost': r.get('token_cost'),
+            'status': r.get('status'),
+            'paid': bool(r.get('token_payment_verified')),
+            'at': r.get('created_at'),
+        })
+    world_token_history.sort(
+        key=lambda x: (x.get('at') is not None, x.get('at')),
+        reverse=True,
+    )
+
+    world_winnings_total = sum(
+        int(w.get('winning_amount') or 0) for w in world_winnings
+    )
+
     return {
         'identity': await _sanitise(u),
         'kyc': kyc,
@@ -155,6 +215,22 @@ async def user_360(user_id: str, request: Request):
         'signup_bonus': signup_bonus,
         'sessions': sessions,
         'admin_actions': admin_actions,
+        'world': {
+            'progress': world_progress,
+            'level_attempts': world_level_attempts,
+            'level_skips': world_level_skips,
+            'winnings': world_winnings,
+            'winnings_total': world_winnings_total,
+            'token_history': world_token_history,
+            'stats': {
+                'level_attempts_count': len(world_level_attempts),
+                'level_skips_count': len(world_level_skips),
+                'winnings_count': len(world_winnings),
+                'token_events_count': len(world_token_history),
+                'champion_stage': (world_progress or {}).get('champion_stage'),
+                'current_level': (world_progress or {}).get('current_level'),
+            },
+        },
     }
 
 

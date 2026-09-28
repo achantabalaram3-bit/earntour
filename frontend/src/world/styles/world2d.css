@@ -6162,6 +6162,63 @@
 
 
 /* ---------------------------------------------------------
+   PREVIOUS CHAMPIONSHIP MAP HISTORY (read-only)
+   Completed = green tick node · Skipped = amber node
+   --------------------------------------------------------- */
+
+.pl1000-level.is-skipped-history .pl1000-node {
+  background:
+    linear-gradient(
+      180deg,
+      #f5b942,
+      #b87513
+    );
+  border-color: #ffe6b0;
+  cursor: default;
+}
+
+.pl1000-level.is-skipped-history,
+.pl1000-level.is-completed:not(.is-current) {
+  cursor: default;
+}
+
+.pl1000-history-badge {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.pl1000-history-badge.is-done {
+  background: linear-gradient(180deg, #34d17f, #0f7a49);
+  color: #eafff2;
+}
+
+.pl1000-history-badge.is-skip {
+  background: linear-gradient(180deg, #f5b942, #a8660f);
+  color: #fff7e6;
+}
+
+.pl1000-special-slot.is-completed-history {
+  filter: saturate(0.85);
+  cursor: default;
+}
+
+.pl1000-special-slot.is-completed-history .pl1000-history-badge {
+  bottom: -6px;
+}
+
+
+
+/* ---------------------------------------------------------
    LOCK
    --------------------------------------------------------- */
 

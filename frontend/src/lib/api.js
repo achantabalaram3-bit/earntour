@@ -508,3 +508,21 @@ export const winningsAdminAPI = {
       reason,
     }).then(r => r.data),
 };
+
+
+export const acquisitionAPI = {
+  track: (payload) =>
+    api.post('/acquisition/track', payload).then(r => r.data),
+};
+
+export const acquisitionAdminAPI = {
+  summary: (days = 30) =>
+    api.get('/admin/acquisition/summary', {
+      params: { days },
+    }).then(r => r.data),
+
+  visits: ({ days = 30, source, skip = 0, limit = 50 } = {}) =>
+    api.get('/admin/acquisition/visits', {
+      params: { days, source, skip, limit },
+    }).then(r => r.data),
+};

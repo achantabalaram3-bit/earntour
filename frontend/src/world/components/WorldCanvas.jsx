@@ -25,6 +25,8 @@ import { useAuth } from '../../context/AuthContext';
 
 import FreeWorldLeaderboard from './FreeWorldLeaderboard';
 
+import InstallPrompt from './InstallPrompt';
+
 import '../styles/world2d.css';
 
 const CHAMPIONSHIP_HEIGHT = 3500;
@@ -612,11 +614,29 @@ function ChampionshipSection({
   worldNowMs,
   onRequestUnlock,
   canUseTokens,
+  championshipHistory,
 }) {
   const championshipNumber =
     championship.championshipNumber ??
     championship.number ??
     sectionIndex + 1;
+
+  const isPastChampionship =
+    championshipNumber < currentChampionship;
+
+  const historyLevelMap =
+    useMemo(() => {
+      const map = new Map();
+      const entry = (championshipHistory || []).find(
+        (h) =>
+          Number(h.championship) ===
+          Number(championshipNumber),
+      );
+      (entry?.levels || []).forEach((l) => {
+        map.set(Number(l.level), l.status);
+      });
+      return map;
+    }, [championshipHistory, championshipNumber]);
 
   const startLevel =
     ((championshipNumber - 1) * 10) + 1;
@@ -1347,6 +1367,9 @@ function ChampionshipSection({
                   className={[
                     'pl1000-special-slot',
                     'pl1000-champion-level',
+                    isPastChampionship
+                      ? 'is-completed-history'
+                      : '',
                   ].join(' ')}
                   style={{
                     left:
@@ -1361,6 +1384,9 @@ function ChampionshipSection({
                     championshipNumber
                   }
                   onClick={() => {
+                    if (isPastChampionship) {
+                      return;
+                    }
                     window.dispatchEvent(
                       new CustomEvent(
                         'pl-world-champion-select',
@@ -1419,6 +1445,12 @@ function ChampionshipSection({
                     </span>
                   )}
 
+                  {isPastChampionship && (
+                    <span className="pl1000-history-badge is-done">
+                      COMPLETED
+                    </span>
+                  )}
+
                   <small>
                     CHAMPION LEVEL
                   </small>
@@ -1439,17 +1471,27 @@ function ChampionshipSection({
                   )
                 : null;
 
+            const historyStatus =
+              isPastChampionship
+                ? historyLevelMap.get(localLevel)
+                : null;
+
+            const skippedHistory =
+              historyStatus === 'skipped';
+
             const completed =
-              Boolean(
-                backendState
-                  ?.completed,
-              );
+              isCurrentChampionship
+                ? Boolean(
+                    backendState?.completed,
+                  )
+                : historyStatus === 'completed';
 
             const available =
-              Boolean(
-                backendState
-                  ?.available,
-              );
+              isCurrentChampionship
+                ? Boolean(
+                    backendState?.available,
+                  )
+                : false;
 
             const isCurrent =
               isCurrentChampionship &&
@@ -1458,7 +1500,8 @@ function ChampionshipSection({
 
             const locked =
               !completed &&
-              !available;
+              !available &&
+              !skippedHistory;
 
             const levelUnlockMs =
               worldUnlockTimeForLevel(
@@ -1548,6 +1591,9 @@ function ChampionshipSection({
                   completed
                     ? 'is-completed'
                     : '',
+                  skippedHistory
+                    ? 'is-skipped-history'
+                    : '',
                   isCurrent
                     ? 'is-current'
                     : '',
@@ -1582,6 +1628,8 @@ function ChampionshipSection({
                   <span className="pl1000-node-num">
                     {completed
                       ? '✓'
+                      : skippedHistory
+                      ? '»'
                       : globalLevel}
                   </span>
 
@@ -1604,6 +1652,29 @@ function ChampionshipSection({
                 {locked && (
                   <span className="pl1000-lock">
                     🔒
+                  </span>
+                )}
+
+                {completed &&
+                  !isCurrentChampionship && (
+                    <span
+                      className="pl1000-history-badge is-done"
+                      data-testid={
+                        `free-world-history-completed-${globalLevel}`
+                      }
+                    >
+                      COMPLETED
+                    </span>
+                  )}
+
+                {skippedHistory && (
+                  <span
+                    className="pl1000-history-badge is-skip"
+                    data-testid={
+                      `free-world-history-skipped-${globalLevel}`
+                    }
+                  >
+                    SKIPPED
                   </span>
                 )}
 
@@ -3077,6 +3148,9 @@ export default function WorldCanvas({
               }
               worldNowMs={worldNowMs}
               canUseTokens={Boolean(user)}
+              championshipHistory={
+                worldState?.championship_history || []
+              }
               onRequestUnlock={
                 setUnlockModal
               }
@@ -3104,6 +3178,8 @@ export default function WorldCanvas({
           setShowFreeLeaderboard(false);
         }}
       />
+
+      <InstallPrompt />
 <nav
         className={[
           'pl2d-bottom-nav',

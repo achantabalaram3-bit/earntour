@@ -222,6 +222,7 @@ from routers.legal_routes import public_router as legal_public_router, admin_rou
 from routers.company_routes import public_router as company_public_router, admin_router as company_admin_router, contest_router as leaderboard_router
 from routers.engines_routes import router as engines_router, public_router as engines_public_router
 from routers.user360_routes import router as user360_router
+from routers.acquisition_routes import public_router as acquisition_public_router, admin_router as acquisition_admin_router
 from routers.admin_referrals_routes import router as admin_referrals_router
 from routers.influencer_promo_routes import router as influencer_promo_router
 from routers.winnings_routes import router as winnings_router, admin_router as winnings_admin_router
@@ -265,6 +266,8 @@ app.include_router(leaderboard_router)
 app.include_router(engines_router)
 app.include_router(engines_public_router)
 app.include_router(user360_router)
+app.include_router(acquisition_public_router)
+app.include_router(acquisition_admin_router)
 app.include_router(admin_referrals_router)
 app.include_router(influencer_promo_router)
 
