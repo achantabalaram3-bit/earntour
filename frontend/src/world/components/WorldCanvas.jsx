@@ -1499,7 +1499,11 @@ function ChampionshipSection({
                 worldNowMs;
 
             const levelCountdown =
-              hasFutureUnlock
+              hasFutureUnlock &&
+              (
+                isCurrent ||
+                nextChampionshipCountdown
+              )
                 ? formatWorldCountdown(
                     levelUnlockMs,
                     worldNowMs,

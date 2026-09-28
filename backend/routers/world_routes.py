@@ -11452,6 +11452,12 @@ async def continue_after_champion(
                 "personal_stage_started_at":
                     now,
 
+                # Token unlocks belong to the previous personal Championship's
+                # levels; clear them so a C1 token unlock never opens C2's
+                # same-numbered level.
+                "token_unlocked_levels":
+                    [],
+
                 "updated_at":
                     now,
             },
@@ -11477,6 +11483,18 @@ async def continue_after_champion(
                     ),
             },
         )
+
+    # Fresh free attempts per personal Championship: clear the live attempt
+    # COUNTERS (tallies) for this user so the new stage's Levels 1-10 start
+    # with their configured free attempts and never inherit the previous
+    # Championship's exhausted counters. Historical per-attempt records in
+    # `world_level_attempts` are preserved for audit.
+    await db.world_attempt_counters.delete_many(
+        {
+            "season_id": WORLD_SEASON_ID,
+            "user_id": user["user_id"],
+        }
+    )
 
     return {
         "continued":
