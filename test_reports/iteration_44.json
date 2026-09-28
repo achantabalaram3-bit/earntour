@@ -1,0 +1,25 @@
+{
+  "summary": "Iteration 44 — Verified (a) champion-attempt standardisation for admin (champion_stage 2): GET /api/world/champion/status returns initial_attempts=3 with attempts_remaining in [0,3]; repeated GETs are idempotent (no reset). POST /api/world/token/retry/reserve level=0 is rejected 409 FREE_ATTEMPT_AVAILABLE while free attempts remain; attempts_remaining unchanged after the rejected call (no data corruption). (b) Acquisition conversion: /api/admin/acquisition/summary?days=30 returns converted_visitors, overall_conversion_rate and by_source_conversion with correct per-row and overall rate math. Public /api/acquisition/track still records visits. (c) Regression: /api/world/state returns championship_history and level 2 token_unlock_enabled=true. Frontend: /admin/acquisition shows the new 'Signup conversion by source' table (headers Source/Visitors/Players/Conversion) + Players (signed up) and Conversion rate stat cards, and day-range toggle refetches. PWA install popup appears proactively (~1.5s) on both /paid-leagues and /world with Install and dismiss buttons; dismissing hides it for the session and does not crash the page. 6/6 pytest cases pass, 3/3 frontend flows pass.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iter44_champion_attempts_and_conversion.py",
+    "/app/test_reports/pytest/iter44.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "world_routes.py _champion_attempt_status: legacy free_attempt_policy migration correctly preserves consumed attempts (old_policy - old_remaining) and clamps at 0, but uses 'setOnInsert' style semantics only via find_one_and_update with a $ne:3 filter — if a legacy counter has free_attempt_policy=3 but stale attempts_remaining>3 the max(0, attempts_remaining) will report >3 free attempts. Not observed in practice (admin sees <=3) but worth guarding with min(initial_attempts, attempts_remaining) on read.",
+    "acquisition_routes.acquisition_summary computes by_source_conversion from EARLIEST source per visitor while overall_conversion_rate uses unique_visitors from a separate aggregation. If a visitor has visits outside the top-20 by_source_conversion bucket, converted_visitors (sum over top-20 rows) may under-count vs the truly unique converted visitors. Currently limit=20 sources rarely bites, but consider computing converted_visitors from the same visitor-level aggregation without the $limit.",
+    "InstallPrompt.jsx sets a 1.5s proactive timer even when native beforeinstallprompt is expected. On browsers that DO fire the native event within that window the banner still appears, which is intended, but the same banner is mounted on both Home and WorldCanvas — if both routes are reached without a full unload the timer/listeners are re-registered; consider a single top-level mount to avoid duplicate listeners."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter44_champion_attempts_and_conversion.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "bachanta8@gmail.com / Herts@910022 (super_admin, champion_stage 2)",
+  "seed_data_creation": "3 TEST_ acquisition_visits inserted via public /api/acquisition/track (google referrer, utm fb/newsletter campaign 'launch44', direct). No champion attempts were consumed (only status GET + a rejected reserve call).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Admin currently has attempts_remaining reflecting whatever legacy state persisted before this run — the FREE_ATTEMPT_AVAILABLE test is guarded with pytest.skip if attempts_remaining==0. Champion contest 2 is active until 2026-10-09. To exhaust free attempts in future runs, POST /api/world/champion/session/begin then submit — that path calls _consume_champion_stage2_attempt which correctly decrements from 3 (setOnInsert) and legacy-upgrades old 1-free counters preserving consumed attempts.",
+  "rca of the issue": "N/A — no defects observed."
+}
