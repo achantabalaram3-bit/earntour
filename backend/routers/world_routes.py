@@ -3063,7 +3063,7 @@ def _next_unpassed_level(progress: dict) -> int:
     return 0
 
 
-def _personal_unlock_context(level: int, progress: dict, active_number: int | None = None):
+def _personal_unlock_context(level: int, progress: dict, active_number: int | None = None, active_start_at=None):
     """
     Personal-progression availability, anchored to when the user ENTERED their
     current personal Championship. Never touches the global scheduler/windows,
@@ -3099,9 +3099,17 @@ def _personal_unlock_context(level: int, progress: dict, active_number: int | No
     behind = active_number is not None and stage < active_number
     catchup = behind and (started <= stage)
 
-    anchor = _ensure_aware_datetime(
-        progress.get("personal_stage_started_at")
-    ) or now
+    if not behind and active_start_at is not None:
+        # LIVE championship: anchor the daily schedule to the GLOBAL
+        # Championship start (the existing schedule) so every live user shares
+        # the same one-level-per-day 00:00 Europe/London unlock.
+        anchor = _ensure_aware_datetime(active_start_at) or now
+    else:
+        # BEHIND (older personal championship): anchor to when the user
+        # personally entered it (its global window is already in the past).
+        anchor = _ensure_aware_datetime(
+            progress.get("personal_stage_started_at")
+        ) or now
 
     if catchup:
         time_available = True
@@ -3192,7 +3200,12 @@ async def _resolve_unlock_context(db, level: int, progress: dict):
     if active_number is None:
         return await _world_unlock_context(db, level, progress)
 
-    return _personal_unlock_context(level, progress, active_number)
+    return _personal_unlock_context(
+        level,
+        progress,
+        active_number,
+        active.get("start_at"),
+    )
 
 
 
