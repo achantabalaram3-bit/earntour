@@ -250,12 +250,60 @@ async def acquisition_summary(request: Request, days: int = 30):
     by_medium = [b for b in by_medium if b['key'] and b['key'] != 'unknown']
     by_campaign = [b for b in by_campaign if b['key'] and b['key'] != 'unknown']
 
+    # Signup conversion by first-touch source: attribute each visitor to the
+    # source of their EARLIEST visit, then count how many of those visitors
+    # ever became a registered player (any visit carried a user_id).
+    conv_rows = await db.acquisition_visits.aggregate([
+        {'$match': match},
+        {'$sort': {'created_at': 1}},
+        {'$group': {
+            '_id': '$visitor_id',
+            'first_source': {'$first': '$source'},
+            'converted': {
+                '$max': {
+                    '$cond': [{'$ifNull': ['$user_id', False]}, 1, 0]
+                }
+            },
+        }},
+        {'$group': {
+            '_id': '$first_source',
+            'visitors': {'$sum': 1},
+            'converted': {'$sum': '$converted'},
+        }},
+        {'$sort': {'visitors': -1}},
+        {'$limit': 20},
+    ]).to_list(20)
+
+    by_source_conversion = [
+        {
+            'key': r['_id'] or 'direct',
+            'visitors': r['visitors'],
+            'converted': r['converted'],
+            'rate': (
+                round((r['converted'] / r['visitors']) * 100, 1)
+                if r['visitors'] else 0
+            ),
+        }
+        for r in conv_rows
+    ]
+
+    converted_visitors = sum(
+        r['converted'] for r in by_source_conversion
+    )
+    overall_conversion_rate = (
+        round((converted_visitors / unique_visitors) * 100, 1)
+        if unique_visitors else 0
+    )
+
     return {
         'days': days,
         'total_visits': total_visits,
         'unique_visitors': unique_visitors,
         'visits_from_signed_in': signups,
+        'converted_visitors': converted_visitors,
+        'overall_conversion_rate': overall_conversion_rate,
         'by_source': by_source,
+        'by_source_conversion': by_source_conversion,
         'by_channel': by_channel,
         'by_medium': by_medium,
         'by_campaign': by_campaign,

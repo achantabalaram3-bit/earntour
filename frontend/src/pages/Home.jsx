@@ -8,6 +8,7 @@ import ReferAndEarnCard from '../components/home/ReferAndEarnCard';
 import TrustBadges from '../components/home/TrustBadges';
 import GamePreviewSection from '../components/home/GamePreviewSection';
 import MobileHome from '../components/mobile/MobileHome';
+import InstallPrompt from '../world/components/InstallPrompt';
 import { contestsAPI } from '../lib/api';
 
 export default function Home() {
@@ -133,6 +134,8 @@ export default function Home() {
         <TrustBadges />
 
       </div>
+
+      <InstallPrompt />
     </>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { acquisitionAdminAPI } from '../../lib/api';
 import {
   Globe, Users, MousePointerClick, Smartphone, Monitor,
-  Search, Share2, Link2, TrendingUp, RefreshCw,
+  Search, Share2, Link2, TrendingUp, RefreshCw, Target, UserCheck,
 } from 'lucide-react';
 
 const DAY_OPTIONS = [7, 30, 90, 365];
@@ -138,11 +138,12 @@ export default function AcquisitionAdmin() {
 
       {state === 'ok' && data && (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             <StatCard label="Total visits" value={data.total_visits} icon={MousePointerClick} tone="indigo" />
             <StatCard label="Unique visitors" value={data.unique_visitors} icon={Users} tone="fuchsia" />
-            <StatCard label="Signed-in visits" value={data.visits_from_signed_in} icon={Globe} tone="emerald" />
-            <StatCard label="Window" value={`${data.days} days`} icon={TrendingUp} tone="amber" />
+            <StatCard label="Players (signed up)" value={data.converted_visitors ?? 0} icon={UserCheck} tone="emerald" />
+            <StatCard label="Conversion rate" value={`${data.overall_conversion_rate ?? 0}%`} icon={Target} tone="rose" />
+            <StatCard label="Window" value={`${data.days}d`} icon={TrendingUp} tone="amber" />
           </div>
 
           {/* Daily trend */}
@@ -177,6 +178,51 @@ export default function AcquisitionAdmin() {
             <BarList title="Browsers" icon={Monitor} items={data.by_browser} total={data.total_visits} />
             <BarList title="Landing pages" icon={Globe} items={data.by_landing} total={data.total_visits} />
             <BarList title="Campaigns (UTM)" icon={Share2} items={data.by_campaign} total={data.total_visits} />
+          </div>
+
+          {/* Signup conversion by source */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5" data-testid="acq-conversion-table">
+            <div className="flex items-center gap-2 mb-4">
+              <Target className="w-4 h-4 text-rose-600" />
+              <h2 className="font-display font-bold text-base">Signup conversion by source</h2>
+              <span className="text-xs text-slate-400">— which sources turn visits into players</span>
+            </div>
+            {!data.by_source_conversion?.length ? (
+              <div className="text-sm text-slate-400">No data yet.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-500 text-xs">
+                    <tr>
+                      <th className="text-left px-3 py-2">Source</th>
+                      <th className="text-right px-3 py-2">Visitors</th>
+                      <th className="text-right px-3 py-2">Players</th>
+                      <th className="text-left px-3 py-2 w-1/3">Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.by_source_conversion.map((row) => (
+                      <tr key={row.key} className="border-t border-slate-100" data-testid={`acq-conv-${row.key}`}>
+                        <td className="px-3 py-2 font-semibold text-slate-700">{row.key}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">{row.visitors}</td>
+                        <td className="px-3 py-2 text-right tabular-nums font-semibold text-emerald-700">{row.converted}</td>
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600"
+                                style={{ width: `${Math.min(100, row.rate)}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-bold text-slate-600 w-12 text-right tabular-nums">{row.rate}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Recent visits */}

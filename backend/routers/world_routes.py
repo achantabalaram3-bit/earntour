@@ -6007,9 +6007,9 @@ async def _champion_attempt_status(
     Free World admin panel later.
     """
 
-    # Personal Champion stage decides the free-attempt policy:
-    #   Champion 1        -> 3 free attempts  (world_champion_attempt_counters)
-    #   Champion 2 and up -> 1 free attempt   (world_champion_stage_counters)
+    # Personal Champion stage decides only the counter STORE; the free-attempt
+    # POLICY is now standardised to 3 across ALL 100 championships (same game,
+    # same rules as the normal levels). Already-consumed attempts are preserved.
     stage = 1
     try:
         stage = int(await _user_champion_stage(db, user_id) or 1)
@@ -6017,7 +6017,7 @@ async def _champion_attempt_status(
         stage = 1
 
     if stage >= 2:
-        initial_attempts = 1
+        initial_attempts = 3
         scoped = await db.world_champion_stage_counters.find_one(
             {
                 "season_id": WORLD_SEASON_ID,
@@ -6028,11 +6028,41 @@ async def _champion_attempt_status(
             {"_id": 0},
         )
         if not scoped:
-            attempts_remaining = 1
+            attempts_remaining = initial_attempts
         else:
+            # Upgrade legacy stage counters (created under the old 1-free
+            # policy) to 3 while preserving attempts already consumed.
+            if int(scoped.get("free_attempt_policy", 1) or 1) != 3:
+                old_policy = int(scoped.get("free_attempt_policy", 1) or 1)
+                old_remaining = max(
+                    0, int(scoped.get("attempts_remaining", 0))
+                )
+                consumed = max(0, old_policy - old_remaining)
+                migrated_remaining = max(0, initial_attempts - consumed)
+
+                result = await db.world_champion_stage_counters.find_one_and_update(
+                    {
+                        "season_id": WORLD_SEASON_ID,
+                        "global_contest_number": contest_number,
+                        "user_id": user_id,
+                        "champion_stage": stage,
+                        "free_attempt_policy": {"$ne": 3},
+                    },
+                    {
+                        "$set": {
+                            "attempts_remaining": migrated_remaining,
+                            "free_attempt_policy": 3,
+                            "updated_at": _utcnow(),
+                        },
+                    },
+                    return_document=True,
+                )
+                if result:
+                    scoped = result
+
             attempts_remaining = max(
                 0,
-                int(scoped.get("attempts_remaining", 1)),
+                int(scoped.get("attempts_remaining", initial_attempts)),
             )
     else:
         initial_attempts = 3
@@ -6134,8 +6164,9 @@ async def _consume_champion_stage2_attempt(
     """
     Consume one Champion play for Champion Level 2 and later.
 
-    Policy: ONE free attempt per (season + contest + user + stage),
-    then a purchased token retry (shared level-0 champion entitlement).
+    Policy: THREE free attempts per (season + contest + user + stage) —
+    standardised to match Championship 1 and the normal levels — then a
+    purchased token retry (shared level-0 champion entitlement).
     Atomic; simultaneous begins cannot double-consume.
     """
     key = {
@@ -6150,15 +6181,36 @@ async def _consume_champion_stage2_attempt(
         {
             "$setOnInsert": {
                 **key,
-                "attempts_remaining": 1,
-                "free_attempt_policy": 1,
+                "attempts_remaining": 3,
+                "free_attempt_policy": 3,
                 "created_at": now,
             }
         },
         upsert=True,
     )
 
-    # 1. FREE (1 per stage)
+    # Upgrade any legacy 1-free counter to the standardised 3-free policy
+    # (all 100 championships share the same rules), preserving consumed.
+    legacy = await db.world_champion_stage_counters.find_one(
+        {**key, "free_attempt_policy": {"$ne": 3}},
+        {"_id": 0},
+    )
+    if legacy:
+        old_policy = int(legacy.get("free_attempt_policy", 1) or 1)
+        old_remaining = max(0, int(legacy.get("attempts_remaining", 0)))
+        consumed = max(0, old_policy - old_remaining)
+        await db.world_champion_stage_counters.update_one(
+            {**key, "free_attempt_policy": {"$ne": 3}},
+            {
+                "$set": {
+                    "attempts_remaining": max(0, 3 - consumed),
+                    "free_attempt_policy": 3,
+                    "updated_at": now,
+                }
+            },
+        )
+
+    # 1. FREE (3 per stage)
     scoped = await db.world_champion_stage_counters.find_one_and_update(
         {**key, "attempts_remaining": {"$gt": 0}},
         {

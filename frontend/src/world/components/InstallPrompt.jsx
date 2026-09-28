@@ -45,6 +45,9 @@ export default function InstallPrompt() {
   const [iosTip, setIosTip] =
     useState(false);
 
+  const [showHelp, setShowHelp] =
+    useState(false);
+
   useEffect(() => {
     if (isStandalone()) {
       return undefined;
@@ -65,6 +68,7 @@ export default function InstallPrompt() {
     const onInstalled = () => {
       setVisible(false);
       setDeferredPrompt(null);
+      sessionStorage.setItem(DISMISS_KEY, '1');
     };
 
     window.addEventListener(
@@ -83,7 +87,22 @@ export default function InstallPrompt() {
       setVisible(true);
     }
 
+    // Proactive nudge: the native `beforeinstallprompt` is unreliable and only
+    // fires under the browser's own heuristics. Show the banner anyway after a
+    // short delay so users always see the install option; the Install button
+    // uses the native prompt when it is available and otherwise shows a short
+    // "how to install" tip.
+    const timer = window.setTimeout(() => {
+      if (
+        !isStandalone() &&
+        sessionStorage.getItem(DISMISS_KEY) !== '1'
+      ) {
+        setVisible(true);
+      }
+    }, 1500);
+
     return () => {
+      window.clearTimeout(timer);
       window.removeEventListener(
         'beforeinstallprompt',
         onBeforeInstall,
@@ -102,6 +121,9 @@ export default function InstallPrompt() {
 
   const install = async () => {
     if (!deferredPrompt) {
+      // No native prompt available (browser heuristics not met, or already
+      // eligible only via menu). Show manual instructions instead.
+      setShowHelp(true);
       return;
     }
 
@@ -142,6 +164,10 @@ export default function InstallPrompt() {
             Tap <Share className="w-3.5 h-3.5 inline" /> then
             {' '}“Add to Home Screen”
           </span>
+        ) : showHelp ? (
+          <span className="pl-install-ios">
+            Open your browser menu → “Install app” / “Add to Home Screen”
+          </span>
         ) : (
           <span>
             Add the app to your home screen for one-tap play
@@ -149,7 +175,7 @@ export default function InstallPrompt() {
         )}
       </div>
 
-      {!iosTip && (
+      {!iosTip && !showHelp && (
         <button
           type="button"
           className="pl-install-cta"
