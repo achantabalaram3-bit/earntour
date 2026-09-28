@@ -2498,10 +2498,17 @@ def _validate_world_level_config(
                 "token_retry_cost":
                     retry_cost,
 
-                # Tokens may purchase retries only.
-                # They can never unlock or skip progression.
+                # Early token unlock of the immediate-next time-locked level
+                # (Levels 2-10). Defaults ON; admin may disable per level.
+                # Tokens still only bypass the scheduled TIME lock — never
+                # progression, contest-open or previous-level rules.
                 "token_unlock_enabled":
-                    False,
+                    bool(
+                        item.get(
+                            "token_unlock_enabled",
+                            True,
+                        )
+                    ),
 
                 "token_unlock_cost":
                     unlock_cost,
