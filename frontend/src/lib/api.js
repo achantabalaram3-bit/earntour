@@ -180,8 +180,20 @@ export const cashoutAPI = {
   adminUpdateConfig: (data) => api.put('/admin/cashout/config', data).then(r => r.data),
   adminList: (status) => api.get('/admin/cashout/withdrawals', { params: status ? { status } : {} }).then(r => r.data),
   adminDetail: (id) => api.get(`/admin/cashout/withdrawals/${id}`).then(r => r.data),
-  adminMarkPaid: (id) => api.post(`/admin/cashout/withdrawals/${id}/mark-paid`).then(r => r.data),
-  adminReject: (id, reason) => api.post(`/admin/cashout/withdrawals/${id}/reject`, { reason }).then(r => r.data),
+  adminMarkPaid: (id, notification_message) =>
+  api
+    .post(`/admin/cashout/withdrawals/${id}/mark-paid`, {
+      notification_message,
+    })
+    .then((r) => r.data),
+
+adminReject: (id, reason, notification_message) =>
+  api
+    .post(`/admin/cashout/withdrawals/${id}/reject`, {
+      reason,
+      notification_message,
+    })
+    .then((r) => r.data),
 };
 
 export const uploadsAPI = {

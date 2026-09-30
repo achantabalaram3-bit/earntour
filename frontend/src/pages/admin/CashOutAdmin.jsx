@@ -16,6 +16,8 @@ export default function CashOutAdmin() {
   const [filter, setFilter] = useState('processing');
   const [detail, setDetail] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [rejectReason, setRejectReason] = useState('');
 
   const loadConfig = async () => {
     try {
@@ -46,20 +48,26 @@ export default function CashOutAdmin() {
     finally { setBusy(false); }
   };
   const openDetail = async (id) => {
-    try { setDetail(await cashoutAPI.adminDetail(id)); } catch (e) { toast({ title: 'Failed to load detail', variant: 'destructive' }); }
+    try {
+      const d = await cashoutAPI.adminDetail(id);
+      setDetail(d);
+      setNotificationMessage(`Your ${gbp(d.amount_gbp)} cash-out has been approved and paid successfully.`);
+      setRejectReason('');
+    } catch (e) { toast({ title: 'Failed to load detail', variant: 'destructive' }); }
   };
   const markPaid = async (id) => {
+    if (!notificationMessage.trim()) { toast({ title: 'Notification message is required', variant: 'destructive' }); return; }
     if (!window.confirm(`Confirm that ${gbp(detail?.amount_gbp)} has been manually sent to this user's bank account.`)) return;
     setBusy(true);
-    try { await cashoutAPI.adminMarkPaid(id); toast({ title: 'Marked as paid' }); setDetail(null); loadRows(); }
+    try { await cashoutAPI.adminMarkPaid(id, notificationMessage.trim()); toast({ title: 'Marked as paid & notification sent' }); setDetail(null); loadRows(); }
     catch (e) { toast({ title: e?.response?.data?.detail || 'Failed', variant: 'destructive' }); }
     finally { setBusy(false); }
   };
   const reject = async (id) => {
-    const reason = window.prompt('Rejection reason:');
-    if (!reason) return;
+    if (!rejectReason.trim()) { toast({ title: 'Rejection reason is required', variant: 'destructive' }); return; }
+    if (!notificationMessage.trim()) { toast({ title: 'Notification message is required', variant: 'destructive' }); return; }
     setBusy(true);
-    try { await cashoutAPI.adminReject(id, reason); toast({ title: 'Rejected & tokens released' }); setDetail(null); loadRows(); }
+    try { await cashoutAPI.adminReject(id, rejectReason.trim(), notificationMessage.trim()); toast({ title: 'Rejected, tokens released & notification sent' }); setDetail(null); loadRows(); }
     catch (e) { toast({ title: e?.response?.data?.detail || 'Failed', variant: 'destructive' }); }
     finally { setBusy(false); }
   };
@@ -146,17 +154,46 @@ export default function CashOutAdmin() {
             <div className="rounded-xl bg-slate-50 border border-slate-200 p-3 text-sm">
               <div className="text-xs font-bold uppercase text-slate-400 mb-1 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Bank payout details</div>
               <Row l="Holder" v={detail.bank?.account_holder} />
+              <Row l="Email / Mail ID" v={detail.bank?.email} />
               <Row l="Sort code" v={detail.bank?.sort_code} />
               <Row l="Account number" v={detail.bank?.account_number} />
+              <Row l="IBAN" v={detail.bank?.iban} />
+              <Row l="BACS" v={detail.bank?.bacs} />
             </div>
             {detail.status === 'processing' && (
-              <div className="flex gap-2">
-                <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => markPaid(detail.withdrawal_id)} disabled={busy} data-testid="admin-mark-paid">
-                  <CheckCircle2 className="w-4 h-4 mr-1" /> Mark as Paid
-                </Button>
-                <Button className="flex-1 bg-rose-600 hover:bg-rose-700" onClick={() => reject(detail.withdrawal_id)} disabled={busy} data-testid="admin-reject">
-                  <XCircle className="w-4 h-4 mr-1" /> Reject
-                </Button>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">In-app notification message</label>
+                  <textarea
+                    className="mt-1 w-full min-h-[84px] rounded-md border border-slate-200 px-3 py-2 text-sm"
+                    value={notificationMessage}
+                    onChange={(e) => setNotificationMessage(e.target.value)}
+                    placeholder="Message sent to the user's in-app notifications"
+                    data-testid="admin-cashout-notification"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">Rejection reason (required only when rejecting)</label>
+                  <Input
+                    value={rejectReason}
+                    onChange={(e) => {
+                      setRejectReason(e.target.value);
+                      if (e.target.value.trim()) {
+                        setNotificationMessage(`Your ${gbp(detail?.amount_gbp)} cash-out request was rejected. Reason: ${e.target.value.trim()}. The reserved tokens have been returned to your wallet.`);
+                      }
+                    }}
+                    placeholder="Enter rejection reason"
+                    data-testid="admin-cashout-reject-reason"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => markPaid(detail.withdrawal_id)} disabled={busy} data-testid="admin-mark-paid">
+                    <CheckCircle2 className="w-4 h-4 mr-1" /> Mark as Paid
+                  </Button>
+                  <Button className="flex-1 bg-rose-600 hover:bg-rose-700" onClick={() => reject(detail.withdrawal_id)} disabled={busy} data-testid="admin-reject">
+                    <XCircle className="w-4 h-4 mr-1" /> Reject
+                  </Button>
+                </div>
               </div>
             )}
             <Button variant="outline" className="w-full" onClick={() => setDetail(null)}>Close</Button>

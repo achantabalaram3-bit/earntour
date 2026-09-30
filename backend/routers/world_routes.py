@@ -293,10 +293,22 @@ async def ensure_world_indexes():
         name="world_level_attempt_history",
     )
 
+    # Attempt balances are personal to each Champion stage.  Drop the
+    # legacy season/user/level-only unique index before installing the
+    # stage-scoped index; otherwise MongoDB would reject a fresh counter
+    # for the same level in the user's next Championship.
+    try:
+        await db.world_attempt_counters.drop_index(
+            "world_attempt_counter_unique"
+        )
+    except Exception:
+        pass
+
     await db.world_attempt_counters.create_index(
         [
             ("season_id", 1),
             ("user_id", 1),
+            ("champion_stage", 1),
             ("level", 1),
         ],
         unique=True,
@@ -3075,17 +3087,18 @@ def _next_unpassed_level(progress: dict) -> int:
 
 def _personal_unlock_context(level: int, progress: dict, active_number: int | None = None, active_start_at=None):
     """
-    Personal-progression availability, anchored to when the user ENTERED their
-    current personal Championship. Never touches the global scheduler/windows,
-    leaderboard, settlement or prizes.
+    Personal progression with GLOBAL level-unlock timing.
 
-    Modes:
-      - "catchup": OLD user who fell BEHIND the live Championship. Remaining
-        levels are immediately playable in sequence and skippable.
-      - "daily": everyone else (live-championship users AND new users). Level 1
-        is always open; Levels 2-10 unlock exactly one per day from the user's
-        personal start, aligned to the EXISTING 00:00 Europe/London boundary
-        via level_unlock_at(), and show a countdown until their unlock time.
+    The CURRENT GLOBAL Championship start is the shared time clock for every
+    Championship that is already globally available. Personal progression
+    still controls sequence, but signup time / personal_stage_started_at never
+    creates a separate level-unlock clock.
+
+    Example while Global C2 is active:
+      - C1 and C2 share the same L1-L10 global unlock clock.
+      - If global L3 is open, L1-L3 are time-unlocked in both C1 and C2.
+      - A new user in personal C1 must still progress L1 -> L2 -> L3.
+      - L4 remains time-locked until the shared global L4 unlock time.
     """
     now = _utcnow()
     stage = int(progress.get("champion_stage") or 1)
@@ -3104,40 +3117,33 @@ def _personal_unlock_context(level: int, progress: dict, active_number: int | No
     highest_unlocked = int(progress.get("highest_unlocked_level", 1) or 1)
     sequence_available = level <= highest_unlocked
 
-    # Catch-up only applies to an OLD user who is BEHIND the live Championship.
-    # Live-championship users use the strict daily schedule (with timers).
     behind = active_number is not None and stage < active_number
     catchup = behind and (started <= stage)
 
-    if not behind and active_start_at is not None:
-        # LIVE championship: anchor the daily schedule to the GLOBAL
-        # Championship start (the existing schedule) so every live user shares
-        # the same one-level-per-day 00:00 Europe/London unlock.
-        anchor = _ensure_aware_datetime(active_start_at) or now
-    else:
-        # BEHIND (older personal championship): anchor to when the user
-        # personally entered it (its global window is already in the past).
-        anchor = _ensure_aware_datetime(
-            progress.get("personal_stage_started_at")
-        ) or now
+    # ONLY CHANGE: level time unlocks use the current GLOBAL Championship
+    # start for everyone. Never use personal_stage_started_at as the clock.
+    anchor = _ensure_aware_datetime(active_start_at) or now
 
-    if catchup:
+    unlock_at = level_unlock_at(anchor, max(0, level - 1))
+    scheduled_time_available = now >= unlock_at
+    time_available = bool(scheduled_time_available or token_unlocked)
+
+    # OLD/BEHIND users are in catch-up mode. Their old personal Championship
+    # levels L1-L10 must not be blocked by the CURRENT live Championship's
+    # level-number timer. Progression is still strictly sequential, and each
+    # next level may be PLAYED or SKIPPED.
+    if catchup and 1 <= level <= 10:
         time_available = True
         scheduled_time_available = True
         unlock_at = None
-        seconds_until_unlock = 0
-    else:
-        unlock_at = level_unlock_at(anchor, max(0, level - 1))
-        scheduled_time_available = now >= unlock_at
-        time_available = bool(scheduled_time_available or token_unlocked)
-        seconds_until_unlock = (
-            0
-            if time_available
-            else max(0, int((unlock_at - now).total_seconds()))
-        )
 
-    # Level 1 of ANY personal Championship is ALWAYS unlocked and never shows
-    # an unlock timer.
+    seconds_until_unlock = (
+        0
+        if time_available
+        else max(0, int((unlock_at - now).total_seconds()))
+    )
+
+    # Level 1 of any already-available personal Championship is always open.
     if level == 1:
         time_available = True
         scheduled_time_available = True
@@ -3158,6 +3164,7 @@ def _personal_unlock_context(level: int, progress: dict, active_number: int | No
     next_unpassed = _next_unpassed_level(progress)
     skippable = bool(
         catchup
+        and time_available
         and not completed
         and level == next_unpassed
         and 1 <= level <= 10
@@ -3172,11 +3179,7 @@ def _personal_unlock_context(level: int, progress: dict, active_number: int | No
         "seconds_until_unlock": seconds_until_unlock,
         "contest_number": stage,
         "contest_status": "personal",
-        "contest_start_at": (
-            _serialize_datetime(anchor)
-            if progress.get("personal_stage_started_at")
-            else None
-        ),
+        "contest_start_at": _serialize_datetime(anchor),
         "contest_end_at": None,
         "unlock_after_days": max(0, level - 1),
         "sequence_available": sequence_available,
@@ -3188,16 +3191,69 @@ def _personal_unlock_context(level: int, progress: dict, active_number: int | No
     }
 
 
+def _personal_champion_transition_schedule(
+    progress: dict,
+    active_contest: dict | None = None,
+) -> dict:
+    """
+    Map-only/personal progression timing for the Champion transition.
+
+    The global Champion contest/leaderboard schedule is intentionally NOT
+    changed here.  This schedule controls only the user's personal map:
+
+      Level 10 unlock -> +24h Champion opens
+      Champion opens  -> +46h Champion window closes
+      Champion opens  -> +48h next personal Championship Level 1 opens
+
+    It is generic for personal Championships 1..100.
+    """
+    now = _utcnow()
+    stage = int(progress.get("champion_stage") or 1)
+
+    active_number = (
+        int(active_contest.get("contest_number"))
+        if active_contest and active_contest.get("contest_number")
+        else None
+    )
+
+    # Users on the live personal Championship retain the shared/global
+    # Championship start anchor used by the existing normal-level timer.
+    # Users progressing through an older personal Championship use the time
+    # they entered that personal stage, so historical global dates cannot make
+    # their Champion timer disappear or point at a future global Championship.
+    if active_number == stage and active_contest is not None:
+        anchor = _ensure_aware_datetime(active_contest.get("start_at")) or now
+    else:
+        anchor = _ensure_aware_datetime(
+            progress.get("personal_stage_started_at")
+        ) or now
+
+    level_10_unlock_at = level_unlock_at(anchor, 9)
+    champion_opens_at = level_10_unlock_at + timedelta(hours=24)
+    champion_closes_at = champion_opens_at + timedelta(hours=46)
+    next_start_at = champion_opens_at + timedelta(hours=48)
+
+    return {
+        "level_10_unlock_at": _serialize_datetime(level_10_unlock_at),
+        "champion_opens_at": _serialize_datetime(champion_opens_at),
+        "champion_closes_at": _serialize_datetime(champion_closes_at),
+        "next_start_at": _serialize_datetime(next_start_at),
+    }
+
+
 async def _resolve_unlock_context(db, level: int, progress: dict):
     """
     Route to the correct availability model.
 
-    - When an active Championship exists, ALL users use personal-progression
-      timing anchored to when they entered their current personal Championship:
-      Level 1 always open; Levels 2-10 unlock one per day at the existing 00:00
-      Europe/London boundary (with countdown). Old users who fell behind get
-      catch-up Play/Skip instead. This never changes the global scheduler,
-      Championship windows, leaderboard, settlement or prizes.
+    - When an active Championship exists, ALL users use the CURRENT GLOBAL
+      Championship start as the shared level-unlock clock. Personal progression
+      still controls sequence. Level 1 is always open; Levels 2-10 unlock one
+      per global day at the existing 00:00 Europe/London boundary. Behind users
+      retain catch-up Play/Skip sequentially through all remaining normal
+      levels of Championships behind the live Championship. Once they catch up
+      to the live Championship, Skip disappears and the global timer applies.
+      This never changes the global scheduler, Championship windows,
+      leaderboard, settlement or prizes.
     - Fallback (no active contest) -> existing _world_unlock_context.
     """
     active = await _active_contest(db)
@@ -3609,11 +3665,13 @@ async def _free_attempt_counter(
     level: int,
 ):
     config = await _effective_level_config(db, level)
+    champion_stage = await _user_champion_stage(db, user_id)
 
     counter = await db.world_attempt_counters.find_one(
         {
             "season_id": WORLD_SEASON_ID,
             "user_id": user_id,
+            "champion_stage": champion_stage,
             "level": level,
         },
         {
@@ -3629,6 +3687,7 @@ async def _free_attempt_counter(
     counter = {
         "season_id": WORLD_SEASON_ID,
         "user_id": user_id,
+        "champion_stage": champion_stage,
         "level": level,
 
         "initial_remaining":
@@ -3655,6 +3714,7 @@ async def _free_attempt_counter(
         {
             "season_id": WORLD_SEASON_ID,
             "user_id": user_id,
+            "champion_stage": champion_stage,
             "level": level,
         },
         {
@@ -3667,6 +3727,7 @@ async def _free_attempt_counter(
         {
             "season_id": WORLD_SEASON_ID,
             "user_id": user_id,
+            "champion_stage": champion_stage,
             "level": level,
         },
         {
@@ -3690,6 +3751,11 @@ async def _normalise_free_attempt_refresh(
     The first refreshed attempt becomes available exactly
     24 hours after the last initial free attempt was consumed.
     """
+
+    champion_stage = int(
+        counter.get("champion_stage")
+        or await _user_champion_stage(db, user_id)
+    )
 
     if int(
         counter.get(
@@ -3757,6 +3823,7 @@ async def _normalise_free_attempt_refresh(
 
             "user_id":
                 user_id,
+                "champion_stage": champion_stage,
 
             "level":
                 level,
@@ -3820,6 +3887,7 @@ async def _free_attempt_status(
         db,
         level,
     )
+    champion_stage = await _user_champion_stage(db, user_id)
 
     # --------------------------------------------------------
     # READ-ONLY ATTEMPT STATUS
@@ -3838,6 +3906,7 @@ async def _free_attempt_status(
 
             "user_id":
                 user_id,
+                "champion_stage": champion_stage,
 
             "level":
                 level,
@@ -3855,6 +3924,9 @@ async def _free_attempt_status(
 
             "user_id":
                 user_id,
+
+            "champion_stage":
+                champion_stage,
 
             "level":
                 level,
@@ -3917,6 +3989,7 @@ async def _free_attempt_status(
 
                 "user_id":
                     user_id,
+                    "champion_stage": champion_stage,
 
                 "level":
                     level,
@@ -4205,6 +4278,7 @@ async def _consume_free_attempt(
     """
 
     now = _utcnow()
+    champion_stage = await _user_champion_stage(db, user_id)
 
     await _free_attempt_counter(
         db,
@@ -4224,6 +4298,7 @@ async def _consume_free_attempt(
 
                 "user_id":
                     user_id,
+                    "champion_stage": champion_stage,
 
                 "level":
                     level,
@@ -4278,6 +4353,7 @@ async def _consume_free_attempt(
 
                     "user_id":
                         user_id,
+                        "champion_stage": champion_stage,
 
                     "level":
                         level,
@@ -4322,6 +4398,7 @@ async def _consume_free_attempt(
 
             "user_id":
                 user_id,
+                "champion_stage": champion_stage,
 
             "level":
                 level,
@@ -4423,6 +4500,7 @@ async def _consume_free_attempt(
 
                 "user_id":
                     user_id,
+                    "champion_stage": champion_stage,
 
                 "level":
                     level,
@@ -4624,7 +4702,6 @@ async def _consume_world_attempt(
 # FREE WORLD STATE
 # ===========================================================================
 
-
 @router.get("/state")
 async def free_world_state(
     request: Request,
@@ -4667,6 +4744,28 @@ async def free_world_state(
             ),
         ),
     )
+
+    # Current-Championship display repair (read-only/in-memory only).
+    #
+    # Reaching Level N means Levels 1..N-1 in THIS personal Championship
+    # were already passed. Preserve explicit skips as skips; every other
+    # prior level must render as completed. This does not write to the DB,
+    # award anything, consume attempts, or change progression.
+    current_stage_skips = {
+        int(x)
+        for x in (progress.get("skipped_levels") or [])
+    }
+    current_stage_completed = {
+        int(x)
+        for x in (progress.get("completed_levels") or [])
+    }
+    for passed_level in range(1, current_level):
+        if passed_level not in current_stage_skips:
+            current_stage_completed.add(passed_level)
+
+    # Feed the repaired current-stage completion view through the existing
+    # unlock/state renderer so C2 L1/L2 show completed when the user is on L3.
+    progress["completed_levels"] = sorted(current_stage_completed)
 
     current_config = (
         await _effective_level_config(
@@ -4763,13 +4862,9 @@ async def free_world_state(
         )
     )
 
-    champion_schedule = (
-        championship_window(
-            season_start,
-            champion_stage,
-        )
-        if season_start
-        else None
+    champion_schedule = _personal_champion_transition_schedule(
+        progress,
+        active_contest,
     )
 
     # -------------------------------------------------------------------
@@ -11291,12 +11386,35 @@ async def free_world_skip_level(level: int, request: Request):
         patch["current_level"] = level + 1
         champion_ready = bool(progress.get("champion_ready", False))
     else:
-        # Passing Level 10 (played or skipped) makes the user Champion-ready.
-        # The existing continue flow then advances them to the next personal
-        # Championship once their stage's global window has closed.
-        patch["champion_ready"] = True
-        patch["current_level"] = 10
-        champion_ready = True
+        # Catch-up rule: SKIPPING Level 10 completes this OLD personal
+        # Championship for progression purposes and moves directly to Level 1
+        # of the next personal Championship. There is deliberately NO separate
+        # Champion-level Skip button.
+        #
+        # If the next stage is the currently-live Championship, catch-up ends
+        # immediately there: Level 1 is normal play and Skip disappears.
+        next_stage = stage + 1
+
+        if next_stage > WORLD_CONTEST_COUNT:
+            patch["champion_stage"] = WORLD_CONTEST_COUNT
+            patch["champion_ready"] = False
+            patch["season_complete"] = True
+            patch["current_level"] = 10
+            champion_ready = False
+        else:
+            patch.update(
+                {
+                    "champion_stage": next_stage,
+                    "champion_ready": False,
+                    "current_level": 1,
+                    "highest_unlocked_level": 1,
+                    "completed_levels": [],
+                    "skipped_levels": [],
+                    "token_unlocked_levels": [],
+                    "personal_stage_started_at": now,
+                }
+            )
+            champion_ready = False
 
     await db.world_progress.update_one(
         {"season_id": WORLD_SEASON_ID, "user_id": user_id},
@@ -11315,7 +11433,7 @@ async def free_world_skip_level(level: int, request: Request):
 
     return {
         "skipped": level,
-        "champion_stage": stage,
+        "champion_stage": int(patch.get("champion_stage", stage)),
         "current_level": patch["current_level"],
         "champion_ready": champion_ready,
         "next_level": _next_unpassed_level(
@@ -11417,6 +11535,29 @@ async def continue_after_champion(
         )
 
     now = _utcnow()
+
+    # The personal map does not enter the next Championship until exactly
+    # 48 hours after this user's Champion opens.  The Champion itself closes
+    # after 46 hours, leaving the intended two-hour transition gap.  This does
+    # not alter the global leaderboard/settlement schedule.
+    active_contest = await _active_contest(db)
+    personal_transition = _personal_champion_transition_schedule(
+        progress,
+        active_contest,
+    )
+    personal_next_open = _ensure_aware_datetime(
+        personal_transition.get("next_start_at")
+    )
+    if personal_next_open is not None and now < personal_next_open:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "code": "NEXT_CHAMPIONSHIP_NOT_OPEN",
+                "message": "Your next Championship Level 1 is not open yet.",
+                "champion_stage": champion_stage,
+                "next_level_opens_at": _serialize_datetime(personal_next_open),
+            },
+        )
 
     # -------------------------------------------------------
     # FINAL CHAMPIONSHIP
@@ -11683,13 +11824,9 @@ async def free_world_access(
         )
     )
 
-    champion_schedule = (
-        championship_window(
-            season_start,
-            champion_stage,
-        )
-        if season_start
-        else None
+    champion_schedule = _personal_champion_transition_schedule(
+        progress,
+        active,
     )
 
     levels = []

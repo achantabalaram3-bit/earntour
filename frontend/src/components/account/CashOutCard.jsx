@@ -22,7 +22,7 @@ export default function CashOutCard() {
   const [step, setStep] = useState('amount');
   const [amount, setAmount] = useState('');
   const [bankId, setBankId] = useState('');
-  const [newBank, setNewBank] = useState({ account_holder: '', sort_code: '', account_number: '' });
+  const [newBank, setNewBank] = useState({ account_holder: '', email: '', sort_code: '', account_number: '', iban: '', bacs: '' });
   const [addingBank, setAddingBank] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(null);
@@ -49,7 +49,7 @@ export default function CashOutCard() {
   };
 
   const addBank = async () => {
-    if (!newBank.account_holder || !newBank.sort_code || !newBank.account_number) {
+    if (!newBank.account_holder || !newBank.email || !newBank.sort_code || !newBank.account_number || !newBank.iban || !newBank.bacs) {
       toast({ title: 'All bank fields are required', variant: 'destructive' }); return;
     }
     setAddingBank(true);
@@ -57,7 +57,7 @@ export default function CashOutCard() {
       const res = await cashoutAPI.addBank(newBank);
       const list = await cashoutAPI.banks(); setBanks(list.items || []);
       setBankId(res.bank_account_id);
-      setNewBank({ account_holder: '', sort_code: '', account_number: '' });
+      setNewBank({ account_holder: '', email: '', sort_code: '', account_number: '', iban: '', bacs: '' });
       toast({ title: 'Bank account added' });
     } catch (e) {
       toast({ title: e?.response?.data?.detail || 'Could not add bank account', variant: 'destructive' });
@@ -191,12 +191,18 @@ export default function CashOutCard() {
                 <div className="text-xs font-semibold text-slate-500">+ Add bank account</div>
                 <Input placeholder="Account holder name" value={newBank.account_holder}
                   onChange={(e) => setNewBank({ ...newBank, account_holder: e.target.value })} data-testid="bank-holder-input" />
+                <Input type="email" placeholder="Email / Mail ID" value={newBank.email}
+                  onChange={(e) => setNewBank({ ...newBank, email: e.target.value })} data-testid="bank-email-input" />
                 <div className="grid grid-cols-2 gap-2">
                   <Input placeholder="Sort code" value={newBank.sort_code}
                     onChange={(e) => setNewBank({ ...newBank, sort_code: e.target.value })} data-testid="bank-sort-input" />
                   <Input placeholder="Account number" value={newBank.account_number}
                     onChange={(e) => setNewBank({ ...newBank, account_number: e.target.value })} data-testid="bank-number-input" />
                 </div>
+                <Input placeholder="IBAN" value={newBank.iban}
+                  onChange={(e) => setNewBank({ ...newBank, iban: e.target.value })} data-testid="bank-iban-input" />
+                <Input placeholder="BACS" value={newBank.bacs}
+                  onChange={(e) => setNewBank({ ...newBank, bacs: e.target.value })} data-testid="bank-bacs-input" />
                 <Button variant="outline" className="w-full h-9 rounded-xl" onClick={addBank} disabled={addingBank} data-testid="bank-add-btn">
                   {addingBank ? 'Adding…' : 'Add account'}
                 </Button>

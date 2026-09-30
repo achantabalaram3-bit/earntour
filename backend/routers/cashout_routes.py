@@ -20,6 +20,7 @@ from routers.wallet_routes import (
     _get_or_create_wallet, reserve_withdrawable, settle_withdrawable_paid,
     release_withdrawable,
 )
+from notifications import notify
 
 logger = logging.getLogger("cashout")
 
@@ -112,8 +113,11 @@ async def cashout_summary(request: Request):
 
 class BankAccountBody(BaseModel):
     account_holder: str
+    email: str
     sort_code: str
     account_number: str
+    iban: str
+    bacs: str
 
 
 @router.post("/bank-accounts")
@@ -121,10 +125,15 @@ async def add_bank_account(body: BankAccountBody, request: Request):
     user = await get_current_user(request)
     db = get_db()
     holder = (body.account_holder or "").strip()
+    email = (body.email or "").strip()
     sort_code = (body.sort_code or "").strip()
     account_number = (body.account_number or "").strip()
-    if not holder or not sort_code or not account_number:
+    iban = (body.iban or "").strip()
+    bacs = (body.bacs or "").strip()
+    if not holder or not email or not sort_code or not account_number or not iban or not bacs:
         raise HTTPException(400, "All bank fields are required")
+    if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+        raise HTTPException(400, "Invalid email address")
     digits = account_number.replace(" ", "")
     if not digits.isdigit() or not (6 <= len(digits) <= 12):
         raise HTTPException(400, "Invalid account number")
@@ -133,15 +142,21 @@ async def add_bank_account(body: BankAccountBody, request: Request):
         "bank_account_id": acct_id,
         "user_id": user["user_id"],
         "account_holder": holder,
+        "email": email,
         "sort_code": sort_code,
         "account_number": digits,  # restricted; never returned to users in full
+        "iban": iban,
+        "bacs": bacs,
         "created_at": _now(),
     })
     return {
         "bank_account_id": acct_id,
         "account_holder": holder,
+        "email": email,
         "sort_code_masked": _mask_sort(sort_code),
         "account_number_masked": _mask_acct(digits),
+        "iban_masked": _mask_acct(iban),
+        "bacs_masked": _mask_acct(bacs),
     }
 
 
@@ -160,8 +175,11 @@ async def list_bank_accounts(request: Request):
         out.append({
             "bank_account_id": r["bank_account_id"],
             "account_holder": r.get("account_holder"),
+            "email": r.get("email"),
             "sort_code_masked": _mask_sort(r.get("sort_code", "")),
             "account_number_masked": _mask_acct((full or {}).get("account_number", "")),
+            "iban_masked": _mask_acct(r.get("iban", "")),
+            "bacs_masked": _mask_acct(r.get("bacs", "")),
         })
     return {"items": out}
 
@@ -214,8 +232,11 @@ async def create_cashout(body: CashOutBody, request: Request):
             "status": "processing",
             "bank_account_id": body.bank_account_id,
             "account_holder": acct.get("account_holder"),
+            "bank_email": acct.get("email"),
             "sort_code": acct.get("sort_code"),
             "account_number": acct.get("account_number"),  # restricted
+            "iban": acct.get("iban"),
+            "bacs": acct.get("bacs"),
             "kyc_status_snapshot": kyc_status,
             "created_at": now,
             "updated_at": now,
@@ -247,7 +268,7 @@ async def my_cashouts(request: Request):
     db = get_db()
     rows = await db.cashout_requests.find(
         {"user_id": user["user_id"]},
-        {"_id": 0, "account_number": 0, "sort_code": 0},
+        {"_id": 0, "account_number": 0, "sort_code": 0, "iban": 0, "bacs": 0},
     ).sort("created_at", -1).to_list(100)
     for r in rows:
         r["created_at"] = _iso(r.get("created_at"))
@@ -331,6 +352,7 @@ async def admin_list(request: Request, status: str = None):
             "created_at": _iso(r.get("created_at")),
             "paid_at": _iso(r.get("paid_at")),
             "account_holder": r.get("account_holder"),
+            "email": r.get("email"),
             "sort_code_masked": _mask_sort(r.get("sort_code", "")),
             "account_number_masked": _mask_acct(r.get("account_number", "")),
         })
@@ -362,8 +384,11 @@ async def admin_detail(withdrawal_id: str, request: Request):
         "kyc_current_status": kyc.get("status", "none"),
         "bank": {
             "account_holder": r.get("account_holder"),
+            "email": r.get("bank_email"),
             "sort_code": r.get("sort_code"),
             "account_number": r.get("account_number"),
+            "iban": r.get("iban"),
+            "bacs": r.get("bacs"),
         },
         "created_at": _iso(r.get("created_at")),
         "paid_at": _iso(r.get("paid_at")),
@@ -372,10 +397,17 @@ async def admin_detail(withdrawal_id: str, request: Request):
     }
 
 
+class MarkPaidBody(BaseModel):
+    notification_message: str
+
+
 @admin_router.post("/withdrawals/{withdrawal_id}/mark-paid")
-async def admin_mark_paid(withdrawal_id: str, request: Request):
+async def admin_mark_paid(withdrawal_id: str, body: MarkPaidBody, request: Request):
     admin = await require_admin(request)
     _require_payout_admin(admin)
+    message = (body.notification_message or "").strip()
+    if not message:
+        raise HTTPException(400, "Notification message required")
     db = get_db()
     now = _now()
     r = await db.cashout_requests.find_one_and_update(
@@ -390,13 +422,22 @@ async def admin_mark_paid(withdrawal_id: str, request: Request):
         return {"withdrawal_id": withdrawal_id, "status": cur["status"], "idempotent": True}
     # Permanently consume reserved tokens (exactly once — guarded by status).
     await settle_withdrawable_paid(db, r["user_id"], float(r["amount_tokens"]))
+    await notify(
+        db,
+        user_id=r["user_id"],
+        kind="cashout_paid",
+        title="Cash-out paid",
+        body=message,
+        ref_tx_id=withdrawal_id,
+    )
     await _audit(db, "cashout_paid", admin["user_id"], withdrawal_id,
-                 {"amount_tokens": r["amount_tokens"]})
+                 {"amount_tokens": r["amount_tokens"], "notification_message": message})
     return {"withdrawal_id": withdrawal_id, "status": "paid"}
 
 
 class RejectBody(BaseModel):
     reason: str
+    notification_message: str
 
 
 @admin_router.post("/withdrawals/{withdrawal_id}/reject")
@@ -405,6 +446,9 @@ async def admin_reject(withdrawal_id: str, body: RejectBody, request: Request):
     _require_payout_admin(admin)
     if not (body.reason or "").strip():
         raise HTTPException(400, "Rejection reason required")
+    message = (body.notification_message or "").strip()
+    if not message:
+        raise HTTPException(400, "Notification message required")
     db = get_db()
     now = _now()
     r = await db.cashout_requests.find_one_and_update(
@@ -419,6 +463,15 @@ async def admin_reject(withdrawal_id: str, body: RejectBody, request: Request):
         return {"withdrawal_id": withdrawal_id, "status": cur["status"], "idempotent": True}
     # Release reserved tokens back to available withdrawable (exactly once).
     await release_withdrawable(db, r["user_id"], float(r["amount_tokens"]))
+    await notify(
+        db,
+        user_id=r["user_id"],
+        kind="cashout_rejected",
+        title="Cash-out rejected",
+        body=message,
+        ref_tx_id=withdrawal_id,
+    )
     await _audit(db, "cashout_rejected", admin["user_id"], withdrawal_id,
-                 {"amount_tokens": r["amount_tokens"], "reason": body.reason.strip()})
+                 {"amount_tokens": r["amount_tokens"], "reason": body.reason.strip(),
+                  "notification_message": message})
     return {"withdrawal_id": withdrawal_id, "status": "rejected"}

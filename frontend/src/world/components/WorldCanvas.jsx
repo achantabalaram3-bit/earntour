@@ -678,7 +678,29 @@ function ChampionshipSection({
           champion.next_level_opens_at ?? '',
         );
 
+      // Preserve the original map behaviour: the Champion countdown is
+      // hidden until this personal Championship's Level 10 has actually
+      // unlocked.  Do not advertise the whole future L1->Champion gap.
+      const level10State =
+        (worldState?.levels ?? []).find(
+          (item, index) =>
+            Number(
+              item?.level ??
+              item?.level_number ??
+              index + 1,
+            ) === 10,
+        ) ?? null;
+
+      const level10Unlocked =
+        Boolean(level10State?.available) ||
+        Boolean(level10State?.completed) ||
+        (
+          level10State?.scheduled_time_available === true &&
+          level10State?.sequence_available === true
+        );
+
       if (
+        level10Unlocked &&
         Number.isFinite(opensMs) &&
         worldNowMs < opensMs
       ) {
@@ -692,6 +714,8 @@ function ChampionshipSection({
       }
 
       if (
+        Number.isFinite(opensMs) &&
+        worldNowMs >= opensMs &&
         Number.isFinite(closesMs) &&
         worldNowMs < closesMs
       ) {
@@ -705,6 +729,8 @@ function ChampionshipSection({
       }
 
       if (
+        Number.isFinite(opensMs) &&
+        worldNowMs >= opensMs &&
         Number.isFinite(nextLevelMs) &&
         worldNowMs < nextLevelMs
       ) {
@@ -1533,8 +1559,19 @@ function ChampionshipSection({
               championshipNumber ===
                 currentChampionship + 1;
 
+            const championOpensMs =
+              Date.parse(
+                worldState?.champion
+                  ?.champion_opens_at ?? '',
+              );
+
+            // The next Championship Level 1 countdown begins only when the
+            // current Champion Level opens.  Before that moment it stays
+            // locked without exposing a long future countdown.
             const nextChampionshipCountdown =
               isNextChampionshipFirstLevel &&
+              Number.isFinite(championOpensMs) &&
+              worldNowMs >= championOpensMs &&
               Number.isFinite(
                 championNextLevelMs,
               ) &&
@@ -1655,17 +1692,16 @@ function ChampionshipSection({
                   </span>
                 )}
 
-                {completed &&
-                  !isCurrentChampionship && (
-                    <span
-                      className="pl1000-history-badge is-done"
-                      data-testid={
-                        `free-world-history-completed-${globalLevel}`
-                      }
-                    >
-                      COMPLETED
-                    </span>
-                  )}
+                {completed && (
+                  <span
+                    className="pl1000-history-badge is-done"
+                    data-testid={
+                      `free-world-history-completed-${globalLevel}`
+                    }
+                  >
+                    COMPLETED
+                  </span>
+                )}
 
                 {skippedHistory && (
                   <span
