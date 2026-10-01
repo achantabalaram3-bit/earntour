@@ -43,6 +43,7 @@ const TOKENS = [
   { id: 'profile',       label: 'Profile',        Icon: User,        color: 'from-violet-500 to-purple-600',   ring: 'ring-violet-400/40', hero: true },
   { id: 'wallet',        label: 'Wallet',         Icon: Wallet,      color: 'from-amber-500 to-orange-600',    ring: 'ring-amber-400/40' },
   { id: 'winnings',      label: 'Winnings',       Icon: Coins,       color: 'from-yellow-500 to-amber-600',    ring: 'ring-yellow-400/40' },
+  { id: 'promotions',    label: 'Promotions',     Icon: Trophy,      color: 'from-orange-500 to-rose-600',     ring: 'ring-orange-400/40' },
   { id: 'tickets',       label: 'Tickets',        Icon: Ticket,      color: 'from-teal-500 to-emerald-600',    ring: 'ring-teal-400/40' },
   { id: 'games',         label: 'My Games',       Icon: Gamepad2,    color: 'from-fuchsia-500 to-pink-600',    ring: 'ring-fuchsia-400/40' },
   { id: 'notifications', label: 'Notifications',  Icon: Bell,        color: 'from-sky-500 to-blue-600',        ring: 'ring-sky-400/40' },

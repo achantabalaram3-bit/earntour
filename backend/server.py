@@ -227,6 +227,9 @@ from routers.admin_referrals_routes import router as admin_referrals_router
 from routers.influencer_promo_routes import router as influencer_promo_router
 from routers.winnings_routes import router as winnings_router, admin_router as winnings_admin_router
 from routers.cashout_routes import router as cashout_router, admin_router as cashout_admin_router
+from routers.promotion_routes import router as promotion_router, admin_router as promotion_admin_router
+from routers.promotion_draw_routes import router as promotion_draw_router
+from routers.promotion_source_analytics_routes import router as promotion_source_analytics_router
 
 app.include_router(auth_router)
 app.include_router(winnings_router)
@@ -270,6 +273,10 @@ app.include_router(acquisition_public_router)
 app.include_router(acquisition_admin_router)
 app.include_router(admin_referrals_router)
 app.include_router(influencer_promo_router)
+app.include_router(promotion_router)
+app.include_router(promotion_admin_router)
+app.include_router(promotion_draw_router)
+app.include_router(promotion_source_analytics_router)
 
 
 @app.on_event('startup')

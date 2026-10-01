@@ -221,6 +221,13 @@ async def register(inp: RegisterInput, request: Request):
         )
         await db.referrals.insert_one(r.model_dump())
 
+        # Promotion programme is independent from the £10 / token referral
+        # programme. A successful referred signup automatically receives its
+        # first promotion ticket; the referrer receives one extra ticket if
+        # already joined.
+        from routers.promotion_routes import auto_join_referred_signup
+        await auto_join_referred_signup(db, user.user_id)
+
     elif influencer_promo:
         # Influencer attribution only.
         # No reward is credited during signup.
@@ -533,6 +540,7 @@ class GoogleFinalizeInput(BaseModel):
     accept_terms: bool
     dob: str = Field(..., description='YYYY-MM-DD')
     address: Optional[str] = None
+    referral_code: Optional[str] = None
 
 
 @router.post('/google/finalize')
@@ -569,6 +577,40 @@ async def finalize_google_signup(inp: GoogleFinalizeInput, request: Request):
             'terms_accepted_at': datetime.now(timezone.utc),
         }},
     )
+    # Apply a personal referral once, at successful Google signup finalization.
+    # This does not alter the separate £10/top-up token reward programme.
+    referral_code = (inp.referral_code or '').strip().upper()
+    if referral_code:
+        existing_ref = await db.referrals.find_one(
+            {'referred_user_id': user['user_id']},
+            {'_id': 0, 'referral_id': 1},
+        )
+        if not existing_ref:
+            ref_user = await db.users.find_one(
+                {'referral_code': referral_code},
+                {'_id': 0, 'user_id': 1},
+            )
+            if not ref_user or ref_user.get('user_id') == user['user_id']:
+                raise HTTPException(status_code=400, detail='Invalid referral code.')
+
+            from models import Referral
+            referral = Referral(
+                referrer_user_id=ref_user['user_id'],
+                referred_user_id=user['user_id'],
+                code=referral_code,
+            )
+            await db.referrals.insert_one(referral.model_dump())
+            await db.users.update_one(
+                {'user_id': user['user_id']},
+                {'$set': {
+                    'referred_by': ref_user['user_id'],
+                    'signup_bonus_offer_eligible': True,
+                }},
+            )
+
+            from routers.promotion_routes import auto_join_referred_signup
+            await auto_join_referred_signup(db, user['user_id'])
+
     fresh = await db.users.find_one({'user_id': user['user_id']}, {'_id': 0, 'password_hash': 0})
     return {
         'ok': True,

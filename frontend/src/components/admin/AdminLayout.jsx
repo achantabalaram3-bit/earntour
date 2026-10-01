@@ -15,6 +15,7 @@ const LINKS = [
  { to: '/admin/competitions', label: 'Contests', icon: Package },
  { to: '/admin/games', label: 'Games', icon: Gamepad2 },
  { to: '/admin/free-world', label: 'Free World', icon: Trophy },
+ { to: '/admin/promotion', label: 'Promotion', icon: Gift },
  { to: '/admin/wallets', label: 'Wallets', icon: WalletIcon },
  { to: '/admin/winnings-payouts', label: 'Winnings Payouts', icon: Banknote },
  { to: '/admin/cash-out', label: 'Cash Out', icon: Banknote },

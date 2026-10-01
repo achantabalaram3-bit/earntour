@@ -126,11 +126,32 @@ export default function Login() {
  };
 
  const google = () => {
- // Use a DEDICATED /auth-callback route (not /my-account) so the redirect
- // is predictable across preview / production / custom domains and so the
- // Google OAuth handler sees a clean URL to hydrate the session token from.
- const redirectUrl = window.location.origin + '/auth-callback';
- window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  const params = new URLSearchParams(window.location.search);
+
+  const next = params.get('next');
+  const promo = params.get('promo');
+  const ref = params.get('ref');
+
+  if (next && next.startsWith('/') && !next.startsWith('//')) {
+    sessionStorage.setItem('pl_google_next', next);
+  } else {
+    sessionStorage.removeItem('pl_google_next');
+  }
+
+  if (promo) {
+    sessionStorage.setItem('pl_google_promo', promo);
+  } else {
+    sessionStorage.removeItem('pl_google_promo');
+  }
+
+  if (ref) {
+    const referralCode = String(ref).trim().toUpperCase();
+    sessionStorage.setItem('pl_google_referral_code', referralCode);
+    localStorage.setItem('pl_referral_code', referralCode);
+  }
+
+  const redirectUrl = window.location.origin + '/auth-callback';
+  window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
  };
 
  const onPhoneLoggedIn = (r) => {

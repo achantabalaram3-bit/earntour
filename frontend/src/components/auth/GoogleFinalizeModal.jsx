@@ -78,7 +78,14 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
         accept_terms: true,
         dob: data.dob,
         address: data.address || null,
+        referral_code:
+          sessionStorage.getItem('pl_google_referral_code') ||
+          localStorage.getItem('pl_referral_code') ||
+          null,
       }).then(x => x.data);
+      sessionStorage.removeItem('pl_google_referral_code');
+      localStorage.removeItem('pl_referral_code');
+
       toast({ title: 'You&apos;re all set 🎉', description: `Welcome, ${r?.user?.name?.split(' ')[0] || 'friend'}!` });
       onComplete?.(r?.user);
     } catch (err) {

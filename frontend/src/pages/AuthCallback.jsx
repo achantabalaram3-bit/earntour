@@ -34,7 +34,19 @@ export default function AuthCallback() {
         if (needsPhone || needsTerms) {
           setNeedsFinalize(true);
         } else {
-          nav('/choose-world', { replace: true });
+          const savedNext = sessionStorage.getItem('pl_google_next');
+          const destination =
+            savedNext &&
+            savedNext.startsWith('/') &&
+            !savedNext.startsWith('//')
+              ? savedNext
+              : '/choose-world';
+
+          sessionStorage.removeItem('pl_google_next');
+          sessionStorage.removeItem('pl_google_promo');
+          sessionStorage.removeItem('pl_google_referral_code');
+
+          nav(destination, { replace: true });
         }
       } catch {
         nav('/login', { replace: true });
@@ -44,7 +56,20 @@ export default function AuthCallback() {
 
   const onFinalized = async () => {
     await refresh?.();
-    nav('/choose-world', { replace: true });
+
+    const savedNext = sessionStorage.getItem('pl_google_next');
+    const destination =
+      savedNext &&
+      savedNext.startsWith('/') &&
+      !savedNext.startsWith('//')
+        ? savedNext
+        : '/choose-world';
+
+    sessionStorage.removeItem('pl_google_next');
+    sessionStorage.removeItem('pl_google_promo');
+    sessionStorage.removeItem('pl_google_referral_code');
+
+    nav(destination, { replace: true });
   };
 
   return (
