@@ -1,4 +1,4 @@
-# Prize League — https://prizeleague.co.uk
+# Prize League — https://www.prizeleague.co.uk
 User-agent: *
 Allow: /
 Allow: /free-world
@@ -26,4 +26,4 @@ Disallow: /admin
 Disallow: /my-account
 Disallow: /cart
 
-Sitemap: https://prizeleague.co.uk/sitemap.xml
+Sitemap: https://www.prizeleague.co.uk/sitemap.xml

@@ -469,3 +469,8 @@ See `/app/memory/test_credentials.md`.
 - Verified: production build succeeded (27s), all 3 static files generated with correct title/canonical/JSON-LD/body; runtime head confirmed on /competitions + /how-it-works.
 - Serving note: prerendered files are served only when the production static server tries `$uri/` before the SPA fallback (standard nginx/serve behaviour); runtime `useSeo` covers JS-capable crawlers regardless.
 - NOT deployed — needs redeploy to ship.
+
+## 2026-06-28 · Canonical host decision = www
+- User chose **www**. Aligned all SEO URLs to `https://www.prizeleague.co.uk` across FreeWorldLanding.jsx, HowItWorks.jsx, Competitions.jsx, prerender-seo.js, public/index.html (canonical+OG+Organization/WebSite JSON-LD), sitemap.xml, robots.txt (incl. Sitemap: line). brand.js already used www.
+- Left untouched (not SEO head tags): legal copy in website-terms.js and an internal AlertsAdmin URL constant.
+- MANUAL (hosting/DNS): add a 301 redirect non-www -> www (apex prizeleague.co.uk -> www.prizeleague.co.uk). In GSC, set the www property as primary and submit https://www.prizeleague.co.uk/sitemap.xml.

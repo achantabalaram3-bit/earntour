@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 import useSeo from '../hooks/useSeo';
 
-const SITE = 'https://prizeleague.co.uk';
+const SITE = 'https://www.prizeleague.co.uk';
 const URL = `${SITE}/free-world`;
 const OG_IMAGE = `${SITE}/og-free-world.png`;
 

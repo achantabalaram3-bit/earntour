@@ -15,7 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE = 'https://prizeleague.co.uk';
+const SITE = 'https://www.prizeleague.co.uk';
 const BUILD_DIR = path.join(__dirname, '..', 'build');
 const SRC = path.join(BUILD_DIR, 'index.html');
 
