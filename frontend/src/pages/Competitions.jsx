@@ -8,8 +8,31 @@ import {
   Search,
   Sparkles,
 } from 'lucide-react';
+import useSeo from '../hooks/useSeo';
 
 export default function Competitions() {
+  useSeo({
+    title: 'Skill Prize Competitions UK | Enter & Win | Prize League',
+    description:
+      'Browse live skill-based prize competitions in the UK on Prize League. Enter online competitions, play skill games and compete to win real prizes. 18+, free postal entry always available.',
+    keywords:
+      'skill-based prize competitions, online competitions UK, prize competitions UK, enter competitions to win, play games to win prizes UK',
+    canonical: 'https://prizeleague.co.uk/competitions',
+    robots: 'index, follow, max-image-preview:large',
+    ogUrl: 'https://prizeleague.co.uk/competitions',
+    ogImage: 'https://prizeleague.co.uk/og-image.png',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://prizeleague.co.uk/' },
+          { '@type': 'ListItem', position: 2, name: 'Competitions', item: 'https://prizeleague.co.uk/competitions' },
+        ],
+      },
+    ],
+  });
+
   const [contests, setContests] = useState([]);
   const [cat, setCat] = useState('all');
   const [q, setQ] = useState('');

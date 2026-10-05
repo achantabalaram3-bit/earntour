@@ -1,6 +1,7 @@
 import HowToPlaySection from '../components/home/HowToPlaySection';
 import { ShieldCheck, Trophy, HeartHandshake, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useSeo from '../hooks/useSeo';
 
 const NOTES = [
   { Icon: ShieldCheck,    title: 'Fair & transparent', text: 'Every winner is verified per contest rules. Competition results are verified according to the published rules.' },
@@ -9,6 +10,28 @@ const NOTES = [
 ];
 
 export default function HowItWorks() {
+  useSeo({
+    title: 'How Prize League Works | Skill-Based Prize Competitions UK',
+    description:
+      'Learn how Prize League works — a UK skill-based prize competition platform. Play skill games, enter competitions and win real prizes in four simple steps. 18+, free postal entry always available.',
+    keywords:
+      'how prize competitions work UK, skill-based prize competitions, play skill games UK, win prizes UK, free postal entry competitions',
+    canonical: 'https://prizeleague.co.uk/how-it-works',
+    robots: 'index, follow, max-image-preview:large',
+    ogUrl: 'https://prizeleague.co.uk/how-it-works',
+    ogImage: 'https://prizeleague.co.uk/og-image.png',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://prizeleague.co.uk/' },
+          { '@type': 'ListItem', position: 2, name: 'How It Works', item: 'https://prizeleague.co.uk/how-it-works' },
+        ],
+      },
+    ],
+  });
+
   return (
     <div className="bg-white">
       {/* Hero */}

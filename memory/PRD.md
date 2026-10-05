@@ -462,3 +462,10 @@ See `/app/memory/test_credentials.md`.
 - `public/og-free-world.png` (1200×630) generated; used for OG/Twitter on the landing. Footer gains a "Free World" internal link.
 - Canonical host used = non-www `https://prizeleague.co.uk/free-world` (matches existing site) despite brief requesting www — flagged for user to pick ONE host + 301.
 - NOT deployed — needs redeploy to ship to production.
+
+## 2026-06-28 (later) · Build-time SEO prerender + more landing pages (SEO-only)
+- **Prerender (React-19 safe, zero-dep):** `frontend/scripts/prerender-seo.js` runs after `craco build` (chained in package.json `build` script). Writes true static `build/<route>/index.html` for `/free-world`, `/how-it-works`, `/competitions` with correct title/meta/keywords/robots/canonical/OG/Twitter + JSON-LD in <head> and a crawlable body snapshot in #root. Fails safe (never throws, exits 0) — cannot break a deploy. react-snap deliberately NOT used (incompatible with React 19's removed hydrate API).
+- **More landing pages:** added `useSeo` (head + BreadcrumbList JSON-LD) to existing `HowItWorks.jsx` and `Competitions.jsx` — no logic/UI change. Titles: "How Prize League Works | Skill-Based Prize Competitions UK" and "Skill Prize Competitions UK | Enter & Win | Prize League". Both added to sitemap.
+- Verified: production build succeeded (27s), all 3 static files generated with correct title/canonical/JSON-LD/body; runtime head confirmed on /competitions + /how-it-works.
+- Serving note: prerendered files are served only when the production static server tries `$uri/` before the SPA fallback (standard nginx/serve behaviour); runtime `useSeo` covers JS-capable crawlers regardless.
+- NOT deployed — needs redeploy to ship.
