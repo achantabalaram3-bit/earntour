@@ -38,6 +38,7 @@ export default function Footer() {
  <div>
  <h4 className="text-white font-bold mb-3 text-sm uppercase tracking-widest">Explore</h4>
  <ul className="space-y-2 text-sm">
+ <li><Link to="/free-world" className="hover:text-[#FFD54A]">Free World</Link></li>
  <li><Link to="/competitions" className="hover:text-[#FFD54A]">Contests</Link></li>
  <li><Link to="/leaderboard" className="hover:text-[#FFD54A]">Leaderboard</Link></li>
  <li><Link to="/winners" className="hover:text-[#FFD54A]">Winners</Link></li>

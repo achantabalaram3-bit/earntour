@@ -344,7 +344,6 @@ async def admin_list(request: Request, status: str = None):
             "user_id": r["user_id"],
             "public_id": u.get("public_id"),
             "name": u.get("name"),
-            "email": u.get("email"),
             "amount_tokens": r["amount_tokens"],
             "amount_gbp": r["amount_gbp"],
             "status": r["status"],

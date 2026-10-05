@@ -453,3 +453,12 @@ See `/app/memory/test_credentials.md`.
 - **PWA install popup made proactive** (`InstallPrompt.jsx`): now shows ~1.5s after load if not standalone/not dismissed (native `beforeinstallprompt` was unreliable). Install button uses the native prompt when available, else shows a "browser menu → Install app / Add to Home Screen" tip. Now mounted on BOTH Free World map and Paid Contests home (`Home.jsx`). Auto-hides on install; dismiss is per-session.
 - **Champion free-attempts standardised to 3 across ALL 100 championships** (`world_routes.py` `_champion_attempt_status` + `_consume_champion_stage2_attempt`): stage≥2 was 1 free, now 3 free (same as Championship 1 and the normal levels). Idempotent legacy migration preserves already-consumed attempts (no user progress reset). Token-retry fallback and prize scaling unchanged. Verified: repeated status calls stable; token retry correctly rejected (409 FREE_ATTEMPT_AVAILABLE) while free attempts remain; no data corruption.
 - NOT deployed — needs redeploy to ship to production.
+
+## 2026-06-28 (later) · Free World SEO landing (/free-world) — SEO-only, no logic changes
+- New public page `/free-world` (`pages/FreeWorldLanding.jsx`) under PublicLayout: crawlable H1, What/How/Levels/Champion/Prizes/How-to-start/Eligibility sections, 6-item FAQ, breadcrumbs, internal links, CTA to `/world`. Content grounded in real product (100 Championships × 10 Number Sequence levels, daily unlock, Champion global leaderboard, free to play).
+- `hooks/useSeo.js`: dependency-free per-route <head> manager (title, description, keywords, robots, canonical, OG/Twitter, JSON-LD). Reverts on unmount (verified: no SEO bleed to other routes).
+- Structured data: route-scoped BreadcrumbList + FAQPage on /free-world; site-wide Organization + WebSite(SearchAction) added statically to index.html (renders without JS).
+- `public/sitemap.xml`: added /free-world (priority 0.95). `public/robots.txt`: explicit allow /free-world; disallow /production, /world-preview, /auth-callback (admin/account/cart/api already blocked).
+- `public/og-free-world.png` (1200×630) generated; used for OG/Twitter on the landing. Footer gains a "Free World" internal link.
+- Canonical host used = non-www `https://prizeleague.co.uk/free-world` (matches existing site) despite brief requesting www — flagged for user to pick ONE host + 301.
+- NOT deployed — needs redeploy to ship to production.

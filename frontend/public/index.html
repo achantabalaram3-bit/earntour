@@ -74,6 +74,31 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Prize League" />
+
+        <!-- Site-wide structured data (renders without JS for all crawlers) -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Prize League",
+          "url": "https://prizeleague.co.uk/",
+          "logo": "https://prizeleague.co.uk/logo.png",
+          "sameAs": []
+        }
+        </script>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Prize League",
+          "url": "https://prizeleague.co.uk/",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://prizeleague.co.uk/competitions?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }
+        </script>
     </head>
 
     <body>

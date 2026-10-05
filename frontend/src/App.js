@@ -1,13 +1,18 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+
 import { Toaster } from './components/ui/toaster';
 import { Toaster as SonnerToaster } from './components/ui/sonner';
+
 import { AuthProvider } from './context/AuthContext';
+
 import TermsGate from './components/TermsGate';
 import PromotionPopup from './components/PromotionPopup';
 import PromotionAuthBridge from './components/PromotionAuthBridge';
+import PromotionFloatingBadge from './components/PromotionFloatingBadge';
 
 import PublicLayout from './components/layout/PublicLayout';
+
 import Home from './pages/Home';
 import Competitions from './pages/Competitions';
 import CompetitionDetail from './pages/CompetitionDetail';
@@ -68,9 +73,11 @@ import TermsPage from './pages/legal/TermsPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import WebsiteTermsPage from './pages/legal/WebsiteTermsPage';
 import MobileTermsPage from './pages/legal/MobileTermsPage';
+
 import PrizeLeagueWorld from './world/PrizeLeagueWorld';
 import WorldPreview from './world/WorldPreview';
 import WorldSelector from './pages/WorldSelector';
+import FreeWorldLanding from './pages/FreeWorldLanding';
 import SpecialChallenge from './pages/SpecialChallenge';
 
 import ProductionLayout from './components/admin/ProductionLayout';
@@ -79,42 +86,143 @@ import PrizeInventory from './pages/production/PrizeInventory';
 import OperationsPage from './pages/production/Operations';
 import WinnersFeed from './pages/production/WinnersFeed';
 
+
 function AppRouter() {
   const location = useLocation();
 
-  if (location.hash && location.hash.includes('session_id=')) {
+  /*
+   * Emergent Google OAuth can return with #session_id=...
+   * Handle it before normal route rendering.
+   */
+  if (
+    location.hash &&
+    location.hash.includes('session_id=')
+  ) {
     return <AuthCallback />;
   }
 
   return (
     <Routes>
+
+      {/* =========================
+          PUBLIC / USER ROUTES
+      ========================== */}
+
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<WorldSelector />} />
-        <Route path="/choose-world" element={<WorldSelector />} />
-        <Route path="/world" element={<PrizeLeagueWorld />} />
-        <Route path="/paid-leagues" element={<Home />} />
-        <Route path="/competitions" element={<Competitions />} />
-        <Route path="/competition/:slug" element={<CompetitionDetail />} />
-        <Route path="/results/:slug" element={<WinnersReveal />} />
-        <Route path="/winners" element={<Winners />} />
-        <Route path="/draw-results" element={<DrawCentre />} />
-        <Route path="/draw-centre" element={<DrawCentre />} />
-        <Route path="/stories" element={<Stories />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        <Route path="/my-account" element={<MyAccount />} />
+        <Route
+          path="/"
+          element={<WorldSelector />}
+        />
 
-        {/* Promotion user page */}
+        <Route
+          path="/choose-world"
+          element={<WorldSelector />}
+        />
+
+        <Route
+          path="/world"
+          element={<PrizeLeagueWorld />}
+        />
+
+        <Route
+          path="/free-world"
+          element={<FreeWorldLanding />}
+        />
+
+        <Route
+          path="/paid-leagues"
+          element={<Home />}
+        />
+
+        <Route
+          path="/competitions"
+          element={<Competitions />}
+        />
+
+        <Route
+          path="/competition/:slug"
+          element={<CompetitionDetail />}
+        />
+
+        <Route
+          path="/results/:slug"
+          element={<WinnersReveal />}
+        />
+
+        <Route
+          path="/winners"
+          element={<Winners />}
+        />
+
+        <Route
+          path="/draw-results"
+          element={<DrawCentre />}
+        />
+
+        <Route
+          path="/draw-centre"
+          element={<DrawCentre />}
+        />
+
+        <Route
+          path="/stories"
+          element={<Stories />}
+        />
+
+        <Route
+          path="/faq"
+          element={<FAQ />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+
+        {/* =========================
+            USER ACCOUNT
+        ========================== */}
+
+        <Route
+          path="/my-account"
+          element={<MyAccount />}
+        />
+
+
+        {/* Promotion page */}
+
         <Route
           path="/my-account/promotions"
           element={<PromotionPage />}
         />
 
-        <Route path="/my-account/:section" element={<MyAccount />} />
 
-        <Route path="/legal/:slug" element={<LegalDocPage />} />
+        <Route
+          path="/my-account/:section"
+          element={<MyAccount />}
+        />
+
+
+        {/* =========================
+            LEGAL
+        ========================== */}
+
+        <Route
+          path="/legal/:slug"
+          element={<LegalDocPage />}
+        />
+
+
+        {/* =========================
+            CART
+        ========================== */}
 
         <Route
           path="/cart"
@@ -125,72 +233,163 @@ function AppRouter() {
           }
         />
 
-        <Route path="/free-entry" element={<FreeEntry />} />
-        <Route path="/verify" element={<VerifyFeed />} />
+
+        {/* =========================
+            FREE ENTRY
+        ========================== */}
+
+        <Route
+          path="/free-entry"
+          element={<FreeEntry />}
+        />
+
+
+        <Route
+          path="/verify"
+          element={<VerifyFeed />}
+        />
+
+
+        {/* =========================
+            GAMES
+        ========================== */}
+
         <Route
           path="/play/:contestId/:ticketId"
           element={<PlayGame />}
         />
-        <Route path="/games" element={<GameArena />} />
-        <Route path="/games/:gameId" element={<GamePreview />} />
-        <Route path="/leaderboard" element={<LeaderboardIndex />} />
+
+        <Route
+          path="/games"
+          element={<GameArena />}
+        />
+
+        <Route
+          path="/games/:gameId"
+          element={<GamePreview />}
+        />
+
+
+        {/* =========================
+            LEADERBOARDS
+        ========================== */}
+
+        <Route
+          path="/leaderboard"
+          element={<LeaderboardIndex />}
+        />
 
         <Route
           path="/leaderboard/:contestId"
           element={<ContestLeaderboard />}
         />
 
+
+        {/* =========================
+            INFORMATION
+        ========================== */}
+
         <Route
           path="/how-it-works"
           element={<HowItWorksPage />}
         />
 
-        <Route path="/refer" element={<ReferPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route
+          path="/refer"
+          element={<ReferPage />}
+        />
+
+
+        {/* =========================
+            TERMS
+        ========================== */}
+
+        <Route
+          path="/terms"
+          element={<TermsPage />}
+        />
+
+        <Route
+          path="/privacy"
+          element={<PrivacyPage />}
+        />
+
         <Route
           path="/website-terms"
           element={<WebsiteTermsPage />}
         />
+
         <Route
           path="/mobile-terms"
           element={<MobileTermsPage />}
         />
+
       </Route>
+
+
+      {/* =========================
+          WORLD PREVIEW
+      ========================== */}
 
       <Route
         path="/world-preview"
         element={<WorldPreview />}
       />
 
+
+      {/* =========================
+          SPECIAL CHALLENGE
+      ========================== */}
+
       <Route
         path="/challenge"
         element={<SpecialChallenge />}
       />
+
+
+      {/* =========================
+          ADMIN LOGIN
+      ========================== */}
 
       <Route
         path="/admin/login"
         element={<AdminLogin />}
       />
 
-      {/* Emergent Google OAuth redirects here with
-          #session_id=… in the URL. */}
+
+      {/* =========================
+          GOOGLE AUTH CALLBACK
+      ========================== */}
+
       <Route
         path="/auth-callback"
         element={<AuthCallback />}
       />
 
-      {/* Full-screen Promotion RNG Draw Studio */}
+
+      {/* =========================
+          PROMOTION DRAW STUDIO
+      ========================== */}
+
       <Route
         path="/admin/promotion/draw-studio"
         element={<PromotionDrawStudio />}
       />
 
+
+      {/* =========================
+          ADMIN ROUTES
+      ========================== */}
+
       <Route
         path="/admin"
         element={<AdminLayout />}
       >
-        <Route index element={<AdminDashboard />} />
+
+        <Route
+          index
+          element={<AdminDashboard />}
+        />
 
         <Route
           path="users"
@@ -227,11 +426,14 @@ function AppRouter() {
           element={<FreeWorldAdmin />}
         />
 
+
         {/* Promotion Admin */}
+
         <Route
           path="promotion"
           element={<PromotionAdminShell />}
         />
+
 
         <Route
           path="wallets"
@@ -312,12 +514,19 @@ function AppRouter() {
           path="users/:user_id"
           element={<UserDetailsPage />}
         />
+
       </Route>
+
+
+      {/* =========================
+          PRODUCTION ROUTES
+      ========================== */}
 
       <Route
         path="/production"
         element={<ProductionLayout />}
       >
+
         <Route
           index
           element={<OperationsPage />}
@@ -342,37 +551,62 @@ function AppRouter() {
           path="kyc"
           element={<AdminKyc />}
         />
+
       </Route>
+
     </Routes>
   );
 }
 
+
 function App() {
   return (
     <div className="App">
+
       <AuthProvider>
+
         <BrowserRouter>
+
+          {/* Acquisition tracking */}
           <AcquisitionTracker />
 
-          {/* Handles promotion intent across login/signup */}
+
+          {/* Handles promotion intent
+              across login / signup */}
           <PromotionAuthBridge />
 
+
+          {/* Main application routes */}
           <AppRouter />
 
-          {/* Global promotion popup */}
+
+          {/* Existing global promotion popup */}
           <PromotionPopup />
 
+
+          {/* NEW:
+              Persistent draggable promotion badge */}
+          <PromotionFloatingBadge />
+
+
+          {/* Terms gate */}
           <TermsGate />
 
+
+          {/* Toast notifications */}
           <Toaster />
+
 
           <SonnerToaster
             position="top-center"
             richColors
             closeButton
           />
+
         </BrowserRouter>
+
       </AuthProvider>
+
     </div>
   );
 }

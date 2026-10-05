@@ -33,8 +33,7 @@ async def _issue_ticket(db,pid,uid,source,referred_user_id=None):
   except DuplicateKeyError:continue
  raise HTTPException(500,'Unable to allocate a unique promotion ticket.')
 async def _sync_referral_ticket(db,pid,joined_user_id):
- # Promotion referral qualification is intentionally separate from the existing token reward programme:
- # a valid referred account must itself join this promotion before it can create one extra ticket.
+ # Promotion referral qualification is intentionally separate from the existing token reward programme.
  ref=await db.referrals.find_one({'referred_user_id':joined_user_id},{'_id':0,'referrer_user_id':1,'referral_id':1})
  if not ref:return None
  referrer=ref.get('referrer_user_id')
@@ -42,18 +41,9 @@ async def _sync_referral_ticket(db,pid,joined_user_id):
  referrer_entry=await db.promotion_entries.find_one({'promotion_id':pid,'user_id':referrer},{'_id':0,'user_id':1})
  if not referrer_entry:return None
  return await _issue_ticket(db,pid,referrer,'referral',joined_user_id)
-async def _backfill_my_referral_tickets(db,pid,uid):
- # Recovery path: if referred users joined before their referrer joined, grant those earned tickets now.
- refs=await db.referrals.find({'referrer_user_id':uid},{'_id':0,'referred_user_id':1}).to_list(10000)
- for ref in refs:
-  referred=ref.get('referred_user_id')
-  if not referred or referred==uid:continue
-  joined=await db.promotion_entries.find_one({'promotion_id':pid,'user_id':referred},{'_id':0,'user_id':1})
-  if joined:await _issue_ticket(db,pid,uid,'referral',referred)
 async def auto_join_referred_signup(db,referred_user_id):
- # A successful personal-referral signup automatically joins the referred user
- # to the live promotion and grants the normal join ticket. If the referrer is
- # already joined, they also receive one idempotent referral ticket.
+ # Idempotent for both new and historical referrals. If a valid personal referral exists,
+ # enrol the referred user into the live promotion and issue the normal join ticket.
  cfg=await _config(db)
  if not cfg.get('is_live'):return {'joined':False,'reason':'promotion_not_live'}
  pid=cfg['promotion_id'];now=datetime.now(timezone.utc)
@@ -67,6 +57,28 @@ async def auto_join_referred_signup(db,referred_user_id):
  await _issue_ticket(db,pid,referred_user_id,'join')
  await _sync_referral_ticket(db,pid,referred_user_id)
  return {'joined':True,'promotion_id':pid}
+async def _backfill_my_referral_tickets(db,pid,uid):
+ # Historical recovery: every valid existing A->B referral is brought onto the
+ # current live promotion before A's referral ticket is checked. Safe to run
+ # repeatedly because entries and tickets are idempotent upserts.
+ refs=await db.referrals.find({'referrer_user_id':uid},{'_id':0,'referred_user_id':1}).to_list(10000)
+ for ref in refs:
+  referred=ref.get('referred_user_id')
+  if not referred or referred==uid:continue
+  await auto_join_referred_signup(db,referred)
+  joined=await db.promotion_entries.find_one({'promotion_id':pid,'user_id':referred},{'_id':0,'user_id':1})
+  if joined:await _issue_ticket(db,pid,uid,'referral',referred)
+async def _backfill_all_referrals(db,pid):
+ # Global historical repair, also triggered from admin promotion views.
+ cfg=await _config(db)
+ if not cfg.get('is_live') or cfg.get('promotion_id')!=pid:return
+ refs=await db.referrals.find({},{'_id':0,'referrer_user_id':1,'referred_user_id':1}).to_list(10000)
+ for ref in refs:
+  referrer=ref.get('referrer_user_id');referred=ref.get('referred_user_id')
+  if not referrer or not referred or referrer==referred:continue
+  await auto_join_referred_signup(db,referred)
+  referrer_entry=await db.promotion_entries.find_one({'promotion_id':pid,'user_id':referrer},{'_id':0,'user_id':1})
+  if referrer_entry:await _issue_ticket(db,pid,referrer,'referral',referred)
 class EventInput(BaseModel):
  event:str;visitor_id:str|None=None;page:str|None=None;device:str|None=None;source:str|None=None;medium:str|None=None;campaign:str|None=None;referrer:str|None=None
 @router.post('/event')
@@ -81,9 +93,13 @@ async def promotion_event(inp:EventInput,request:Request):
 async def promotion_config():return await _config(get_db())
 @router.get('/me')
 async def promotion_me(request:Request):
- user=await get_current_user(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];entry=await db.promotion_entries.find_one({'promotion_id':pid,'user_id':user['user_id']},{'_id':0})
- if entry:await _backfill_my_referral_tickets(db,pid,user['user_id'])
- tickets=await db.promotion_tickets.find({'promotion_id':pid,'user_id':user['user_id']},{'_id':0}).sort('created_at',1).to_list(10000)
+ user=await get_current_user(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];uid=user['user_id']
+ # Repair historical referred signups lazily when either referred user opens the promotion page.
+ if cfg.get('is_live'):
+  await auto_join_referred_signup(db,uid)
+  await _backfill_my_referral_tickets(db,pid,uid)
+ entry=await db.promotion_entries.find_one({'promotion_id':pid,'user_id':uid},{'_id':0})
+ tickets=await db.promotion_tickets.find({'promotion_id':pid,'user_id':uid},{'_id':0}).sort('created_at',1).to_list(10000)
  return {'promotion':cfg,'joined':bool(entry),'tickets':tickets,'ticket_count':len(tickets),'base_ticket_count':sum(1 for t in tickets if t.get('source')=='join'),'referral_ticket_count':sum(1 for t in tickets if t.get('source')=='referral')}
 @router.post('/join')
 async def join_promotion(request:Request):
@@ -103,17 +119,17 @@ async def admin_save_config(inp:ConfigInput,request:Request):
  await require_admin(request);db=get_db();data=inp.model_dump();data.update({'key':'freeworld','updated_at':datetime.now(timezone.utc)});await db.promotion_config.update_one({'key':'freeworld'},{'$set':data},upsert=True);return await _config(db)
 @admin_router.get('/analytics')
 async def admin_analytics(request:Request):
- await require_admin(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];match={'promotion_id':pid};events=await db.promotion_events.aggregate([{'$match':match},{'$group':{'_id':'$event','count':{'$sum':1},'unique_visitors':{'$addToSet':'$visitor_id'},'unique_users':{'$addToSet':'$user_id'}}}]).to_list(100);event_map={x['_id']:{'count':x['count'],'unique_visitors':len([v for v in x['unique_visitors'] if v]),'unique_users':len([v for v in x['unique_users'] if v])} for x in events};participants=await db.promotion_entries.count_documents(match);total=await db.promotion_tickets.count_documents(match);base=await db.promotion_tickets.count_documents({**match,'source':'join'});refs=await db.promotion_tickets.count_documents({**match,'source':'referral'});impressions=event_map.get('impression',{}).get('count',0);joins=event_map.get('join_click',{}).get('count',0);devices=await db.promotion_events.aggregate([{'$match':{**match,'event':'impression'}},{'$group':{'_id':'$device','count':{'$sum':1}}},{'$sort':{'count':-1}}]).to_list(20);pages=await db.promotion_events.aggregate([{'$match':{**match,'event':'impression'}},{'$group':{'_id':'$page','count':{'$sum':1}}},{'$sort':{'count':-1}},{'$limit':50}]).to_list(50);sources=await db.promotion_events.aggregate([{'$match':{**match,'event':'impression'}},{'$group':{'_id':'$source','count':{'$sum':1}}},{'$sort':{'count':-1}},{'$limit':50}]).to_list(50);daily=await db.promotion_events.aggregate([{'$match':match},{'$group':{'_id':{'day':{'$dateToString':{'format':'%Y-%m-%d','date':'$created_at'}},'event':'$event'},'count':{'$sum':1}}},{'$sort':{'_id.day':1}}]).to_list(10000);return {'promotion':cfg,'participants':participants,'total_tickets':total,'base_tickets':base,'referral_tickets':refs,'events':event_map,'conversion':{'impression_to_join_click_pct':round(joins*100/impressions,2) if impressions else 0,'participant_per_impression_pct':round(participants*100/impressions,2) if impressions else 0},'devices':devices,'pages':pages,'sources':sources,'daily':daily}
+ await require_admin(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];await _backfill_all_referrals(db,pid);match={'promotion_id':pid};events=await db.promotion_events.aggregate([{'$match':match},{'$group':{'_id':'$event','count':{'$sum':1},'unique_visitors':{'$addToSet':'$visitor_id'},'unique_users':{'$addToSet':'$user_id'}}}]).to_list(100);event_map={x['_id']:{'count':x['count'],'unique_visitors':len([v for v in x['unique_visitors'] if v]),'unique_users':len([v for v in x['unique_users'] if v])} for x in events};participants=await db.promotion_entries.count_documents(match);total=await db.promotion_tickets.count_documents(match);base=await db.promotion_tickets.count_documents({**match,'source':'join'});refs=await db.promotion_tickets.count_documents({**match,'source':'referral'});impressions=event_map.get('impression',{}).get('count',0);joins=event_map.get('join_click',{}).get('count',0);devices=await db.promotion_events.aggregate([{'$match':{**match,'event':'impression'}},{'$group':{'_id':'$device','count':{'$sum':1}}},{'$sort':{'count':-1}}]).to_list(20);pages=await db.promotion_events.aggregate([{'$match':{**match,'event':'impression'}},{'$group':{'_id':'$page','count':{'$sum':1}}},{'$sort':{'count':-1}},{'$limit':50}]).to_list(50);sources=await db.promotion_events.aggregate([{'$match':{**match,'event':'impression'}},{'$group':{'_id':'$source','count':{'$sum':1}}},{'$sort':{'count':-1}},{'$limit':50}]).to_list(50);daily=await db.promotion_events.aggregate([{'$match':match},{'$group':{'_id':{'day':{'$dateToString':{'format':'%Y-%m-%d','date':'$created_at'}},'event':'$event'},'count':{'$sum':1}}},{'$sort':{'_id.day':1}}]).to_list(10000);return {'promotion':cfg,'participants':participants,'total_tickets':total,'base_tickets':base,'referral_tickets':refs,'events':event_map,'conversion':{'impression_to_join_click_pct':round(joins*100/impressions,2) if impressions else 0,'participant_per_impression_pct':round(participants*100/impressions,2) if impressions else 0},'devices':devices,'pages':pages,'sources':sources,'daily':daily}
 @admin_router.get('/participants')
 async def admin_participants(request:Request,q:str|None=None,limit:int=Query(200,ge=1,le=1000),skip:int=Query(0,ge=0)):
- await require_admin(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];entries=await db.promotion_entries.find({'promotion_id':pid},{'_id':0}).sort('joined_at',-1).skip(skip).limit(limit).to_list(limit);out=[]
+ await require_admin(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];await _backfill_all_referrals(db,pid);entries=await db.promotion_entries.find({'promotion_id':pid},{'_id':0}).sort('joined_at',-1).skip(skip).limit(limit).to_list(limit);out=[]
  for e in entries:
   uid=e['user_id'];user=await db.users.find_one({'user_id':uid},{'_id':0,'user_id':1,'email':1,'name':1,'username':1,'public_id':1});tickets=await db.promotion_tickets.find({'promotion_id':pid,'user_id':uid},{'_id':0}).sort('created_at',1).to_list(10000);row={'user':user or {'user_id':uid},'joined_at':e.get('joined_at'),'ticket_count':len(tickets),'base_tickets':sum(1 for t in tickets if t.get('source')=='join'),'referral_tickets':sum(1 for t in tickets if t.get('source')=='referral'),'tickets':tickets};hay=' '.join(str((user or {}).get(k,'')) for k in ['email','name','username','public_id','user_id']).lower()
   if not q or q.lower() in hay or any(q.lower() in str(t.get('ticket_number','')).lower() for t in tickets):out.append(row)
  return {'items':out,'count':len(out),'skip':skip,'limit':limit}
 @admin_router.get('/events')
 async def admin_events(request:Request,event:str|None=None,device:str|None=None,page:str|None=None,limit:int=Query(500,ge=1,le=2000),skip:int=Query(0,ge=0)):
- await require_admin(request);db=get_db();cfg=await _config(db);f={'promotion_id':cfg['promotion_id']}
+ await require_admin(request);db=get_db();cfg=await _config(db);pid=cfg['promotion_id'];f={'promotion_id':pid}
  if event:f['event']=event
  if device:f['device']=device
  if page:f['page']=page
