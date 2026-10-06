@@ -1,5 +1,5 @@
 """
-Prize League referral + signup bonus programme.
+EarnTour referral + signup bonus programme.
 
 Rules:
 - Minimum normal wallet top-up remains £5.
@@ -130,7 +130,7 @@ async def _grant_signup_bonus_once(
             user_id,
             'signup_bonus',
             f'🎉 {signup_reward_tokens:g} signup bonus tokens added',
-            'Your verified £10+ top-up qualified for the Prize League signup bonus.',
+            'Your verified £10+ top-up qualified for the EarnTour signup bonus.',
             reward_tx,
         )
 

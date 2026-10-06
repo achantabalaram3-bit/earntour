@@ -1,3 +1,4 @@
+import { SITE_URL } from '../lib/site';
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CompetitionCard from '../components/CompetitionCard';
@@ -12,22 +13,22 @@ import useSeo from '../hooks/useSeo';
 
 export default function Competitions() {
   useSeo({
-    title: 'Skill Prize Competitions UK | Enter & Win | Prize League',
+    title: 'Skill Prize Competitions UK | Enter & Win | EarnTour',
     description:
-      'Browse live skill-based prize competitions in the UK on Prize League. Enter online competitions, play skill games and compete to win real prizes. 18+, free postal entry always available.',
+      'Browse live skill-based prize competitions in the UK on EarnTour. Enter online competitions, play skill games and compete to win real prizes. 18+, free postal entry always available.',
     keywords:
       'skill-based prize competitions, online competitions UK, prize competitions UK, enter competitions to win, play games to win prizes UK',
-    canonical: 'https://www.prizeleague.co.uk/competitions',
+    canonical: `${SITE_URL}/competitions`,
     robots: 'index, follow, max-image-preview:large',
-    ogUrl: 'https://www.prizeleague.co.uk/competitions',
-    ogImage: 'https://www.prizeleague.co.uk/og-image.png',
+    ogUrl: `${SITE_URL}/competitions`,
+    ogImage: `${SITE_URL}/earntour-og.png`,
     jsonLd: [
       {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.prizeleague.co.uk/' },
-          { '@type': 'ListItem', position: 2, name: 'Competitions', item: 'https://www.prizeleague.co.uk/competitions' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'Competitions', item: `${SITE_URL}/competitions` },
         ],
       },
     ],
@@ -271,7 +272,7 @@ export default function Competitions() {
           </h2>
 
           <p className="mt-2 text-slate-500">
-            New Prize League competitions are being prepared.
+            New EarnTour competitions are being prepared.
           </p>
 
         </div>

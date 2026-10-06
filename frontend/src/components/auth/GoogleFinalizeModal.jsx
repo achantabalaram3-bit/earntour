@@ -180,7 +180,7 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
             <h3 className="font-display font-extrabold text-2xl text-slate-900">One last thing</h3>
             <p className="text-sm text-slate-500">Confirm you agree to our terms — required to finish signup.</p>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 max-h-40 overflow-auto">
-              By ticking the box you agree to Prize League&apos;s{' '}
+              By ticking the box you agree to EarnTour&apos;s{' '}
               <Link to="/terms" target="_blank" className="text-[#6C2BFF] underline">Terms &amp; Conditions</Link>,{' '}
               <Link to="/privacy" target="_blank" className="text-[#6C2BFF] underline">Privacy Policy</Link>, and confirm you&apos;re 18+, a UK resident,
               and play responsibly. Prizes are subject to KYC. Free postal entry is always available.

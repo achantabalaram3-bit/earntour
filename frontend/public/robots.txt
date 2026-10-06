@@ -1,4 +1,4 @@
-# Prize League — https://www.prizeleague.co.uk
+# EarnTour
 User-agent: *
 Allow: /
 Allow: /free-world
@@ -25,5 +25,3 @@ Allow: /
 Disallow: /admin
 Disallow: /my-account
 Disallow: /cart
-
-Sitemap: https://www.prizeleague.co.uk/sitemap.xml

@@ -588,7 +588,7 @@ export default function MyAccount() {
             </div>
             <ul className="divide-y divide-slate-100">
               {[
-                { title: 'Terms & Conditions', desc: 'Rules of using Prize League', href: '/legal/terms' },
+                { title: 'Terms & Conditions', desc: 'Rules of using EarnTour', href: '/legal/terms' },
                 { title: 'Privacy Policy', desc: 'How we handle your data', href: '/legal/privacy' },
                 { title: 'Cookie Policy', desc: 'Cookies we use and why', href: '/legal/cookies' },
                 { title: 'Responsible Participation', desc: 'Play safely and know your limits', href: '/legal/responsible' },
@@ -819,7 +819,7 @@ export default function MyAccount() {
       <AlertDialog open={signOutOpen} onOpenChange={setSignOutOpen}>
         <AlertDialogContent data-testid="signout-confirm">
           <AlertDialogHeader>
-            <AlertDialogTitle>Sign out of Prize League?</AlertDialogTitle>
+            <AlertDialogTitle>Sign out of EarnTour?</AlertDialogTitle>
             <AlertDialogDescription>
               You&apos;ll need to sign in again to access your account, wallet and tickets.
             </AlertDialogDescription>

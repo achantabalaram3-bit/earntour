@@ -33,7 +33,7 @@ def db_ref():
 
 
 # Create the main app
-app = FastAPI(title='Prize League API')
+app = FastAPI(title='EarnTour API')
 
 # Basic root
 api_router = APIRouter(prefix='/api')

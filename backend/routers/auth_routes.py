@@ -389,7 +389,7 @@ async def bootstrap_admin_form():
         existing = await db.users.count_documents({'role': {'$in': _PRIVILEGED_ROLES}})
     except Exception as e:
         return HTMLResponse(f"""
-<!doctype html><html><head><title>Prize League — Setup blocked</title>
+<!doctype html><html><head><title>EarnTour — Setup blocked</title>
 <style>body{{font-family:system-ui;background:#0b0716;color:#fff;max-width:640px;margin:60px auto;padding:24px;line-height:1.5}}code{{background:#1a1330;padding:2px 6px;border-radius:4px;color:#FFD54A}}</style>
 </head><body>
 <h1 style="color:#FFD54A">⛔ Database unreachable</h1>
@@ -401,7 +401,7 @@ async def bootstrap_admin_form():
 
     if existing > 0:
         return HTMLResponse(f"""
-<!doctype html><html><head><title>Prize League — Setup complete</title>
+<!doctype html><html><head><title>EarnTour — Setup complete</title>
 <style>body{{font-family:system-ui;background:#0b0716;color:#fff;max-width:640px;margin:60px auto;padding:24px;line-height:1.5}}a{{color:#FFD54A}}</style>
 </head><body>
 <h1 style="color:#22c55e">✅ Bootstrap disabled</h1>
@@ -410,7 +410,7 @@ async def bootstrap_admin_form():
 </body></html>""")
 
     return HTMLResponse("""
-<!doctype html><html><head><title>Prize League — Create Super Admin</title>
+<!doctype html><html><head><title>EarnTour — Create Super Admin</title>
 <style>
   *{box-sizing:border-box}
   body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#0b0716,#1a0f2e);color:#fff;min-height:100vh;margin:0;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -428,7 +428,7 @@ async def bootstrap_admin_form():
   .err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);color:#fca5a5}
 </style></head><body>
 <div class="card">
-  <h1>🏆 Prize League Setup</h1>
+  <h1>🏆 EarnTour Setup</h1>
   <p class="sub">One-time Super Admin creation. This page is available only while zero admins exist in the database. It disables itself after the first successful creation.</p>
   <form id="f" onsubmit="return submit(event)">
     <label>Email</label>
@@ -630,7 +630,7 @@ class PasswordResetConfirmInput(BaseModel):
 
 @router.post('/password-reset/send')
 async def password_reset_send(inp: PasswordResetSendInput):
-    """Send a password-reset OTP to a verified Prize League phone number.
+    """Send a password-reset OTP to a verified EarnTour phone number.
 
     A generic response is returned even when no matching account exists, so
     callers cannot use this endpoint to discover registered phone numbers.

@@ -14,7 +14,7 @@ const LINKS = [
 ];
 
 /**
- * Prize League — premium production layout.
+ * EarnTour — premium production layout.
  * Same palette as public/admin: dark base, purple gradient active, gold accent header dot.
  */
 export default function ProductionLayout() {
@@ -86,7 +86,7 @@ export default function ProductionLayout() {
  <header className="h-14 border-b border-white/10 px-4 md:px-6 flex items-center justify-between text-white" style={{ background: 'linear-gradient(180deg, #0B0D1F 0%, #161433 100%)' }}>
  <div className="flex items-center gap-3">
  <button className="md:hidden text-white" onClick={() => setOpen(true)} aria-label="Menu"><Menu className="w-5 h-5" /></button>
- <Link to="/" className="font-display font-bold hover:text-[#FFD54A] text-sm">← Prize League</Link>
+ <Link to="/" className="font-display font-bold hover:text-[#FFD54A] text-sm">← EarnTour</Link>
  </div>
  <div className="flex items-center gap-2 text-xs text-emerald-400">
  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Live systems OK

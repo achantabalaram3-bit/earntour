@@ -1,17 +1,18 @@
+import { SITE_URL } from '../lib/site';
 import { Link } from 'react-router-dom';
 import {
   Trophy, Gamepad2, CalendarDays, Crown, Sparkles, ArrowRight, CheckCircle2,
 } from 'lucide-react';
 import useSeo from '../hooks/useSeo';
 
-const SITE = 'https://www.prizeleague.co.uk';
+const SITE = SITE_URL;
 const URL = `${SITE}/free-world`;
 const OG_IMAGE = `${SITE}/og-free-world.png`;
 
 const FAQS = [
   {
-    q: 'What is Prize League Free World?',
-    a: 'Free World is Prize League\u2019s free-to-play skill-game experience. You progress through a map of Championships, each made up of ten skill-based levels plus a Champion challenge, competing for prizes through skill \u2014 no purchase needed to play.',
+    q: 'What is EarnTour Free World?',
+    a: 'Free World is EarnTour\u2019s free-to-play skill-game experience. You progress through a map of Championships, each made up of ten skill-based levels plus a Champion challenge, competing for prizes through skill \u2014 no purchase needed to play.',
   },
   {
     q: 'Is Free World free to play?',
@@ -27,11 +28,11 @@ const FAQS = [
   },
   {
     q: 'How can I win a prize?',
-    a: 'Prizes in Free World are earned through skill. The top-ranked finishers on the Champion leaderboard win prizes according to Prize League\u2019s published competition rules. Your placement depends only on your score and speed, not on spending.',
+    a: 'Prizes in Free World are earned through skill. The top-ranked finishers on the Champion leaderboard win prizes according to EarnTour\u2019s published competition rules. Your placement depends only on your score and speed, not on spending.',
   },
   {
     q: 'Who can participate?',
-    a: 'Free World is open to eligible Prize League players. Full eligibility, prize and participation details follow Prize League\u2019s published Terms & Conditions \u2014 please review them before playing.',
+    a: 'Free World is open to eligible EarnTour players. Full eligibility, prize and participation details follow EarnTour\u2019s published Terms & Conditions \u2014 please review them before playing.',
   },
 ];
 
@@ -44,14 +45,14 @@ const STEPS = [
 
 export default function FreeWorldLanding() {
   useSeo({
-    title: 'Free Skill Games & Prize Competitions UK | Free World \u2013 Prize League',
+    title: 'Free Skill Games & Prize Competitions UK | Free World \u2013 EarnTour',
     description:
-      'Join Free World on Prize League \u2014 free skill games in the UK. Progress through skill-based levels, reach Champion challenges and compete for prizes. Free to play, no purchase to progress.',
+      'Join Free World on EarnTour \u2014 free skill games in the UK. Progress through skill-based levels, reach Champion challenges and compete for prizes. Free to play, no purchase to progress.',
     keywords:
       'free skill games UK, free skill competitions UK, online skill games with prizes, skill-based prize competitions, free online competitions UK, play games to win prizes UK',
     canonical: URL,
     robots: 'index, follow, max-image-preview:large, max-snippet:-1',
-    ogTitle: 'Free World \u2013 Play Skill Games & Compete for Prizes | Prize League',
+    ogTitle: 'Free World \u2013 Play Skill Games & Compete for Prizes | EarnTour',
     ogUrl: URL,
     ogImage: OG_IMAGE,
     jsonLd: [
@@ -97,7 +98,7 @@ export default function FreeWorldLanding() {
               Free World <span className="text-[#6C2BFF]">–</span> Play Skill Games &amp; Compete for Prizes
             </h1>
             <p className="mt-4 text-base md:text-lg text-slate-600 max-w-xl">
-              Free World is Prize League’s free skill-gaming world for UK players. Progress through
+              Free World is EarnTour’s free skill-gaming world for UK players. Progress through
               skill-based levels, reach Champion challenges and compete for prizes — all through skill,
               with no purchase needed to play.
             </p>
@@ -125,7 +126,7 @@ export default function FreeWorldLanding() {
           <div>
             <img
               src="/og-free-world.png"
-              alt="Free World skill-game map with numbered levels leading to a Champion trophy – Prize League"
+              alt="Free World skill-game map with numbered levels leading to a Champion trophy – EarnTour"
               width="1200"
               height="630"
               loading="eager"
@@ -139,7 +140,7 @@ export default function FreeWorldLanding() {
       <section className="max-w-6xl mx-auto px-5 py-10 md:py-14">
         <h2 className="font-display font-bold text-2xl md:text-3xl">What is Free World?</h2>
         <p className="mt-4 text-slate-600 max-w-3xl">
-          Free World is the free, skill-based side of Prize League. Instead of paying to enter, you play
+          Free World is the free, skill-based side of EarnTour. Instead of paying to enter, you play
           free skill games in the UK and climb a map of 100 Championships. Every Championship is built from
           ten skill levels and finishes with a Champion challenge, so there is always a clear next goal and a
           genuine way to compete for prizes with online skill games.
@@ -189,7 +190,7 @@ export default function FreeWorldLanding() {
           <h2 className="font-display font-bold text-xl">Prizes</h2>
           <p className="mt-3 text-sm text-slate-600">
             Champion results are ranked together on one global leaderboard by score and speed. The top
-            finishers win prizes according to Prize League’s published competition rules — a real way to
+            finishers win prizes according to EarnTour’s published competition rules — a real way to
             play games to win prizes in the UK through skill.
           </p>
         </div>
@@ -216,8 +217,8 @@ export default function FreeWorldLanding() {
           <div>
             <h2 className="font-display font-bold text-2xl">Eligibility</h2>
             <p className="mt-4 text-sm text-slate-600">
-              Free World is free to play and open to eligible Prize League players. Full eligibility, prize
-              and participation details follow Prize League’s published rules. Please read the{' '}
+              Free World is free to play and open to eligible EarnTour players. Full eligibility, prize
+              and participation details follow EarnTour’s published rules. Please read the{' '}
               <Link to="/terms" className="text-[#6C2BFF] font-semibold hover:underline">Terms &amp; Conditions</Link>{' '}
               and <Link to="/how-it-works" className="text-[#6C2BFF] font-semibold hover:underline">How It Works</Link>{' '}
               before you play.

@@ -53,7 +53,7 @@ export default function GameArena() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#FFD54A] font-extrabold">
               <Gamepad2 className="w-4 h-4" />
-              Prize League Game Arena
+              EarnTour Game Arena
             </div>
 
             <h1 className="font-display text-4xl md:text-6xl font-black mt-3 leading-tight">

@@ -48,7 +48,7 @@ export default function AdminLogin() {
  <p className="text-sm text-white/60 mb-6">Restricted access. Staff accounts only.</p>
 
  <form onSubmit={submit} className="space-y-4">
- <div><Label className="text-white/80 mb-1 block">Work email</Label><Input name="email" type="email" required placeholder="admin@prizeleague.co.uk" className="bg-white/5 border-white/10 text-white placeholder:text-white/40" /></div>
+ <div><Label className="text-white/80 mb-1 block">Work email</Label><Input name="email" type="email" required placeholder="Your admin email" className="bg-white/5 border-white/10 text-white placeholder:text-white/40" /></div>
  <div><Label className="text-white/80 mb-1 block">Password</Label><Input name="password" type="password" required placeholder="••••••••" className="bg-white/5 border-white/10 text-white placeholder:text-white/40" /></div>
  <Button type="submit" disabled={busy} className="w-full h-11 pl-btn-gold font-extrabold hover:brightness-105">
  {busy ? 'Signing in…' : <><Lock className="w-4 h-4 mr-1" /> Sign in to admin</>}

@@ -524,7 +524,7 @@ export function TwentyFortyEightMini({ onComplete }) {
    Skill: pattern recognition
    ============================================================ */
 const QUOTES = [
-  'SKILL WINS','PLAY AND WIN','GOOD LUCK','MIND OVER LUCK','THINK FAST','PRIZE LEAGUE','SMART WINS'
+  'SKILL WINS','PLAY AND WIN','GOOD LUCK','MIND OVER LUCK','THINK FAST','EARNTOUR WIN','SMART WINS'
 ];
 function makeCipher() {
   const q = QUOTES[rndInt(0,QUOTES.length-1)];

@@ -4,6 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@/index.css";
 import App from "@/App";
 
+import { initializeSiteMetadata } from './lib/site';
+
+initializeSiteMetadata();
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -23,7 +27,7 @@ root.render(
 );
 
 /*
- * Prize League PWA registration.
+ * EarnTour PWA registration.
  * The service worker intentionally performs no API/network caching.
  */
 if ('serviceWorker' in navigator) {
@@ -31,7 +35,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/service-worker.js')
       .catch((error) => {
-        console.error('Prize League service worker registration failed:', error);
+        console.error('EarnTour service worker registration failed:', error);
       });
   });
 }

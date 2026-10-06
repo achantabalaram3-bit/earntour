@@ -160,7 +160,7 @@ const minimalWorldHeader =
       <Link
        to="/"
        className="shrink-0 flex items-center"
-       aria-label="Prize League"
+       aria-label="EarnTour"
        data-testid="header-logo"
       >
        <span className="sm:hidden">
@@ -672,7 +672,7 @@ const minimalWorldHeader =
  <AlertDialog open={signOutOpen} onOpenChange={setSignOutOpen}>
  <AlertDialogContent data-testid="header-signout-confirm">
  <AlertDialogHeader>
- <AlertDialogTitle>Sign out of Prize League?</AlertDialogTitle>
+ <AlertDialogTitle>Sign out of EarnTour?</AlertDialogTitle>
  <AlertDialogDescription>
  You&apos;ll need to sign in again to access your account, wallet and tickets.
  </AlertDialogDescription>

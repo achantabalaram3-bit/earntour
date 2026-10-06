@@ -1,3 +1,4 @@
+import { SITE_URL } from '../lib/site';
 import HowToPlaySection from '../components/home/HowToPlaySection';
 import { ShieldCheck, Trophy, HeartHandshake, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -11,22 +12,22 @@ const NOTES = [
 
 export default function HowItWorks() {
   useSeo({
-    title: 'How Prize League Works | Skill-Based Prize Competitions UK',
+    title: 'How EarnTour Works | Skill-Based Prize Competitions UK',
     description:
-      'Learn how Prize League works — a UK skill-based prize competition platform. Play skill games, enter competitions and win real prizes in four simple steps. 18+, free postal entry always available.',
+      'Learn how EarnTour works — a UK skill-based prize competition platform. Play skill games, enter competitions and win real prizes in four simple steps. 18+, free postal entry always available.',
     keywords:
       'how prize competitions work UK, skill-based prize competitions, play skill games UK, win prizes UK, free postal entry competitions',
-    canonical: 'https://www.prizeleague.co.uk/how-it-works',
+    canonical: `${SITE_URL}/how-it-works`,
     robots: 'index, follow, max-image-preview:large',
-    ogUrl: 'https://www.prizeleague.co.uk/how-it-works',
-    ogImage: 'https://www.prizeleague.co.uk/og-image.png',
+    ogUrl: `${SITE_URL}/how-it-works`,
+    ogImage: `${SITE_URL}/earntour-og.png`,
     jsonLd: [
       {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.prizeleague.co.uk/' },
-          { '@type': 'ListItem', position: 2, name: 'How It Works', item: 'https://www.prizeleague.co.uk/how-it-works' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'How It Works', item: `${SITE_URL}/how-it-works` },
         ],
       },
     ],
@@ -44,7 +45,7 @@ export default function HowItWorks() {
             Play. Compete. <span className="pl-gold-text">Win.</span>
           </h1>
           <p className="mt-4 text-white/75 max-w-2xl mx-auto">
-            Prize League is a premium skill-based prize competition platform. Four simple steps between you and your next prize.
+            EarnTour is a premium skill-based prize competition platform. Four simple steps between you and your next prize.
           </p>
         </div>
       </section>

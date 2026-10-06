@@ -106,7 +106,7 @@ export default function Home() {
           <>
             <CompetitionSection
               title="Future Contests"
-              subtitle="Upcoming Prize League contests"
+              subtitle="Upcoming EarnTour contests"
               items={futureContests}
               viewAllHref="/competitions?view=future"
               hideViewAll

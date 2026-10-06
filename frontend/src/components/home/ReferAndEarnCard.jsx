@@ -37,8 +37,8 @@ export default function ReferAndEarnCard() {
     if (!navigator.share) { copyLink(); return; }
     try {
       await navigator.share({
-        title: 'Prize League — join with my link',
-        text: 'Try Prize League — skill-based contests with amazing prizes.',
+        title: 'EarnTour — join with my link',
+        text: 'Try EarnTour — skill-based contests with amazing prizes.',
         url: link,
       });
     } catch (err) {

@@ -1,5 +1,5 @@
 """
-Prize League — Legal document registry (25 policies).
+EarnTour — Legal document registry (25 policies).
 Each entry seeds a first-draft document. All non-uploaded drafts are marked
 `ai_generated=True` and prefixed with a compliance banner requiring
 solicitor review before publication.
@@ -47,7 +47,7 @@ LEGAL_DOCS = [
         'source_url': 'https://customer-assets.emergentagent.com/job_contest-arena-16/artifacts/5f32ng5s_Prize%20League%20-%20Terms%20%26%20Conditions.docx',
         'content': (
             COMPANY_BLOCK
-            + "\n\nThese Terms & Conditions govern your use of the Prize League "
+            + "\n\nThese Terms & Conditions govern your use of the EarnTour "
               "website, platform, competitions and related services. The full "
               "client-approved text has been imported from the uploaded Word "
               "document — open in the editor to review and adjust before "
@@ -77,7 +77,7 @@ LEGAL_DOCS = [
         'source_url': 'https://customer-assets.emergentagent.com/job_contest-arena-16/artifacts/66w4ugan_Prize%20League%20-%20Website%20Terms%20of%20Use%20%26%20Acceptable%20Use%20Policy.docx',
         'content': (
             COMPANY_BLOCK
-            + "\n\nRules governing your use of the Prize League website. "
+            + "\n\nRules governing your use of the EarnTour website. "
               "Full text imported from the uploaded Word document."
         ),
     },
@@ -90,7 +90,7 @@ LEGAL_DOCS = [
         'source_url': 'https://customer-assets.emergentagent.com/job_contest-arena-16/artifacts/awgmhp1h_Prize%20League%20-%20Mobile%20Terms%20of%20Service.docx',
         'content': (
             COMPANY_BLOCK
-            + "\n\nAdditional terms applicable when accessing Prize League on "
+            + "\n\nAdditional terms applicable when accessing EarnTour on "
               "a mobile device or mobile browser. Full text imported from the "
               "uploaded Word document."
         ),
@@ -157,10 +157,10 @@ LEGAL_DOCS = [
                  'Winners may be required to complete identity, age and address verification '
                  'before the prize is released.'),
                 ('7. Disqualification',
-                 'Prize League may cancel entries or disqualify participants for fraud, misuse of '
+                 'EarnTour may cancel entries or disqualify participants for fraud, misuse of '
                  'the platform, multiple accounts, bots or breach of these terms.'),
                 ('8. Cancellation',
-                 'Prize League reserves the right to cancel a competition where required by law '
+                 'EarnTour reserves the right to cancel a competition where required by law '
                  'or force majeure and will provide a fair refund route where appropriate.'),
                 ('9. Complaints',
                  'Concerns about a specific competition should be raised via support@prizeleague.co.uk '
@@ -203,14 +203,14 @@ LEGAL_DOCS = [
         'owner': 'Competition Operations',
         'ai_generated': True,
         'content': _draft(
-            "Prize League provides a free postal entry route for eligible "
+            "EarnTour provides a free postal entry route for eligible "
             "competitions, ensuring an alternative method of entry without "
             "purchase where the competition supports it.",
             [
                 ('1. Postal address',
                  'Free Postal Entry  \nPRIZE LEAGUE LTD  \n118 Windsor Road  \nLondon, England, E7 0RB  \nUnited Kingdom'),
                 ('2. Required information on your envelope contents',
-                 '- Full name  \n- Prize League account username or registered email  \n'
+                 '- Full name  \n- EarnTour account username or registered email  \n'
                  '- Confirmation you are aged 18+  \n- Confirmation you agree to the Terms & Conditions  \n'
                  '- The exact name of the competition  \n- Your answer to the skill task'),
                 ('3. Eligibility',
@@ -233,7 +233,7 @@ LEGAL_DOCS = [
         'owner': 'Payments & Compliance',
         'ai_generated': True,
         'content': _draft(
-            "This policy explains when refunds may be issued on Prize League "
+            "This policy explains when refunds may be issued on EarnTour "
             "entry tickets and wallet balances.",
             [
                 ('1. Entry tickets',
@@ -244,10 +244,10 @@ LEGAL_DOCS = [
                  'Unused wallet balance may be refunded to the original payment method subject to '
                  'identity verification and anti-fraud checks. Bonus/promotional credits are not refundable.'),
                 ('3. Cancelled competitions',
-                 'If Prize League cancels a competition before it closes, all valid paid entrants receive '
+                 'If EarnTour cancels a competition before it closes, all valid paid entrants receive '
                  'either a full refund to their wallet or original payment method.'),
                 ('4. How to request',
-                 'Email support@prizeleague.co.uk with your Prize League public ID, competition name '
+                 'Email support@prizeleague.co.uk with your EarnTour public ID, competition name '
                  'and the reason for the request.'),
                 ('5. Processing time',
                  'Approved refunds are issued within 5-10 UK business days.'),
@@ -286,7 +286,7 @@ LEGAL_DOCS = [
         'owner': 'Trust & Safety',
         'ai_generated': True,
         'content': _draft(
-            "Rules for acceptable behaviour on the Prize League platform.",
+            "Rules for acceptable behaviour on the EarnTour platform.",
             [
                 ('1. Prohibited conduct',
                  'No fraud, no cheating, no bots, no multiple accounts, no attempts to exploit scoring, '
@@ -308,7 +308,7 @@ LEGAL_DOCS = [
         'owner': 'Player Protection',
         'ai_generated': True,
         'content': _draft(
-            "Prize League operates skill competitions responsibly and supports "
+            "EarnTour operates skill competitions responsibly and supports "
             "players in maintaining healthy engagement.",
             [
                 ('1. Age',
@@ -330,7 +330,7 @@ LEGAL_DOCS = [
         'owner': 'MLRO',
         'ai_generated': True,
         'content': _draft(
-            "Prize League is committed to preventing money laundering and "
+            "EarnTour is committed to preventing money laundering and "
             "terrorist financing through its services.",
             [
                 ('1. Risk-based approach',
@@ -353,7 +353,7 @@ LEGAL_DOCS = [
         'owner': 'MLRO',
         'ai_generated': True,
         'content': _draft(
-            "Prize League screens for and prevents its services being used to "
+            "EarnTour screens for and prevents its services being used to "
             "finance terrorism.",
             [
                 ('1. Sanctions & PEP screening',
@@ -361,7 +361,7 @@ LEGAL_DOCS = [
                 ('2. Escalation',
                  'Matches or hits are escalated to the MLRO for review. Confirmed matches are frozen and reported to HMT/OFSI as required.'),
                 ('3. Prohibited jurisdictions',
-                 'Prize League does not accept customers from jurisdictions subject to UK financial sanctions.'),
+                 'EarnTour does not accept customers from jurisdictions subject to UK financial sanctions.'),
             ],
         ),
     },
@@ -372,7 +372,7 @@ LEGAL_DOCS = [
         'owner': 'Fraud Operations',
         'ai_generated': True,
         'content': _draft(
-            "Zero tolerance for fraudulent activity on the Prize League "
+            "Zero tolerance for fraudulent activity on the EarnTour "
             "platform.",
             [
                 ('1. Detection',
@@ -392,7 +392,7 @@ LEGAL_DOCS = [
         'owner': 'Compliance',
         'ai_generated': True,
         'content': _draft(
-            "How Prize League verifies the identity of its users.",
+            "How EarnTour verifies the identity of its users.",
             [
                 ('1. When we verify',
                  'At registration (soft checks), when prize value exceeds threshold, for withdrawals, and where risk indicators trigger enhanced due diligence.'),
@@ -410,7 +410,7 @@ LEGAL_DOCS = [
         'owner': 'MLRO',
         'ai_generated': True,
         'content': _draft(
-            "Prize League screens customers, payments and beneficial owners "
+            "EarnTour screens customers, payments and beneficial owners "
             "against applicable sanctions lists.",
             [
                 ('1. Lists screened',
@@ -447,12 +447,12 @@ LEGAL_DOCS = [
         'ai_generated': True,
         'content': _draft(
             "Terms governing deposits, wallet balances and payments on the "
-            "Prize League platform.",
+            "EarnTour platform.",
             [
                 ('1. Deposits',
                  'Processed via Stripe. Only debit/credit cards registered to the account holder or approved payment methods are permitted.'),
                 ('2. Wallet',
-                 'Prize League wallet balances may be used only for entering competitions or refunded to the original payment method subject to checks.'),
+                 'EarnTour wallet balances may be used only for entering competitions or refunded to the original payment method subject to checks.'),
                 ('3. Currency',
                  'All balances and prices are in GBP (£).'),
                 ('4. Chargebacks',
@@ -467,7 +467,7 @@ LEGAL_DOCS = [
         'owner': 'Payments',
         'ai_generated': True,
         'content': _draft(
-            "How and when Prize League pays out winnings and how users can "
+            "How and when EarnTour pays out winnings and how users can "
             "withdraw eligible balances.",
             [
                 ('1. Verified bank only',
@@ -488,7 +488,7 @@ LEGAL_DOCS = [
         'owner': 'Data Protection Officer',
         'ai_generated': True,
         'content': _draft(
-            "How long Prize League retains personal data and why.",
+            "How long EarnTour retains personal data and why.",
             [
                 ('1. Account data',
                  'Retained for the life of the account plus 6 years to meet regulatory and tax record-keeping obligations.'),
@@ -529,7 +529,7 @@ LEGAL_DOCS = [
         'owner': 'Player Protection',
         'ai_generated': True,
         'content': _draft(
-            "Prize League identifies and protects customers who may be in "
+            "EarnTour identifies and protects customers who may be in "
             "vulnerable circumstances.",
             [
                 ('1. Indicators',
@@ -564,7 +564,7 @@ LEGAL_DOCS = [
         'owner': 'IT Security',
         'ai_generated': True,
         'content': _draft(
-            "Measures Prize League takes to protect user accounts and its "
+            "Measures EarnTour takes to protect user accounts and its "
             "platform, and what users can do themselves.",
             [
                 ('1. Platform controls',
@@ -585,7 +585,7 @@ LEGAL_DOCS = [
         'owner': 'Customer Care',
         'ai_generated': True,
         'content': _draft(
-            "Prize League Support Service standards and response times.",
+            "EarnTour Support Service standards and response times.",
             [
                 ('1. Channels',
                  'Email: support@prizeleague.co.uk. In-app ticketing via Support Centre.'),
@@ -603,7 +603,7 @@ LEGAL_DOCS = [
         'owner': 'Product',
         'ai_generated': True,
         'content': _draft(
-            "Prize League aims to make its platform accessible to the widest "
+            "EarnTour aims to make its platform accessible to the widest "
             "possible audience.",
             [
                 ('1. Standards',

@@ -106,7 +106,7 @@ export default function GamePreview() {
             </h1>
 
             <p className="text-white/65 mt-2 text-sm">
-              Test your skill before joining Prize League.
+              Test your skill before joining EarnTour.
             </p>
 
             <div className="mt-4 inline-flex items-center gap-2 text-xs bg-white/10 border border-white/10 rounded-full px-3 py-2">
@@ -174,7 +174,7 @@ export default function GamePreview() {
                 </h2>
 
                 <p className="text-white/65 text-sm mt-2">
-                  Join Prize League to enter live skill competitions and put
+                  Join EarnTour to enter live skill competitions and put
                   your skills to the test.
                 </p>
 
@@ -200,7 +200,7 @@ export default function GamePreview() {
               </Button>
 
               <p className="text-xs text-slate-400 mt-4">
-                This free result is not submitted to an official Prize League
+                This free result is not submitted to an official EarnTour
                 leaderboard.
               </p>
             </div>

@@ -1,5 +1,5 @@
 """
-Prize League Free World / Champion Contest engine.
+EarnTour Free World / Champion Contest engine.
 
 IMPORTANT:
 - Independent from paid contests, paid tickets and paid game_scores.
@@ -9697,7 +9697,7 @@ async def _enforce_champion_paid_qualification(
       paid contest participation is not required.
 
     Champion 3+:
-      at least one verified paid Prize League contest entry
+      at least one verified paid EarnTour contest entry
       must exist inside the applicable GLOBAL World contest
       window.
 
@@ -9751,7 +9751,7 @@ async def _enforce_champion_paid_qualification(
 
                 "message":
                     (
-                        "Enter at least one paid Prize League "
+                        "Enter at least one paid EarnTour "
                         "contest during this Championship "
                         "period to qualify for this Champion "
                         "prize challenge."
@@ -10790,7 +10790,7 @@ async def _settle_world_champion_contest(
                 "champion_prize",
                 amount,
                 note=(
-                    f"Prize League Champion Contest "
+                    f"EarnTour Champion Contest "
                     f"{contest_number} "
                     f"Rank {rank} prize"
                 ),

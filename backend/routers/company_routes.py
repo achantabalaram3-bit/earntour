@@ -1,5 +1,5 @@
 """
-Prize League — Company Settings & Postal Entry admin API.
+EarnTour — Company Settings & Postal Entry admin API.
 
 Company Settings (Super Admin only):
     GET  /api/admin/company              — current settings
@@ -42,7 +42,7 @@ DEFAULT_COMPANY = {
     'email_general': 'info@prizeleague.co.uk',
     'email_support': 'support@prizeleague.co.uk',
     'legal_footer': (
-        'Prize League is operated by PRIZE LEAGUE LTD, a company registered '
+        'EarnTour is operated by PRIZE LEAGUE LTD, a company registered '
         'in England and Wales under company number 17338919. Registered '
         'office: 118 Windsor Road, London, England, E7 0RB, United Kingdom.'
     ),
@@ -53,7 +53,7 @@ DEFAULT_COMPANY = {
     'postal_address_postcode': 'E7 0RB',
     'postal_address_country_full': 'United Kingdom',
     'postal_required_details': (
-        '- Full name\n- Prize League public ID or registered email\n'
+        '- Full name\n- EarnTour public ID or registered email\n'
         '- Confirmation you are aged 18+ and agree to the Terms & Conditions\n'
         '- Competition name\n- Your answer to the skill task'
     ),

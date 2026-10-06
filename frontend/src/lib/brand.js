@@ -1,18 +1,19 @@
+import { SITE_URL } from './site';
 /**
- * Prize League — central branding & company configuration.
+ * EarnTour — central branding & company configuration.
  * Every page, email, receipt and admin panel must import from here.
  * DO NOT hardcode company info elsewhere.
  */
 
 export const BRAND = {
-  name: 'Prize League',
+  name: 'EarnTour',
   // Cache-bust — bump when the logo asset is replaced so browsers refetch.
-  logoUrl: '/logo.png?v=5',
-  logoAlt: 'Prize League',
+  logoUrl: '/earntour-logo.png?v=1',
+  logoAlt: 'EarnTour',
   primary: '#6C2BFF',
   gold: '#FFD54A',
-  // Aspect ratio of the shipped logo asset (width / height). Crown emblem is ~0.836.
-  logoAspect: 428 / 512,
+  // Aspect ratio of the square EarnTour monogram.
+  logoAspect: 1,
 };
 
 export const COMPANY = {
@@ -28,7 +29,7 @@ export const COMPANY = {
     postcode: 'E7 0RB',
     countryFull: 'United Kingdom',
   },
-  website: 'https://www.prizeleague.co.uk',
+  website: SITE_URL,
   emails: {
     general: 'info@prizeleague.co.uk',
     support: 'support@prizeleague.co.uk',
@@ -41,7 +42,7 @@ export const REGISTERED_ADDRESS_ONE_LINE =
 
 // Legal footer statement — MUST appear in site footer.
 export const LEGAL_FOOTER =
-  'Prize League is operated by PRIZE LEAGUE LTD, a company registered in ' +
+  'EarnTour is operated by PRIZE LEAGUE LTD, a company registered in ' +
   'England and Wales under company number 17338919. Registered office: ' +
   '118 Windsor Road, London, England, E7 0RB, United Kingdom.';
 

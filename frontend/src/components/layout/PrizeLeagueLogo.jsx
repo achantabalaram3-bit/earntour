@@ -1,6 +1,6 @@
 /**
- * Prize League — logo component.
- * Renders the crown emblem PNG and, by default, the "PRIZE LEAGUE" wordmark
+ * EarnTour — logo component.
+ * Renders the EarnTour monogram PNG and, by default, the "EarnTour" wordmark
  * next to it. Pass `emblemOnly` when you need just the icon (e.g. tight
  * corners, favicons, admin sidebar collapsed state).
  *
@@ -29,19 +29,19 @@ export default function PrizeLeagueLogo({ size = 48, className = '', emblemOnly 
   if (emblemOnly) return img;
 
   // Wordmark font-size ~ 42% of emblem height keeps text visually balanced with
-  // the crown while still legible on small headers. Letter-spacing widens the
+  // the monogram while still legible on small headers. Letter-spacing widens the
   // wordmark so it reads as a premium sports/prize brand rather than default.
   const wordSize = Math.max(12, Math.round(size * 0.42));
   return (
     <span className="inline-flex items-center gap-2" data-testid="prizeleague-logo-wrap">
       {img}
       <span
-        className={`font-display font-black uppercase tracking-[0.14em] leading-none whitespace-nowrap ${wordmarkClassName}`}
+        className={`font-display font-black tracking-[0.04em] leading-none whitespace-nowrap ${wordmarkClassName}`}
         style={{ fontSize: `${wordSize}px` }}
         data-testid="prizeleague-wordmark"
       >
-        <span style={{ color: BRAND.gold }}>PRIZE</span>
-        <span className="text-white/95 ml-1">LEAGUE</span>
+        <span style={{ color: BRAND.gold }}>Earn</span>
+        <span className="text-white/95">Tour</span>
       </span>
     </span>
   );

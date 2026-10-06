@@ -33,7 +33,7 @@ export default function VerifyFeed() {
       </div>
       <h1 className="font-display text-4xl font-extrabold text-slate-900">Instant-Win Verification Feed</h1>
       <p className="text-slate-600 mt-3 max-w-2xl leading-relaxed">
-        For every instant-win contest, Prize League commits the exact list of winning tickets
+        For every instant-win contest, EarnTour commits the exact list of winning tickets
         <strong> before ticket sales open</strong>. We publish only the SHA-256 hash of that list here.
         After the contest ends, you can request the original file from support and verify the hash
         matches to prove no manipulation occurred.

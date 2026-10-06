@@ -98,7 +98,7 @@ export default function PromotionBanner() {
               <img
                 key={slide.id}
                 src={resolveMediaUrl(slide.url)}
-                alt={`Prize League promotion ${slideIndex + 1}`}
+                alt={`EarnTour promotion ${slideIndex + 1}`}
                 className={`absolute inset-0 block w-full h-full object-cover object-center transition-opacity duration-500 ${
                   slideIndex === index
                     ? 'opacity-100'

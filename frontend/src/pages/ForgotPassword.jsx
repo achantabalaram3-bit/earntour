@@ -138,7 +138,7 @@ export default function ForgotPassword() {
         <Link
           to="/"
           className="inline-flex mb-6"
-          aria-label="Prize League home"
+          aria-label="EarnTour home"
         >
           <PrizeLeagueLogo size={42} />
         </Link>
@@ -175,7 +175,7 @@ export default function ForgotPassword() {
                   Forgot password?
                 </h1>
                 <p className="text-sm text-slate-500 mt-2">
-                  Enter the verified mobile number linked to your Prize League
+                  Enter the verified mobile number linked to your EarnTour
                   account.
                 </p>
               </div>

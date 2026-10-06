@@ -153,7 +153,7 @@ export default function ContestLeaderboard() {
         <div className="relative">
           <div className="text-white/80 text-xs uppercase tracking-widest flex items-center gap-2">
             <Flame className="w-4 h-4" />
-            Prize League contest leaderboard
+            EarnTour contest leaderboard
           </div>
 
           <h1 className="font-display text-4xl md:text-5xl font-extrabold mt-2">

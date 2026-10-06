@@ -1858,7 +1858,7 @@ function SeasonStart({
         </small>
 
         <strong>
-          PRIZE LEAGUE
+          EarnTour
         </strong>
 
         <span>
@@ -1902,7 +1902,7 @@ function SeasonStart({
 
         <div className="pl2d-gate-arch">
           <div className="pl2d-gate-arch-title">
-            PRIZE LEAGUE
+            EarnTour
           </div>
 
           <div className="pl2d-gate-arch-subtitle">
@@ -3067,8 +3067,8 @@ export default function WorldCanvas({
 
         <div className="pl2d-final-brand">
           <strong>
-            <span>PRIZE</span>
-            <span>LEAGUE</span>
+            <span>Earn</span>
+            <span>Tour</span>
           </strong>
 
           <small>
@@ -3223,7 +3223,7 @@ export default function WorldCanvas({
             ? 'is-busy'
             : '',
         ].join(' ')}
-        aria-label="Prize League primary navigation"
+        aria-label="EarnTour primary navigation"
       >
         <button
           type="button"

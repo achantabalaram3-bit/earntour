@@ -17,7 +17,7 @@ export const FALLBACK_CONTEST_IMAGE =
         font-size="72"
         font-weight="700"
       >
-        Prize League
+        EarnTour
       </text>
     </svg>
   `);

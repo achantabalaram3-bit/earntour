@@ -360,7 +360,7 @@ export default function PrizeLeagueWorld() {
         </div>
 
         <div className="pl-world-loading-subtitle">
-          Preparing Prize League World…
+          Preparing EarnTour World…
         </div>
       </div>
     );
@@ -397,7 +397,7 @@ export default function PrizeLeagueWorld() {
 
       <div
         className="pl-world-promo-ticker pl-world-promo-ticker-top"
-        aria-label="Prize League Free World information"
+        aria-label="EarnTour Free World information"
       >
         <div className="pl-world-promo-track">
 
@@ -483,10 +483,10 @@ export default function PrizeLeagueWorld() {
           <Minus size={20} />
         </button>
       </motion.div>
-      {/* Prize League Free World navigation */}
+      {/* EarnTour Free World navigation */}
       <nav
         className="pl-world-primary-nav"
-        aria-label="Prize League World navigation"
+        aria-label="EarnTour World navigation"
       >
 
         <button

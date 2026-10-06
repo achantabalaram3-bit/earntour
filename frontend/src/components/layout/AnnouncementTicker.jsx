@@ -17,7 +17,7 @@ import { contestsAPI } from '../../lib/api';
 const PROMO_ITEMS = [
   { icon: '🎉', text: 'Play Skill-Based Games' },
   { icon: '⚡', text: 'Enter Exciting Contests' },
-  { icon: '🏆', text: 'Win Amazing Prizes with Prize League' },
+  { icon: '🏆', text: 'Win Amazing Prizes with EarnTour' },
   { icon: '✨', text: 'New contests every week — brand-new skill games each drop' },
 ];
 

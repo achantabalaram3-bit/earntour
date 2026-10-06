@@ -6,7 +6,7 @@ import { worldAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/pl-global-lb.css';
 
-const LOGO_URL = '/logo.png?v=5';
+const LOGO_URL = '/earntour-logo.png?v=1';
 const CHAMPIONSHIP_COUNT = 100;
 
 /* Authoritative prize model (mirrors backend _champion_final_prize):
@@ -195,11 +195,11 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
 
   return (
     <section className="pl-global-lb-shell" role="dialog" aria-modal="true" aria-label="Global leaderboard" data-testid="global-leaderboard">
-      {/* SLIM PRIZE LEAGUE BRAND BAR */}
+      {/* SLIM EarnTour BRAND BAR */}
       <header className="pl-global-lb-topbar" data-testid="lb-topbar">
         <div className="pl-global-lb-brand">
-          <img src={LOGO_URL} alt="Prize League" className="pl-global-lb-logo" />
-          <span className="pl-global-lb-wordmark"><b>PRIZE</b> LEAGUE</span>
+          <img src={LOGO_URL} alt="EarnTour" className="pl-global-lb-logo" />
+          <span className="pl-global-lb-wordmark"><b>Earn</b>Tour</span>
         </div>
         <button className="pl-global-lb-back" onClick={() => onClose?.()} data-testid="lb-close" aria-label="Close leaderboard">
           <X size={18} /> <span>Back</span>

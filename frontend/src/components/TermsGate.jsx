@@ -72,7 +72,7 @@ export default function TermsGate() {
           </DialogTitle>
           <DialogDescription className="text-slate-600 leading-relaxed">
             Before you continue, please confirm you have read and agree to the
-            Prize League Terms &amp; Conditions and Privacy Policy. You&apos;ll only
+            EarnTour Terms &amp; Conditions and Privacy Policy. You&apos;ll only
             need to do this once.
           </DialogDescription>
         </DialogHeader>

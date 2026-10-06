@@ -12,7 +12,7 @@ stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 CATALOG = [
     {
         "emergent_product_id": "wallet_topup",
-        "name": "Prize League — Tokens",
+        "name": "EarnTour — Tokens",
         "tax_code": "txcd_10000000",  # general digital
         "prices": [
             {"lookup_key": "wallet_topup_5",   "amount": 500,   "currency": "gbp"},  # 5 tokens (£5) — minimum

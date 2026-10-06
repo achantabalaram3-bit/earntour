@@ -1,5 +1,5 @@
 """
-Prize League — Stripe wallet top-up payments (Flow A / claimable sandbox).
+EarnTour — Stripe wallet top-up payments (Flow A / claimable sandbox).
 
 Endpoints:
   POST /api/payments/wallet-topup/checkout   → creates Stripe Checkout session (from lookup_key)
@@ -89,7 +89,7 @@ async def create_topup_checkout(req: CheckoutRequest, request: Request):
                 "currency": "gbp",
                 "unit_amount": amount_pence,
                 "product_data": {
-                    "name": f"Prize League — {tokens} tokens (£{tokens})",
+                    "name": f"EarnTour — {tokens} tokens (£{tokens})",
                     "tax_code": "txcd_10103001",  # Digital: SaaS
                 },
             },
@@ -156,7 +156,7 @@ async def create_custom_topup(req: CustomTopupRequest, request: Request):
                 "currency": "gbp",
                 "unit_amount": amount_pence,
                 "product_data": {
-                    "name": f"Prize League — {tokens} tokens (£{tokens})",
+                    "name": f"EarnTour — {tokens} tokens (£{tokens})",
                     # Digital: Software as a Service — required by Stripe Managed Payments.
                     "tax_code": "txcd_10103001",
                 },

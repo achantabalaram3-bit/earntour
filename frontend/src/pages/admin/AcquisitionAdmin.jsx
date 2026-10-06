@@ -98,7 +98,7 @@ export default function AcquisitionAdmin() {
             Acquisition
           </h1>
           <p className="text-sm text-slate-500">
-            How visitors reach Prize League — referrer, campaigns, device and landing pages.
+            How visitors reach EarnTour — referrer, campaigns, device and landing pages.
           </p>
         </div>
         <div className="flex items-center gap-2">

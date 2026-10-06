@@ -50,7 +50,7 @@ export default function MeeraChat({ theme = 'light', onActionsExecuted, publicMo
     'Delete all draft contests',
   ];
   const publicSuggestions = [
-    'How does Prize League work?',
+    'How does EarnTour work?',
     'Is this legal in the UK?',
     'How do I enter for free by post?',
     'When are the draws?',

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { Gamepad2, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 
 /**
- * Prize League premium hero.
- * Left  = PRIZE LEAGUE brand + Play Now.
+ * EarnTour premium hero.
+ * Left  = EarnTour brand + Play Now.
  * Right = Live Contests auto-rotating carousel (fed from `contests` prop).
  */
 export default function HeroBanner({ contests = [] }) {
@@ -60,7 +60,7 @@ export default function HeroBanner({ contests = [] }) {
         {/* LEFT — brand */}
         <div>
           <h1 className="font-display font-extrabold leading-[0.95] tracking-tight">
-            <span className="block pl-gold-text text-5xl md:text-6xl lg:text-7xl">PRIZE LEAGUE</span>
+            <span className="block pl-gold-text text-5xl md:text-6xl lg:text-7xl">EarnTour</span>
           </h1>
           <p className="mt-4 text-white text-2xl md:text-3xl font-display font-bold">
             Play. Compete. Win Amazing Prizes.

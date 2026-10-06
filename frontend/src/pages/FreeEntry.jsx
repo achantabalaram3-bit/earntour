@@ -23,7 +23,7 @@ export default function FreeEntry() {
   const countryFull = c?.postal_address_country_full || FALLBACK_COMPANY.registeredOffice.countryFull;
   const supportEmail = c?.email_support || FALLBACK_COMPANY.emails.support;
   const requiredDetails = c?.postal_required_details || (
-    '- Full name\n- Prize League public ID or registered email\n' +
+    '- Full name\n- EarnTour public ID or registered email\n' +
     '- Confirmation you are aged 18+ and agree to the Terms & Conditions\n' +
     '- The exact name of the competition\n- Your answer to the skill task'
   );
@@ -41,7 +41,7 @@ export default function FreeEntry() {
       </div>
       <h1 className="font-display text-4xl font-extrabold text-slate-900">Free Postal Entry</h1>
       <p className="text-slate-600 mt-3 leading-relaxed">
-        Every Prize League competition that displays a "Free postal entry available" badge accepts
+        Every EarnTour competition that displays a "Free postal entry available" badge accepts
         entries by post at no cost. Your postal entry is treated identically to a paid entry — same
         odds, same rules, same prizes.
       </p>

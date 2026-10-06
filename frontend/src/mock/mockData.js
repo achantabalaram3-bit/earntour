@@ -1,4 +1,4 @@
-// Prize League — public static content used for pages that do not require
+// EarnTour — public static content used for pages that do not require
 // live server data (nav labels, FAQs, category filters, "how it works" copy).
 //
 // PRODUCTION LAUNCH STATE: every runtime array (contests, winners, stats,
@@ -32,12 +32,12 @@ export const HOW_IT_WORKS = [
 ];
 
 export const FAQ_ITEMS = [
-  { q: 'Is Prize League gambling?', a: 'No. Prize League is a UK skill-based prize competition platform. Every entry requires you to correctly answer a genuine skill question. Entries with an incorrect answer are excluded from eligibility. Prize League competitions use genuine skill requirements as part of the entry process.' },
+  { q: 'Is EarnTour gambling?', a: 'No. EarnTour is a UK skill-based prize competition platform. Every entry requires you to correctly answer a genuine skill question. Entries with an incorrect answer are excluded from eligibility. EarnTour competitions use genuine skill requirements as part of the entry process.' },
   { q: 'How do I enter a contest?', a: 'Pick a contest, correctly answer the skill question, choose the number of tickets you want, and pay the entry fee at checkout.' },
   { q: 'When are the draws?', a: 'Every competition displays its published closing and result information on the competition page.' },
   { q: 'Is there a free entry route?', a: 'Yes — UK law requires a free postal entry alternative. Details are printed on every contest page under "Free Entry".' },
   { q: 'How do winners get paid?', a: 'Cash and physical prizes are fulfilled after winner verification in accordance with the competition rules.' },
-  { q: 'What happens if I answer wrong?', a: 'Incorrect answers are excluded from eligibility, so please double-check before submitting. Prize League competitions include genuine skill requirements.' },
+  { q: 'What happens if I answer wrong?', a: 'Incorrect answers are excluded from eligibility, so please double-check before submitting. EarnTour competitions include genuine skill requirements.' },
   { q: 'Who can enter?', a: 'You must be 18+ and a UK resident. Verification may be required before payout.' },
   { q: 'How do I contact support?', a: 'Email support@prizeleague.co.uk — we typically reply within one business day.' },
 ];

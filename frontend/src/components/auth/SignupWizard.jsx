@@ -396,7 +396,7 @@ export default function SignupWizard() {
 
       toast({
         title:
-          `Welcome to Prize League, ${
+          `Welcome to EarnTour, ${
             data.name.split(' ')[0]
           }! 🎉`,
         description:
@@ -769,7 +769,7 @@ export default function SignupWizard() {
 
           <p className="text-sm text-slate-500">
             A verified mobile number is
-            required to create a Prize League
+            required to create a EarnTour
             account.
           </p>
 
@@ -930,7 +930,7 @@ export default function SignupWizard() {
 
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 max-h-40 overflow-auto">
             By ticking the box you agree to
-            Prize League&apos;s{' '}
+            EarnTour&apos;s{' '}
 
             <Link
               to="/terms"

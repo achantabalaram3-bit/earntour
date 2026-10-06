@@ -27,7 +27,7 @@ function isIos() {
 }
 
 /*
- * Prize League install popup.
+ * EarnTour install popup.
  *
  * Sits just above the Free World bottom nav Home button. Uses the native
  * `beforeinstallprompt` on Chromium browsers, and shows a lightweight
@@ -150,14 +150,14 @@ export default function InstallPrompt() {
       className="pl-install-prompt"
       data-testid="pwa-install-prompt"
       role="dialog"
-      aria-label="Install Prize League app"
+      aria-label="Install EarnTour app"
     >
       <div className="pl-install-icon" aria-hidden="true">
         <Download className="w-5 h-5" />
       </div>
 
       <div className="pl-install-copy">
-        <strong>Install Prize League</strong>
+        <strong>Install EarnTour</strong>
 
         {iosTip ? (
           <span className="pl-install-ios">

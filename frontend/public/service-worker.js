@@ -1,8 +1,8 @@
 /*
- * Prize League PWA Service Worker
+ * EarnTour PWA Service Worker
  *
  * Intentionally does NOT cache network responses.
- * Live Prize League data must continue to come from the network.
+ * Live EarnTour data must continue to come from the network.
  */
 
 self.addEventListener('install', () => {
@@ -19,7 +19,7 @@ self.addEventListener('activate', (event) => {
  * A fetch handler is required for the browser to treat the app as an
  * installable PWA (so the install prompt can fire). It intentionally does
  * NOT cache anything — every request goes straight to the network so live
- * Prize League data (auth, APIs, contests, wallet, leaderboards, Free World,
+ * EarnTour data (auth, APIs, contests, wallet, leaderboards, Free World,
  * Special Challenge) is never served stale.
  */
 self.addEventListener('fetch', (event) => {

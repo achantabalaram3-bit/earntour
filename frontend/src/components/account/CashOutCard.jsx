@@ -243,7 +243,7 @@ export default function CashOutCard() {
               </div>
               {(success.google_review_url || success.trustpilot_review_url) && (
                 <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3">
-                  <div className="text-xs font-semibold text-slate-600 mb-2 flex items-center gap-1"><Star className="w-3.5 h-3.5 text-amber-400" /> Enjoying Prize League? Share your experience.</div>
+                  <div className="text-xs font-semibold text-slate-600 mb-2 flex items-center gap-1"><Star className="w-3.5 h-3.5 text-amber-400" /> Enjoying EarnTour? Share your experience.</div>
                   <div className="flex gap-2">
                     {success.google_review_url && <a href={success.google_review_url} target="_blank" rel="noreferrer" className="flex-1 text-center text-xs font-bold rounded-xl border border-slate-200 py-2 hover:bg-white" data-testid="review-google">Google Review</a>}
                     {success.trustpilot_review_url && <a href={success.trustpilot_review_url} target="_blank" rel="noreferrer" className="flex-1 text-center text-xs font-bold rounded-xl border border-slate-200 py-2 hover:bg-white" data-testid="review-trustpilot">Trustpilot</a>}

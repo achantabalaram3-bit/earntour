@@ -10,7 +10,7 @@ export default function Footer() {
  const { toast } = useToast();
  const subscribe = (e) => {
  e.preventDefault();
- toast({ title: 'Subscribed!', description: 'You will hear from Prize League soon.' });
+ toast({ title: 'Subscribed!', description: 'You will hear from EarnTour soon.' });
  e.currentTarget.reset();
  };
 
@@ -20,13 +20,13 @@ export default function Footer() {
  <div className="md:col-span-2 lg:col-span-1">
  <div className="flex items-center gap-3">
  <PrizeLeagueLogo size={48} emblemOnly />
- <div className="font-display font-black uppercase tracking-[0.14em] text-white leading-none whitespace-nowrap text-lg">
- <span style={{ color: '#FFD54A' }}>PRIZE</span>
- <span className="ml-1">LEAGUE</span>
+ <div className="font-display font-black tracking-[0.04em] text-white leading-none whitespace-nowrap text-lg">
+ <span style={{ color: '#FFD54A' }}>Earn</span>
+ <span>Tour</span>
  </div>
  </div>
  <p className="text-sm mt-4 leading-relaxed max-w-xs">
- Prize League is a premium skill-based prize competition platform. Play, compete and win amazing prizes.
+ EarnTour is a premium skill-based prize competition platform. Play, compete and win amazing prizes.
  </p>
  <div className="flex gap-3 mt-4">
  <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#6C2BFF] flex items-center justify-center transition-colors"><Facebook className="w-4 h-4" /></a>

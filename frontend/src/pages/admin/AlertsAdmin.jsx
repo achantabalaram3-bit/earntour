@@ -1,3 +1,4 @@
+import { SITE_URL } from '../../lib/site';
 import { useEffect, useMemo, useState } from 'react';
 import { Bell, RefreshCw, Send, Users, CheckCircle2, Clock3, Ban } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
@@ -1861,7 +1862,7 @@ const TEMPLATE_CATEGORIES = {
       },
       {
             "name": "🎉 Winners 03",
-            "message": "You're a Prize League winner!"
+            "message": "You're a EarnTour winner!"
       },
       {
             "name": "🎉 Winners 04",
@@ -2017,7 +2018,7 @@ const TEMPLATE_CATEGORIES = {
       },
       {
             "name": "🎉 Winners 42",
-            "message": "Celebrate your Prize League win!"
+            "message": "Celebrate your EarnTour win!"
       },
       {
             "name": "🎉 Winners 43",
@@ -2055,7 +2056,7 @@ const TEMPLATE_CATEGORIES = {
   }
 };
 
-const PRIZE_LEAGUE_URL = 'https://prizeleague.co.uk/';
+const PRIZE_LEAGUE_URL = `${SITE_URL}/`;
 
 const CATEGORY_KEYS = Object.keys(TEMPLATE_CATEGORIES);
 

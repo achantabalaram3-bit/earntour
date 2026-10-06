@@ -298,7 +298,7 @@ export default function PlayGame() {
 
         <div className="relative">
           <div className="text-white/80 text-xs uppercase tracking-widest">
-            Prize League official competition
+            EarnTour official competition
           </div>
 
           <h1 className="font-display text-3xl font-extrabold">

@@ -5,11 +5,11 @@ from auth import require_admin
 router = APIRouter(prefix='/api/admin/settings', tags=['settings'])
 
 DEFAULT_SETTINGS = {
-    'site_name': 'Prize League',
+    'site_name': 'EarnTour',
     'tagline': 'Play. Solve. Win.',
     'support_email': 'support@prizeleague.co.uk',
     'support_phone': '',
-    'postal_address': 'Prize League Free Entry\nPO Box 4210\nLondon EC1A 1BB\nUnited Kingdom',
+    'postal_address': 'EarnTour Free Entry\nPO Box 4210\nLondon EC1A 1BB\nUnited Kingdom',
     'currency': 'GBP',
     'kyc_required_for_payout': True,
     'min_withdrawal': 10,

@@ -16,7 +16,7 @@ export default function ReferPage() {
             Refer &amp; <span className="pl-gold-text">Earn</span>
           </h1>
           <p className="mt-4 text-white/75 max-w-xl mx-auto">
-            Invite friends to Prize League and earn 5 tokens when an eligible referral completes the qualifying requirements.
+            Invite friends to EarnTour and earn 5 tokens when an eligible referral completes the qualifying requirements.
           </p>
         </div>
       </section>

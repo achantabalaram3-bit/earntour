@@ -197,7 +197,7 @@ export default function GamePreviewSection({ mobile = false }) {
             </h2>
 
             <p className="text-sm md:text-base text-slate-500 mt-2 max-w-2xl">
-              Practice selected Prize League skill games without logging in,
+              Practice selected EarnTour skill games without logging in,
               using tickets or submitting an official leaderboard score.
             </p>
           </div>

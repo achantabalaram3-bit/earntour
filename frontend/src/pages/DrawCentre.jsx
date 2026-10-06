@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { countdown, gbp } from '../lib/format';
 import BackButton from '../components/BackButton';
 
-const FALLBACK_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23111828"/><text x="50%" y="50%" text-anchor="middle" dy=".35em" fill="%236C2BFF" font-family="sans-serif" font-size="28" font-weight="bold">Prize League</text></svg>';
+const FALLBACK_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23111828"/><text x="50%" y="50%" text-anchor="middle" dy=".35em" fill="%236C2BFF" font-family="sans-serif" font-size="28" font-weight="bold">EarnTour</text></svg>';
 
 function Countdown({ endDate }) {
   const [t, setT] = useState(() => countdown(endDate));
