@@ -1,0 +1,19 @@
+.world-selector-page { min-height: 100vh; background: radial-gradient(ellipse at top, #29154b, #020611 65%); color: #fff; padding: 48px 20px; }
+.earntour-worlds { max-width: 1100px; margin: auto; text-align: center; }
+.earntour-worlds h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 900; margin: 28px 0 12px; }
+.earntour-worlds > p { color: #cbd5e1; font-size: 1.1rem; }
+.earntour-world-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; margin: 40px 0; }
+.earntour-world-card { display: flex; flex-direction: column; align-items: center; padding: 36px 28px; border: 1px solid #8b6b26; border-radius: 28px; background: linear-gradient(145deg, #322710, #0f1422); text-align: left; }
+.earntour-world-free { border-color: #7955c9; background: linear-gradient(145deg, #37215a, #0f1422); }
+.earntour-world-icon { font-size: 4rem; }
+.earntour-world-card h2 { font-size: 2rem; font-weight: 800; margin: 16px 0; }
+.earntour-world-card p { color: #cbd5e1; min-height: 3.5em; text-align: center; }
+.earntour-world-card ul { margin: 24px 0; padding-left: 22px; list-style: disc; line-height: 2; }
+.earntour-world-card button { margin-top: auto; width: 100%; padding: 18px; border: 0; border-radius: 14px; background: #ffd54a; color: #17120a; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; }
+.earntour-world-free button { background: #baf477; }
+.earntour-world-card button:hover { filter: brightness(1.1); }
+.earntour-world-card button:focus-visible { outline: 3px solid white; outline-offset: 5px; }
+.earntour-world-note { padding: 16px; }
+@media (max-width: 767px) { .world-selector-page { padding: 30px 16px; } .earntour-world-grid { grid-template-columns: 1fr; gap: 20px; } .earntour-world-card { padding: 28px 22px; } }
+
+.earntour-world-grid-single { grid-template-columns: minmax(0, 520px); justify-content: center; }

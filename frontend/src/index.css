@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Poppins', sans-serif; letter-spacing: -0.01em; }
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 174 84% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 174 84% 32%;
+    --chart-1: 174 84% 32%;
+    --chart-2: 24 95% 53%;
+    --chart-3: 43 96% 56%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 340 82% 52%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
+}
+
+
+/* --- Mobile helpers --- */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Prevent accidental horizontal page overflow on small screens */
+html, body { overflow-x: hidden; }
+
+/* Prize card hover kept subtle on touch */
+@media (hover: none) {
+  .prize-card:hover img { transform: none !important; }
+}
+
+
+/* ---------- Prize League Premium Palette + Utilities ---------- */
+:root {
+  --pl-purple: #6C2BFF;
+  --pl-purple-2: #8B5CFF;
+  --pl-gold: #FFD54A;
+  --pl-gold-2: #F5B800;
+  --pl-dark: #0B0D1F;
+  --pl-dark-2: #161433;
+  --pl-success: #2ECC71;
+}
+
+/* Gold-metallic gradient text used for PRIZE LEAGUE */
+.pl-gold-text {
+  background: linear-gradient(180deg, #FFE68A 0%, #FFD54A 45%, #E9A700 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.05);
+}
+
+/* Deep-purple radial hero backdrop with subtle star noise */
+.pl-hero-bg {
+  background:
+    radial-gradient(1200px 500px at 15% 0%, rgba(139,92,255,0.35), transparent 60%),
+    radial-gradient(900px 400px at 85% 20%, rgba(108,43,255,0.45), transparent 60%),
+    radial-gradient(600px 300px at 50% 100%, rgba(255,213,74,0.10), transparent 60%),
+    linear-gradient(180deg, var(--pl-dark) 0%, var(--pl-dark-2) 100%);
+}
+
+/* Marquee ticker */
+@keyframes pl-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.pl-marquee-track {
+  display: inline-flex;
+  gap: 3rem;
+  animation: pl-marquee 30s linear infinite;
+  will-change: transform;
+}
+.pl-marquee:hover .pl-marquee-track { animation-play-state: paused; }
+
+/* Glass card */
+.pl-glass {
+  background: rgba(22, 20, 51, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Soft float animation */
+@keyframes pl-float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); }
+}
+.pl-float { animation: pl-float 4s ease-in-out infinite; }
+
+/* Respect reduced-motion preference — turn off decorative animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Gold primary button */
+.pl-btn-gold {
+  background: linear-gradient(180deg, #FFE68A, #FFD54A);
+  color: #171033;
+  box-shadow: 0 10px 30px rgba(255,213,74,0.35), inset 0 -2px 0 rgba(0,0,0,0.1);
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+.pl-btn-gold:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(255,213,74,0.5), inset 0 -2px 0 rgba(0,0,0,0.1); }
+.pl-btn-gold:active { transform: translateY(0); }
+
+/* Purple secondary */
+.pl-btn-purple {
+  background: linear-gradient(180deg, var(--pl-purple-2), var(--pl-purple));
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(108,43,255,0.35);
+}
+
+/* Nav active underline (gold) */
+.pl-nav-active { position: relative; }
+.pl-nav-active::after {
+  content: '';
+  position: absolute; left: 15%; right: 15%; bottom: -6px;
+  height: 3px; border-radius: 999px;
+  background: linear-gradient(90deg, #FFE68A, #F5B800);
+}

@@ -1,0 +1,35 @@
+{
+  "id": "/",
+  "name": "TallSkill",
+  "short_name": "TallSkill",
+  "description": "TallSkill — free-to-play skill championships for India. No deposits, no paid entry.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#21133d",
+  "theme_color": "#21133d",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/tallskill-pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tallskill-pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tallskill-pwa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

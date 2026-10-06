@@ -1,0 +1,338 @@
+from fastapi import FastAPI, APIRouter, Request
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
+import os
+import asyncio
+import logging
+from pathlib import Path
+
+from deps import get_client, get_db
+
+ROOT_DIR = Path(__file__).parent
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+# MongoDB connection (owned by deps.py; re-exported for legacy callers)
+client = get_client()
+db = get_db()
+
+
+_bg_tasks: set = set()
+
+
+def _spawn(coro):
+    t = asyncio.create_task(coro)
+    _bg_tasks.add(t)
+    t.add_done_callback(_bg_tasks.discard)
+    return t
+
+
+def db_ref():
+    """Legacy shim — use `from deps import get_db` in new code."""
+    return get_db()
+
+
+# Create the main app
+app = FastAPI(title='TallSkill API')
+
+# Basic root
+api_router = APIRouter(prefix='/api')
+
+
+@api_router.get('/')
+async def root():
+    return {'service': 'tallskill', 'status': 'ok'}
+
+
+# ---- Kubernetes health probes -------------------------------------------
+# The Emergent K8s cluster probes `GET /health` and `GET /ready` on the
+# backend pod directly (no `/api` prefix stripping). If we don't answer
+# these at the ROOT path the pod is marked NotReady, nginx sees connection
+# refused-style failures, and no client traffic reaches the app.
+# Keep these endpoints trivially cheap so a slow DB never fails a probe.
+@app.get('/health')
+@app.get('/healthz')
+async def health():
+    return {'status': 'ok'}
+
+
+@app.get('/ready')
+@app.get('/readyz')
+async def ready():
+    # Do NOT touch the DB here — a transient Mongo blip should not evict the
+    # pod. Real DB checks belong in a separate /diagnostics endpoint later.
+    return {'status': 'ready'}
+
+
+# ---- Public diagnostics -------------------------------------------------
+# Admin-only. Reveals ONLY safe metadata: which DB name is
+# active, whether the Mongo ping succeeds, how many users are visible.
+# Never returns credentials, secret values, or full document contents.
+@api_router.get('/diagnostics/db')
+async def diagnostics_db(request: Request):
+    from auth import require_admin
+    await require_admin(request)
+    import os as _os
+    from deps import _sanitize_db_name
+    raw = _os.environ.get('DB_NAME')
+    sanitized = _sanitize_db_name(raw)
+    result = {
+        'db_name_raw': raw,
+        'db_name_sanitized': sanitized,
+        'mongo_url_host': None,
+        'ping_ok': False,
+        'ping_error': None,
+        'users_count': None,
+        'privileged_users_count': None,
+    }
+    # Extract just the host from MONGO_URL — never the credentials.
+    mongo_url = _os.environ.get('MONGO_URL', '')
+    if '@' in mongo_url:
+        result['mongo_url_host'] = mongo_url.split('@', 1)[1].split('/', 1)[0]
+    elif '://' in mongo_url:
+        result['mongo_url_host'] = mongo_url.split('://', 1)[1].split('/', 1)[0]
+    try:
+        # Cheap round-trip: {ping:1} is a no-auth-required admin command.
+        await client.admin.command('ping')
+        result['ping_ok'] = True
+        _db = get_db()
+        result['users_count'] = await _db.users.count_documents({})
+        result['privileged_users_count'] = await _db.users.count_documents(
+            {'role': {'$in': ['admin', 'super_admin', 'operator', 'support']}}
+        )
+    except Exception as e:
+        result['ping_error'] = f'{type(e).__name__}: {str(e)[:200]}'
+    return result
+
+
+@api_router.get('/public/winners')
+async def public_winners(limit: int = 50):
+    limit = max(1, min(limit, 200))
+    docs = await db.winners.find({}, {'_id': 0}).sort('drawn_at', -1).to_list(limit)
+    return docs
+
+
+@api_router.get('/public/stats')
+async def public_stats():
+    contests_count = await db.contests.count_documents({'status': 'live'})
+    winners_count = await db.winners.count_documents({})
+    pp = await db.contests.aggregate([{'$group': {'_id': None, 't': {'$sum': '$prize_amount'}}}]).to_list(1)
+    prize_pool = pp[0]['t'] if pp else 0
+    paid_pipe = await db.winners.aggregate([{'$group': {'_id': None, 't': {'$sum': '$prize_amount'}}}]).to_list(1)
+    prizes_given = paid_pipe[0]['t'] if paid_pipe else 0
+    return {
+        'contests_live': contests_count,
+        'winners_total': winners_count,
+        'prize_pool': prize_pool,
+        'prizes_given': prizes_given,
+    }
+
+
+app.include_router(api_router)
+
+# Feature routers
+from routers.auth_routes import router as auth_router
+from routers.contest_routes import router as contest_router
+from routers.order_routes import router as order_router
+from routers.admin_routes import router as admin_router
+from routers.meera_routes import router as meera_router, public_router as meera_public_router
+from routers.user_routes import router as user_router
+from routers.settings_routes import router as settings_router, public_router as settings_public_router
+from routers.production_routes import production_router, notif_router
+from routers.wallet_routes import wallet_router, admin_wallet_router
+from routers.referral_routes import router as referral_router
+from routers.game_routes import router as game_router, public_router as game_public_router
+from routers.world_routes import (
+    router as world_router,
+    public_router as world_public_router,
+    admin_router as world_admin_router,
+    ensure_world_indexes,
+)
+from routers.payments_routes import payments_router
+from routers.uploads_routes import uploads_router
+from routers.winners_routes import winners_router
+from routers.twilio_routes import router as twilio_router
+from routers.captcha_routes import router as captcha_router
+from routers.support_routes import router as support_router, admin_router as admin_support_router
+from routers.legal_routes import public_router as legal_public_router, admin_router as legal_admin_router, ensure_legal_docs_seeded
+from routers.company_routes import public_router as company_public_router, admin_router as company_admin_router, contest_router as leaderboard_router
+from routers.engines_routes import router as engines_router, public_router as engines_public_router
+from routers.user360_routes import router as user360_router
+from routers.acquisition_routes import public_router as acquisition_public_router, admin_router as acquisition_admin_router
+from routers.admin_referrals_routes import router as admin_referrals_router
+from routers.influencer_promo_routes import router as influencer_promo_router
+from routers.winnings_routes import router as winnings_router, admin_router as winnings_admin_router
+from routers.cashout_routes import router as cashout_router, admin_router as cashout_admin_router
+from routers.promotion_routes import router as promotion_router, admin_router as promotion_admin_router
+from routers.promotion_draw_routes import router as promotion_draw_router
+from routers.promotion_source_analytics_routes import router as promotion_source_analytics_router
+from routers.coins_routes import router as coins_router, config_router as tallskill_config_router
+
+app.include_router(auth_router)
+app.include_router(winnings_router)
+app.include_router(winnings_admin_router)
+app.include_router(cashout_router)
+app.include_router(cashout_admin_router)
+app.include_router(contest_router)
+app.include_router(order_router)
+app.include_router(admin_router)
+app.include_router(meera_router)
+app.include_router(meera_public_router)
+app.include_router(user_router)
+app.include_router(settings_router)
+app.include_router(settings_public_router)
+app.include_router(production_router)
+app.include_router(notif_router)
+app.include_router(wallet_router)
+app.include_router(admin_wallet_router)
+app.include_router(referral_router)
+app.include_router(game_router)
+app.include_router(game_public_router)
+app.include_router(world_router)
+app.include_router(world_public_router)
+app.include_router(world_admin_router)
+app.include_router(payments_router)
+app.include_router(uploads_router)
+app.include_router(winners_router)
+app.include_router(twilio_router)
+app.include_router(captcha_router)
+app.include_router(support_router)
+app.include_router(admin_support_router)
+app.include_router(legal_public_router)
+app.include_router(legal_admin_router)
+app.include_router(company_public_router)
+app.include_router(company_admin_router)
+app.include_router(leaderboard_router)
+app.include_router(engines_router)
+app.include_router(engines_public_router)
+app.include_router(user360_router)
+app.include_router(acquisition_public_router)
+app.include_router(acquisition_admin_router)
+app.include_router(admin_referrals_router)
+app.include_router(influencer_promo_router)
+app.include_router(promotion_router)
+app.include_router(promotion_admin_router)
+app.include_router(promotion_draw_router)
+app.include_router(promotion_source_analytics_router)
+app.include_router(coins_router)
+app.include_router(tallskill_config_router)
+
+
+@app.on_event('startup')
+async def _ensure_world_engine_indexes():
+    async def _bg():
+        try:
+            await ensure_world_indexes()
+        except Exception as e:
+            import logging
+            logging.warning(
+                f'[startup] world index setup failed: {e}'
+            )
+    _spawn(_bg())
+
+
+@app.on_event('startup')
+async def _seed_legal_docs():
+    from deps import get_db
+    async def _bg():
+        try:
+            await ensure_legal_docs_seeded(get_db())
+        except Exception as e:
+            import logging
+            logging.warning(f'[startup] legal seed failed: {e}')
+    _spawn(_bg())
+
+# Serve uploaded images under /api/uploads/* so k8s ingress routes to the backend pod.
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+
+
+# TallSkill origins come from env only. CORS_ORIGINS: comma-separated list or "*".
+_cors_origins = [o.strip() for o in os.environ.get('CORS_ORIGINS', '').split(',') if o.strip()]
+_cors_dev_regex = r'https?://(localhost(:\d+)?|127\.0\.0\.1(:\d+)?|.*\.preview\.emergentagent\.com|.*\.emergent\.host)'
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=[] if '*' in _cors_origins else _cors_origins,
+    allow_origin_regex='.*' if '*' in _cors_origins else (os.environ.get('CORS_ORIGIN_REGEX') or _cors_dev_regex),
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+
+@app.on_event('startup')
+async def _start_scheduler():
+    from services import scheduler as draw_scheduler
+    draw_scheduler.start(db)
+    logger.info('Draw scheduler started')
+
+
+@app.on_event('startup')
+async def _ensure_core_indexes():
+    _spawn(_do_core_indexes())
+
+
+async def _do_core_indexes():
+    """Create the indexes the app relies on for correctness (not just perf).
+    Idempotent — Mongo silently no-ops if the index already exists.
+
+    Critical ones:
+      - users.email unique          → prevents duplicate signup for the same email
+      - users.public_id unique      → sequential PLxxxxx must be unique
+      - orders(user_id, idempotency_sig) unique + short TTL-scoped filter →
+        makes the 3-second double-click guard race-safe (duplicate key
+        rejection is atomic, unlike the previous check-then-insert)
+      - payment_transactions.session_id unique → keeps top-up records unique
+      - user_sessions.session_token unique     → Google session integrity
+    """
+    _db = get_db()
+    # Legacy index cleanup — the old `public_id_1` (sparse=True) collides
+    # with the new `ux_users_public_id_str` (partialFilterExpression). If we
+    # find the legacy sparse variant, drop it silently so the modern one
+    # becomes the sole enforcer.
+    try:
+        existing = await _db.users.list_indexes().to_list(None)
+        for idx in existing:
+            if idx.get('name') == 'public_id_1' and idx.get('sparse'):
+                await _db.users.drop_index('public_id_1')
+                logger.info('[startup] dropped legacy sparse index users.public_id_1')
+                break
+    except Exception as e:
+        logger.warning('[startup] legacy index cleanup skipped: %s', str(e)[:120])
+
+    # Each index in its own try — one existing-but-incompatible index must
+    # not prevent the others from being created.
+    _idx_specs = [
+        ('users',                 [('email', 1)],         {'unique': True}),
+        ('users',                 [('public_id', 1)],     {'unique': True, 'partialFilterExpression': {'public_id': {'$type': 'string'}}, 'name': 'ux_users_public_id_str'}),
+        ('users',                 [('user_id', 1)],       {'unique': True}),
+        ('contests',              [('slug', 1)],          {'unique': True, 'sparse': True}),
+        ('contests',              [('contest_id', 1)],    {'unique': True}),
+        ('orders',                [('order_id', 1)],      {'unique': True}),
+        ('orders',                [('user_id', 1), ('idempotency_sig', 1)], {
+            'unique': True,
+            'partialFilterExpression': {'idempotency_sig': {'$type': 'string'}},
+            'name': 'ux_orders_user_idempotency',
+        }),
+        ('tickets',               [('ticket_id', 1)],     {'unique': True, 'partialFilterExpression': {'ticket_id': {'$type': 'string'}}, 'name': 'ux_tickets_ticket_id_str'}),
+        ('payment_transactions',  [('session_id', 1)],    {'unique': True}),
+        ('user_sessions',         [('session_token', 1)], {'unique': True}),
+        ('wallets',               [('user_id', 1)],       {'unique': True}),
+    ]
+    ok = 0
+    for coll, keys, opts in _idx_specs:
+        try:
+            await _db[coll].create_index(keys, **opts)
+            ok += 1
+        except Exception as e:
+            logger.warning('[startup] index skip %s%s: %s', coll, keys, str(e)[:120])
+    logger.info('[startup] core indexes ensured (%d/%d)', ok, len(_idx_specs))
+
+
+@app.on_event('shutdown')
+async def shutdown_db_client():
+    from services import scheduler as draw_scheduler
+    draw_scheduler.stop()
+    client.close()

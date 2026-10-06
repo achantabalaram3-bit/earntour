@@ -1,0 +1,27 @@
+# TallSkill
+User-agent: *
+Allow: /
+Allow: /free-world
+Disallow: /admin
+Disallow: /admin/
+Disallow: /my-account
+Disallow: /cart
+Disallow: /auth/
+Disallow: /auth-callback
+Disallow: /production
+Disallow: /production/
+Disallow: /world-preview
+Disallow: /api/
+
+# Allow all major search engines to crawl marketing pages
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /my-account
+Disallow: /cart
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /my-account
+Disallow: /cart
