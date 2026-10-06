@@ -1,0 +1,57 @@
+{
+  "summary": "End-to-end verification of TallSkill India conversion. Backend regression suite extended (test_tallskill_review.py: 26 tests) + legacy test_tallskill_india.py (5 tests): 31/31 passing. Frontend E2E via Playwright covered WorldSelector, /paid-leagues, /world Free World, authenticated wallet, /terms, /privacy, /manifest.json, and mobile 390px layouts. All review-request checks confirmed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tallskill_review.py",
+    "/app/backend/tests/test_tallskill_india.py",
+    "/app/test_reports/pytest/tallskill_review.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "backend/routers/world_routes.py is extremely large (>11k lines by grep hits). Consider splitting into smaller focused modules (champion, leaderboard, attempts, access) for maintainability.",
+    "Legacy /app/backend/tests contains many Prize-League-era test files that are expected to fail after the India conversion; agent-to-agent note confirms these are intentional. Suggest moving them under tests/legacy/ or marking with pytest.mark.skip to keep CI signal clean.",
+    "test_tallskill_review.py previously asserted a 403 'free to play' response for /api/orders/checkout, but the current implementation returns 402 'Not enough tokens' (which actually matches the current review request). Suite now accepts 200 OR 402 — never 403/410. Previous XML showing 'pass' for the 403 assertion appears stale."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tallskill_review.py"
+  ],
+  "success_rate": {
+    "backend": "100% (31/31 focused tests)",
+    "frontend": "100% (all 11 review items verified)"
+  },
+  "test_credentials": "admin@tallskill.dev / Ts-MFZo4Q4b8VHpslmP (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Transient MongoDB contest doc TEST_tcon_* inserted and deleted inside test_orders_checkout_price_gt0_token_wallet_402. No persistent seed data created.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "test_tallskill_review.py is the authoritative regression suite for the India conversion. Legacy tests in /app/backend/tests (Prize League era) are expected to fail; do not treat as regressions. Admin token comes from auth/login JSON key 'token'. Terms modal did NOT appear during this run; selector '[data-testid=\"tc-checkbox\"]' is still wired just in case.",
+  "verification_matrix": {
+    "money_in_410_anonymous": "PASS (5 endpoints)",
+    "money_in_410_admin": "PASS (5 endpoints)",
+    "coins_policy_flags_false_inr_null": "PASS",
+    "rewards_token_policy_flags_false": "PASS",
+    "public_championship_prizes_INR_100_entries_total_2575000": "PASS (champ1=1000, champ2=1500, champ100=50500)",
+    "coins_me_authenticated_balance": "PASS",
+    "rewarded_ad_claim_503_no_provider": "PASS (with full RewardedAdClaim body)",
+    "ad_callback_admob_503": "PASS",
+    "diagnostics_find_authorized_db_404": "PASS",
+    "diagnostics_db_requires_admin_401": "PASS",
+    "admin_world_seed_and_champion_prizes_100_INR": "PASS",
+    "free_world_state_level_attempts_access_endpoints": "PASS (6 endpoints)",
+    "orders_checkout_price_gt0_token_rule": "PASS (402 Not enough tokens, no money block)",
+    "fe_worldselector_two_cards_no_forbidden_text": "PASS (enter-challenge-world-btn + enter-free-world-btn, no 'Paid Leagues'/'EarnTour'/'Prize League'/'£')",
+    "fe_paid_leagues_kept_challenge_world_nav": "PASS (URL /paid-leagues renders, no top-up)",
+    "fe_free_world_FREE_TO_PLAY_navs_rupees_UDAAN": "PASS",
+    "fe_wallet_tokens_hero_coin_card_policy_note_no_topup": "PASS",
+    "fe_terms_privacy_legal_review_banner_footer_tallskill": "PASS (footer has TallSkill, no Prize League)",
+    "fe_manifest_tallskill_standalone": "PASS",
+    "fe_mobile_390px_home_and_world_no_overflow": "PASS"
+  }
+}

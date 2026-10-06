@@ -100,3 +100,7 @@ frontend/node_modules/.cache/default-development/0.pack
 .env
 .env.*
 *.env
+
+# TallSkill: never commit user uploads/KYC or build output
+backend/uploads/
+frontend/build/
