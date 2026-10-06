@@ -6,7 +6,6 @@ from deps import get_db
 from models import CheckoutInput, Order, Ticket
 from routers.wallet_routes import _apply_tx, _get_or_create_wallet
 from skill_challenge import verify_challenge
-from tallskill_config import MONEY_IN_DISABLED_DETAIL
 
 router = APIRouter(prefix='/api/orders', tags=['orders'])
 
@@ -85,8 +84,6 @@ async def checkout(inp: CheckoutInput, request: Request):
             raise HTTPException(status_code=404, detail=f'Contest not found: {item.contest_id}')
         if c.get('status') != 'live':
             raise HTTPException(status_code=400, detail=f'Contest closed: {c["title"]}')
-        if float(c.get('price') or 0) > 0:
-            raise HTTPException(status_code=403, detail=MONEY_IN_DISABLED_DETAIL)
         _validate_skill(c, item)
         if item.qty <= 0 or item.qty > 500:
             raise HTTPException(status_code=400, detail='Invalid quantity')
@@ -114,7 +111,7 @@ async def checkout(inp: CheckoutInput, request: Request):
     if wallet['balance'] < total:
         raise HTTPException(
             status_code=402,
-            detail=f'Insufficient coin balance. You have {wallet["balance"]:.0f}, need {total:.0f}.',
+            detail=f'Not enough tokens. You have {wallet["balance"]:.0f}, need {total:.0f}. Earn tokens to enter.',
         )
 
     # Pass 2: ATOMIC ticket reservations. Each `$inc` is guarded by a filter

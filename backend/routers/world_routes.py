@@ -33,6 +33,7 @@ from auth import get_current_user, require_admin
 from deps import get_db
 import os
 from routers.wallet_routes import _apply_tx_idempotent
+from coins_ledger import apply_coin_tx_idempotent
 from tallskill_config import CURRENCY_CODE, championship_multiplier, championship_prize, championship_rank_base_prizes
 
 
@@ -8458,7 +8459,7 @@ async def reserve_world_token_retry(
     #
     # Same reservation_id => same wallet marker =>
     # repeating/resuming this operation cannot charge twice.
-    spend = await _apply_tx_idempotent(
+    spend = await apply_coin_tx_idempotent(
         db,
         user_id,
         "spend",
@@ -8890,7 +8891,7 @@ async def reserve_world_level_unlock(
     if reservation.get(
         "status"
     ) == "active":
-        wallet = await db.wallets.find_one(
+        wallet = await db.coin_wallets.find_one(
             {
                 "user_id":
                     user["user_id"],
@@ -8968,7 +8969,7 @@ async def reserve_world_level_unlock(
         },
     )
 
-    spend = await _apply_tx_idempotent(
+    spend = await apply_coin_tx_idempotent(
         db,
         user["user_id"],
         "spend",

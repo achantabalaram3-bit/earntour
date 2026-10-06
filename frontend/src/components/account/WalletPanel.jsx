@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
-import { tokens as fmtTokens, tokenCount } from '../../lib/format';
+import { useEffect, useMemo, useState } from 'react';
+import { tokens as fmtTokens, coins as fmtCoins, tokenCount } from '../../lib/format';
+import { coinsAPI } from '../../lib/api';
 import { Coins, ShieldCheck, TrendingUp, TrendingDown, Receipt, X } from 'lucide-react';
-import { COIN_POLICY } from '../../config/tallskill';
+import { COIN_POLICY, TOKEN_POLICY } from '../../config/tallskill';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import PrizeLeagueLogo from '../layout/PrizeLeagueLogo';
 import CashOutCard from './CashOutCard';
@@ -24,6 +25,7 @@ function windowStart(filter) {
 
 const TX_LABELS = {
  topup: 'Legacy purchase',
+ ad_reward: 'Rewarded ad',
  spend: 'Contest entry',
  refund: 'Refund',
  admin_adjust: 'Admin adjustment',
@@ -61,7 +63,7 @@ function TxReceipt({ tx, open, onClose, walletBefore }) {
  {tx.note && <Row label="Note" value={<span className="text-slate-500 text-xs">{tx.note}</span>} />}
  {tx.ref_order_id && <Row label="Order" value={<span className="font-mono text-xs">{tx.ref_order_id}</span>} />}
   <div className="h-px bg-slate-200 my-3" />
- <Row label="Coins" bold value={<span className={tx.amount > 0 ? 'text-emerald-600' : 'text-rose-600'}>{tx.amount > 0 ? '+' : ''}{fmtTokens(tx.amount)}</span>} />
+ <Row label="Tokens" bold value={<span className={tx.amount > 0 ? 'text-emerald-600' : 'text-rose-600'}>{tx.amount > 0 ? '+' : ''}{fmtTokens(tx.amount)}</span>} />
  <Row label="Balance before" value={fmtTokens(walletBefore)} />
  <Row label="Balance after" bold value={fmtTokens(balanceAfter)} />
  <Row label="Status" value={<span className="text-emerald-600 font-semibold">Completed</span>} />
@@ -86,6 +88,9 @@ function Row({ label, value, bold }) {
 export default function WalletPanel({ wallet, walletTxs }) {
  const [filter, setFilter] = useState('month');
  const [selectedTx, setSelectedTx] = useState(null);
+ const [coinWallet, setCoinWallet] = useState(null);
+
+ useEffect(() => { coinsAPI.me().then(setCoinWallet).catch(() => {}); }, []);
 
  const filteredTxs = useMemo(() => {
  const start = windowStart(filter);
@@ -104,12 +109,12 @@ export default function WalletPanel({ wallet, walletTxs }) {
  <div className="bg-gradient-to-br from-[#3E0BAA] via-[#6C2BFF] to-[#8B5CFF] rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden" data-testid="wallet-hero">
  <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-[#FFD54A]/20 blur-3xl" />
  <div className="relative">
- <div className="text-white/85 text-xs uppercase tracking-widest flex items-center gap-2"><Coins className="w-4 h-4" /> {COIN_POLICY.name}</div>
+ <div className="text-white/85 text-xs uppercase tracking-widest flex items-center gap-2"><Coins className="w-4 h-4" /> {TOKEN_POLICY.name} · Challenge World entry</div>
  <div className="mt-1 font-display font-extrabold text-5xl md:text-6xl flex items-baseline gap-2" data-testid="wallet-balance">
  <span>{wallet ? tokenCount(wallet.tokens ?? wallet.balance) : 0}</span>
- <span className="text-xl md:text-2xl text-white/80 font-bold">coins</span>
+ <span className="text-xl md:text-2xl text-white/80 font-bold">tokens</span>
  </div>
- <div className="mt-2 text-xs text-white/85">Earn coins through gameplay and promotions. Rewarded ads are coming soon.</div>
+ <div className="mt-2 text-xs text-white/85">Earn tokens by watching verified rewarded ads (coming soon). Tokens are never sold.</div>
  </div>
  <div className="relative mt-6 grid grid-cols-2 md:grid-cols-3 gap-3 text-white/90">
  <div className="bg-white/10 backdrop-blur rounded-xl p-3">
@@ -120,13 +125,18 @@ export default function WalletPanel({ wallet, walletTxs }) {
  <div className="text-[10px] uppercase tracking-wider text-white/70">Used ({filter})</div>
  <div className="font-bold text-lg mt-0.5" data-testid="wallet-used">{fmtTokens(stats.used)}</div>
  </div>
+ <div className="bg-white/10 backdrop-blur rounded-xl p-3" data-testid="coin-balance-card">
+ <div className="text-[10px] uppercase tracking-wider text-white/70">{COIN_POLICY.name}</div>
+ <div className="font-bold text-lg mt-0.5" data-testid="coin-balance">{fmtCoins(coinWallet?.coins ?? 0)}</div>
+ <div className="text-[10px] text-white/60">Free World retries &amp; unlocks</div>
+ </div>
  </div>
  </div>
 
  <div className="bg-white rounded-2xl border border-slate-100 p-5 flex gap-3 items-start" data-testid="coin-policy-note">
  <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
  <p className="text-sm text-slate-600">
- TallSkill Coins cannot be bought, sold, transferred, withdrawn or exchanged for cash, and have no rupee value. TallSkill has no deposits and no paid entry.
+ TallSkill Tokens and Coins cannot be bought, sold, transferred, withdrawn or exchanged for cash, and have no rupee value. TallSkill has no deposits.
  </p>
  </div>
 

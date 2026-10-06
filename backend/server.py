@@ -166,7 +166,7 @@ from routers.cashout_routes import router as cashout_router, admin_router as cas
 from routers.promotion_routes import router as promotion_router, admin_router as promotion_admin_router
 from routers.promotion_draw_routes import router as promotion_draw_router
 from routers.promotion_source_analytics_routes import router as promotion_source_analytics_router
-from routers.coins_routes import router as coins_router, config_router as tallskill_config_router
+from routers.coins_routes import router as coins_router, rewards_router, config_router as tallskill_config_router
 
 app.include_router(auth_router)
 app.include_router(winnings_router)
@@ -215,6 +215,7 @@ app.include_router(promotion_admin_router)
 app.include_router(promotion_draw_router)
 app.include_router(promotion_source_analytics_router)
 app.include_router(coins_router)
+app.include_router(rewards_router)
 app.include_router(tallskill_config_router)
 
 

@@ -74,11 +74,7 @@ export default function LegalDocPage() {
 
               <div className="border-t border-slate-100 mt-8 pt-4 text-[11px] text-slate-500 leading-relaxed">
                 <p>
-                  <strong>{COMPANY.legalName}</strong> · Company No. {COMPANY.companyNumber} ·
-                  Registered in {COMPANY.jurisdiction}. Registered office:
-                  {' '}{COMPANY.registeredOffice.line1}, {COMPANY.registeredOffice.line2},
-                  {' '}{COMPANY.registeredOffice.country}, {COMPANY.registeredOffice.postcode},
-                  {' '}{COMPANY.registeredOffice.countryFull}.
+                  <strong>{COMPANY.legalName}</strong> · {COMPANY.jurisdiction}
                 </p>
               </div>
             </>

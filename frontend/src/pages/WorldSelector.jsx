@@ -11,14 +11,15 @@ export default function WorldSelector() {
       <div className="earntour-worlds">
         <PrizeLeagueLogo size={56} />
         <h1>Welcome to TallSkill</h1>
-        <p>Free-to-play skill championships. No deposits. No paid entry.</p>
+        <p>Two worlds. One account. No deposits — ever.</p>
         <div className={`earntour-world-grid${FEATURES.paidLeagues ? '' : ' earntour-world-grid-single'}`} data-testid="world-selector-grid">
           {FEATURES.paidLeagues && (
             <section className="earntour-world-card earntour-world-paid">
               <span aria-hidden="true" className="earntour-world-icon">🏆</span>
-              <h2>Paid Leagues</h2>
-              <p>Put your skills to the test in prize competitions.</p>
-              <button type="button" onClick={() => navigate('/paid-leagues')}>Enter Paid Leagues <span aria-hidden="true">→</span></button>
+              <h2>Challenge World</h2>
+              <p>Skill competitions with live leaderboards. Enter with tokens you earn — never with money.</p>
+              <ul><li>Token entry</li><li>Live leaderboards</li><li>Published competition rules</li></ul>
+              <button type="button" data-testid="enter-challenge-world-btn" onClick={() => navigate('/paid-leagues')}>Enter Challenge World <span aria-hidden="true">→</span></button>
             </section>
           )}
           <section className="earntour-world-card earntour-world-free">
@@ -29,7 +30,7 @@ export default function WorldSelector() {
             <button type="button" data-testid="enter-free-world-btn" onClick={() => navigate('/world')}>Enter Free World <span aria-hidden="true">→</span></button>
           </section>
         </div>
-        <p className="earntour-world-note">Your account and progress stay with you on web and mobile.</p>
+        <p className="earntour-world-note">Switch worlds anytime. Your account, tokens, coins and progress stay with you on web and Android.</p>
       </div>
     </main>
   );

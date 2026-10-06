@@ -168,7 +168,7 @@ export default function Cart() {
       setCheckoutStep('success');
       loadWallet();
       toast({
-        title: 'Payment successful 🎉',
+        title: 'Entry confirmed 🎉',
         description: `${r.tickets} ticket${r.tickets !== 1 ? 's' : ''} confirmed · ${fmtTokens(r.total)} · Order #${r.order_id}`,
       });
     } catch (err) {
@@ -194,8 +194,7 @@ export default function Cart() {
           : rawDetail || 'Please try again.';
 
       if (status === 402) {
-        toast({ title: 'Not enough tokens', description: `Buy ${fmtTokens(shortfall)} more to complete this order.` });
-        nav('/my-account/wallet?topup=1');
+        toast({ title: 'Not enough tokens', description: `You need ${fmtTokens(shortfall)} more. Tokens are earned, never bought.` });
       } else if (status === 400 && /skill|token|answer|expired/i.test(detail)) {
         // Force a re-issue of the skill challenge for the failing contest(s)
         // so the user's next click can succeed.
@@ -207,7 +206,7 @@ export default function Cart() {
     } finally { setBusy(false); }
   };
 
-  const goTopUp = () => nav('/my-account/wallet?topup=1');
+  const goTopUp = () => nav('/my-account/wallet');
 
   const hasGameToPlay = Boolean(
     checkoutSuccess?.first_ticket_id &&
@@ -241,7 +240,7 @@ export default function Cart() {
                 </div>
 
                 <h2 className="mt-5 text-center font-display text-2xl md:text-3xl font-extrabold text-slate-900">
-                  Payment successful
+                  Entry confirmed
                 </h2>
 
                 <p className="mt-2 text-center text-slate-600">
@@ -367,7 +366,7 @@ export default function Cart() {
 
       <div className="max-w-6xl mx-auto px-4 lg:px-8 py-8 md:py-10" data-testid="cart-page">
       <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900">Your Basket</h1>
-      <p className="text-sm text-slate-500 mt-1">Tickets are only allocated after successful payment.</p>
+      <p className="text-sm text-slate-500 mt-1">Entries use TallSkill Tokens you have earned. No money is ever charged.</p>
 
       {items.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-slate-100 mt-8" data-testid="cart-empty">
@@ -528,10 +527,10 @@ export default function Cart() {
                 <div className="mt-4 space-y-2">
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30">
                     <AlertCircle className="w-4 h-4 text-rose-400 mt-0.5 shrink-0" />
-                    <div className="text-xs text-rose-200">Not enough tokens. Buy {fmtTokens(shortfall)} more to complete this order — your basket will be waiting when you return.</div>
+                    <div className="text-xs text-rose-200">Not enough tokens. You need {fmtTokens(shortfall)} more — earn tokens via rewarded ads (coming soon). Your basket will be waiting.</div>
                   </div>
                   <Button onClick={goTopUp} data-testid="cart-topup-btn" className="w-full pl-btn-gold text-slate-900 h-11 font-extrabold">
-                    <Sparkles className="w-4 h-4 mr-1" /> Buy tokens →
+                    <Sparkles className="w-4 h-4 mr-1" /> How to earn tokens →
                   </Button>
                 </div>
               ) : (
@@ -541,7 +540,7 @@ export default function Cart() {
               )}
 
               <p className="text-[10px] text-slate-500 text-center mt-3">
-                Server-validated token debit. Entries are only created after payment succeeds.
+                Server-validated token debit. Tokens have no cash value and cannot be bought.
               </p>
             </div>
           </div>

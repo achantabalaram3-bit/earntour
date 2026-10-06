@@ -17,7 +17,7 @@ import { FEATURES } from '../../config/tallskill';
 const NAV = [
  { label: 'Home', href: '/' },
  { label: 'Free World', href: '/world' },
- ...(FEATURES.paidLeagues ? [{ label: 'Contests', href: '/competitions' }] : []),
+ ...(FEATURES.paidLeagues ? [{ label: 'Challenge World', href: '/paid-leagues' }] : []),
  { label: 'Leaderboard', href: '/leaderboard' },
  { label: 'How It Works', href: '/how-it-works' },
  { label: 'Refer & Earn', href: '/refer' },
@@ -187,7 +187,7 @@ const minimalWorldHeader =
           className="inline-flex items-center justify-center rounded-full border border-[#FFD54A]/40 bg-[#FFD54A]/10 px-3 sm:px-4 py-2 text-[#FFD54A] text-[11px] sm:text-sm font-extrabold tracking-wide hover:bg-[#FFD54A]/20 transition"
           data-testid="login-header-real-world"
          >
-          REAL WORLD
+          CHALLENGE WORLD
          </Link>
          )}
 

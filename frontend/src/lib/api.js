@@ -216,6 +216,11 @@ export const uploadsAPI = {
 };
 
 // Money-in (Stripe top-ups) is disabled for TallSkill India; paymentsAPI removed.
+export const coinsAPI = {
+  me: () => api.get('/coins/me').then(r => r.data),
+  transactions: (limit = 50) => api.get(`/coins/transactions?limit=${limit}`).then(r => r.data),
+  policy: () => api.get('/coins/policy').then(r => r.data),
+};
 
 
 export const adminWalletAPI = {

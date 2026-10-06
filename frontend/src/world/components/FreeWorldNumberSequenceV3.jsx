@@ -20,7 +20,7 @@ import {
 import {
   worldAPI,
   worldContestAPI,
-  walletAPI,
+  coinsAPI,
 } from '../../lib/api';
 
 import { toast } from 'sonner';
@@ -236,13 +236,13 @@ export default function FreeWorldNumberSequenceV3({
         return;
       }
 
-      walletAPI
+      coinsAPI
         .me()
         .then((wallet) => {
           if (mountedRef.current) {
             setWalletBalance(
               Number(
-                wallet?.tokens ??
+                wallet?.coins ??
                   Math.round(
                     Number(
                       wallet?.balance ?? 0,
@@ -1131,7 +1131,7 @@ if (
 
           toast.success('Retry unlocked', {
             description:
-              `${cost} Tokens used \u2022 ${remaining} remaining`,
+              `${cost} Coins used \u2022 ${remaining} remaining`,
           });
 
           window.dispatchEvent(
@@ -1146,7 +1146,7 @@ if (
         const message =
           getErrorMessage(
             requestError,
-            'Unable to reserve a token retry.',
+            'Unable to reserve a coin retry.',
           );
 
         if (mountedRef.current) {
@@ -1869,7 +1869,7 @@ if (
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="fwv3-token-modal-kicker">
-                  RETRY WITH TOKENS
+                  RETRY WITH COINS
                 </div>
 
                 <h3>
@@ -2332,7 +2332,7 @@ if (
                   setRetryConfirmOpen(true);
                 }}
               >
-                RETRY WITH TOKENS - {
+                RETRY WITH COINS - {
                   Number(
                     resultAttempts
                       ?.token_retry_cost ?? 1,
@@ -2342,8 +2342,8 @@ if (
                     resultAttempts
                       ?.token_retry_cost ?? 1,
                   ) === 1
-                    ? 'TOKEN'
-                    : 'TOKENS'
+                    ? 'COIN'
+                    : 'COINS'
                 }
               </button>
             ) : null
@@ -2417,7 +2417,7 @@ if (
                 }
               >
                 <div className="fwv3-token-modal-kicker">
-                  RETRY WITH TOKENS
+                  RETRY WITH COINS
                 </div>
 
                 <h3>

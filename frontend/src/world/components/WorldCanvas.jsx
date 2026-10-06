@@ -16,11 +16,12 @@ import {
 
 import {
   worldAPI,
-  walletAPI,
+  coinsAPI,
 } from '../../lib/api';
 
 import { FEATURES, championshipPrize } from '../../config/tallskill';
 import { formatINR } from '../../lib/currency';
+import { championshipName } from '../../config/championships';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../context/AuthContext';
@@ -378,7 +379,7 @@ function ChampionshipPrizePopup({
       <div className="pl2d-prize-rays" />
 
       <small>
-        CHAMPIONSHIP {championshipNumber}
+        CHAMPIONSHIP {championshipNumber} · {championshipName(championshipNumber).toUpperCase()}
       </small>
 
       <strong>
@@ -1773,7 +1774,7 @@ function ChampionshipSection({
 
       <div className="pl1000-range">
         <small>
-          CHAMPIONSHIP {championshipNumber}
+          CHAMPIONSHIP {championshipNumber} · {championshipName(championshipNumber).toUpperCase()}
         </small>
 
         <span>
@@ -2226,12 +2227,12 @@ export default function WorldCanvas({
       return;
     }
 
-    walletAPI
+    coinsAPI
       .me()
       .then((wallet) => {
         setWalletBalance(
           Number(
-            wallet?.tokens ??
+            wallet?.coins ??
               Math.round(
                 Number(wallet?.balance ?? 0),
               ),
@@ -2387,7 +2388,7 @@ export default function WorldCanvas({
 
       toast.success('Level unlocked', {
         description:
-          `${cost} Tokens used \u2022 ${remaining} remaining`,
+          `${cost} Coins used \u2022 ${remaining} remaining`,
       });
 
       setUnlockModal(null);
@@ -3064,7 +3065,7 @@ export default function WorldCanvas({
             </small>
 
             <strong>
-              CHAMPIONSHIP {currentChampionship}
+              CHAMPIONSHIP {currentChampionship} · {championshipName(currentChampionship).toUpperCase()}
             </strong>
 
             <span>
@@ -3247,7 +3248,7 @@ export default function WorldCanvas({
           </span>
 
           <strong>
-            PAID CONTESTS
+            CHALLENGE WORLD
           </strong>
 
           <small>
@@ -3309,7 +3310,7 @@ export default function WorldCanvas({
             }
           >
             <div className="pl2d-token-modal-kicker">
-              EARLY UNLOCK WITH TOKENS
+              EARLY UNLOCK WITH COINS
             </div>
 
             <h2>

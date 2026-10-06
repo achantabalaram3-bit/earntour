@@ -2,12 +2,12 @@
 // Mirrors backend/tallskill_config.py. Values are a configured schedule pending launch approval.
 export const FEATURES = {
   moneyIn: false,
-  paidLeagues: false,
+  paidLeagues: true, // Challenge World (internal route /paid-leagues), token entry only
   rewardedAds: false,
 };
 
 export const MONEY_IN_DISABLED_MESSAGE =
-  'TallSkill is free to play. Deposits, top-ups, coin purchases and paid entry are not available.';
+  'TallSkill has no deposits. Tokens and coins cannot be bought — they are earned.';
 
 export const WORLD_TIMEZONE = process.env.REACT_APP_WORLD_TIMEZONE || 'Asia/Kolkata';
 export const WORLD_TIMEZONE_LABEL = WORLD_TIMEZONE === 'Asia/Kolkata' ? 'India Standard Time' : WORLD_TIMEZONE;
@@ -33,8 +33,20 @@ export const CHAMPIONSHIP_SCHEDULE_TOTAL = Array.from(
   (_, i) => championshipPrize(i + 1),
 ).reduce((a, b) => a + b, 0);
 
+export const TOKEN_POLICY = {
+  name: 'TallSkill Tokens',
+  use: 'Challenge World entry',
+  purchasable: false,
+  sellable: false,
+  transferable: false,
+  withdrawable: false,
+  cashExchangeable: false,
+  inrValue: null,
+};
+
 export const COIN_POLICY = {
   name: 'TallSkill Coins',
+  use: 'Free World retries and early unlocks',
   purchasable: false,
   sellable: false,
   transferable: false,

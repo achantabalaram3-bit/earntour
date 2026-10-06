@@ -7,7 +7,7 @@ router = APIRouter(prefix='/api/admin/settings', tags=['settings'])
 DEFAULT_SETTINGS = {
     'site_name': 'TallSkill',
     'tagline': 'Play. Solve. Win.',
-    'support_email': 'support@prizeleague.co.uk',
+    'support_email': '',
     'support_phone': '',
     'postal_address': '',
     'currency': 'INR',

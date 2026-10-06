@@ -26,7 +26,7 @@ export default function Footer() {
  </div>
  </div>
  <p className="text-sm mt-4 leading-relaxed max-w-xs">
- TallSkill is a free-to-play skill championship platform for India. No deposits. No paid entry.
+ TallSkill is a skill-gaming platform for India with Free World and Challenge World. No deposits — tokens are earned, never bought.
  </p>
  <div className="flex gap-3 mt-4">
  <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#6C2BFF] flex items-center justify-center transition-colors"><Facebook className="w-4 h-4" /></a>
@@ -50,7 +50,7 @@ export default function Footer() {
  <h4 className="text-white font-bold mb-3 text-sm uppercase tracking-widest">Company</h4>
  <ul className="space-y-2 text-sm">
  <li><Link to="/my-account" className="hover:text-[#FFD54A]">My Account</Link></li>
- <li><a href={`mailto:${COMPANY.emails.support}`} className="hover:text-[#FFD54A]">Contact Us</a></li>
+ <li><Link to="/my-account/support" className="hover:text-[#FFD54A]">Contact Us</Link></li>
  </ul>
  </div>
 
@@ -80,13 +80,10 @@ export default function Footer() {
  <p className="leading-relaxed" data-testid="legal-footer-statement">{LEGAL_FOOTER}</p>
  <div className="flex flex-col md:flex-row justify-between gap-3 text-white/50">
  <div>
- <span>© {new Date().getFullYear()} {COMPANY.legalName}. All rights reserved.</span>
- <span className="mx-2">·</span>
- <span>Company No. {COMPANY.companyNumber}</span>
- <span className="mx-2">·</span>
- <a href={`mailto:${COMPANY.emails.support}`} className="hover:text-white">{COMPANY.emails.support}</a>
+ <span>© {new Date().getFullYear()} TallSkill. All rights reserved.</span>
+ {COMPANY.emails.support && (<><span className="mx-2">·</span><a href={`mailto:${COMPANY.emails.support}`} className="hover:text-white">{COMPANY.emails.support}</a></>)}
  </div>
- <p data-testid="footer-eligibility-note">Free to play · Eligibility rules for India pending legal review · Prize fulfilment subject to winner verification and terms.</p>
+ <p data-testid="footer-eligibility-note">No deposits · Eligibility rules for India pending legal review · Prize fulfilment subject to winner verification and terms.</p>
  </div>
  </div>
  </footer>

@@ -4,14 +4,16 @@ import { formatINR } from './currency';
 export const inr = (n) => formatINR(n);
 export const gbp = inr;
 
-/**
- * TallSkill Coin formatter. Coins have no INR value.
- *   tokens(5) → "5 coins", tokens(1) → "1 coin"
- */
-export const tokens = (n) => {
+const unit = (one, many) => (n) => {
   const v = Math.round(Number(n) || 0);
-  return `${v.toLocaleString('en-IN')} ${v === 1 ? 'coin' : 'coins'}`;
+  return `${v.toLocaleString('en-IN')} ${v === 1 ? one : many}`;
 };
+
+/** TallSkill Tokens (Challenge World entry). No INR value. tokens(5) → "5 tokens" */
+export const tokens = unit('token', 'tokens');
+
+/** TallSkill Coins (Free World retries/unlocks). No INR value. coins(1) → "1 coin" */
+export const coins = unit('coin', 'coins');
 
 /** Compact coin count (no unit label) — for tight UI spots like the header. */
 export const tokenCount = (n) => Math.round(Number(n) || 0);

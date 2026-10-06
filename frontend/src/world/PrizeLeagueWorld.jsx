@@ -522,7 +522,7 @@ export default function PrizeLeagueWorld() {
           <Crown size={19} />
 
           <span>
-            PAID CONTESTS
+            CHALLENGE WORLD
           </span>
         </button>
         )}

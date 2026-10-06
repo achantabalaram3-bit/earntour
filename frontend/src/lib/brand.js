@@ -16,44 +16,36 @@ export const BRAND = {
   logoAspect: 1,
 };
 
+// TallSkill's Indian legal entity is not yet incorporated. Do NOT fill in a company number,
+// CIN, GST, PAN or address until it exists; configure via env / admin Company Settings.
+const PENDING = 'TallSkill legal entity pending incorporation';
+
 export const COMPANY = {
-  legalName: 'PRIZE LEAGUE LTD',
-  companyNumber: '17338919',
-  incorporatedOn: '14 July 2026',
-  companyType: 'Private company limited by shares',
-  jurisdiction: 'England and Wales',
-  registeredOffice: {
-    line1: '118 Windsor Road',
-    line2: 'London',
-    country: 'England',
-    postcode: 'E7 0RB',
-    countryFull: 'United Kingdom',
-  },
+  legalName: process.env.REACT_APP_LEGAL_OPERATOR_NAME || PENDING,
+  companyNumber: '',
+  incorporatedOn: '',
+  companyType: '',
+  jurisdiction: 'India (pending incorporation)',
+  registeredOffice: { line1: '', line2: '', country: 'India', postcode: '', countryFull: 'India' },
   website: SITE_URL,
-  // Legacy operator mailboxes retained until TallSkill contacts are confirmed; override via env.
   emails: {
-    general: process.env.REACT_APP_GENERAL_EMAIL || 'info@prizeleague.co.uk',
-    support: process.env.REACT_APP_SUPPORT_EMAIL || 'support@prizeleague.co.uk',
+    general: process.env.REACT_APP_GENERAL_EMAIL || '',
+    support: process.env.REACT_APP_SUPPORT_EMAIL || '',
   },
 };
 
-// Address block formatted for postal + legal displays.
-export const REGISTERED_ADDRESS_ONE_LINE =
-  '118 Windsor Road, London, England, E7 0RB, United Kingdom';
+export const REGISTERED_ADDRESS_ONE_LINE = '';
 
-// Legal footer statement — MUST appear in site footer.
 export const LEGAL_FOOTER =
-  'TallSkill is operated by PRIZE LEAGUE LTD, a company registered in ' +
-  'England and Wales under company number 17338919. Registered office: ' +
-  '118 Windsor Road, London, England, E7 0RB, United Kingdom.';
+  'TallSkill legal operator details are pending incorporation and Indian legal review.';
 
-// Default free postal entry address (super-admin editable via /admin/company-settings).
+// UK free postal entry route — not used by TallSkill India.
 export const POSTAL_ENTRY = {
   header: 'Free Postal Entry',
-  legalName: 'PRIZE LEAGUE LTD',
-  line1: '118 Windsor Road',
-  line2: 'London',
-  country: 'England',
-  postcode: 'E7 0RB',
-  countryFull: 'United Kingdom',
+  legalName: COMPANY.legalName,
+  line1: '',
+  line2: '',
+  country: '',
+  postcode: '',
+  countryFull: '',
 };

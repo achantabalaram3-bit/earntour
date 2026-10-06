@@ -13,6 +13,7 @@ Postal Entry Admin Queue:
 """
 from __future__ import annotations
 from datetime import datetime, timezone
+import os
 from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel
 from typing import Optional, Literal
@@ -25,33 +26,34 @@ admin_router = APIRouter(prefix='/api/admin', tags=['admin'])
 
 
 # ---------- Defaults ----------
+# TallSkill's Indian legal entity does not exist yet. Never invent CIN/GST/PAN/address;
+# super-admin fills these in via /admin/company once incorporated.
+_PENDING = '[Pending — TallSkill legal entity not yet incorporated]'
 DEFAULT_COMPANY = {
-    'legal_name': 'PRIZE LEAGUE LTD',
-    'company_number': '17338919',
-    'incorporated_on': '2026-07-14',
-    'jurisdiction': 'England and Wales',
-    'company_type': 'Private company limited by shares',
+    'legal_name': os.environ.get('LEGAL_OPERATOR_NAME', _PENDING),
+    'company_number': '',
+    'incorporated_on': '',
+    'jurisdiction': 'India (pending incorporation)',
+    'company_type': '',
     'registered_address': {
-        'line1': '118 Windsor Road',
-        'line2': 'London',
-        'country': 'England',
-        'postcode': 'E7 0RB',
-        'country_full': 'United Kingdom',
+        'line1': '',
+        'line2': '',
+        'country': 'India',
+        'postcode': '',
+        'country_full': 'India',
     },
-    'website': 'https://www.prizeleague.co.uk',
-    'email_general': 'info@prizeleague.co.uk',
-    'email_support': 'support@prizeleague.co.uk',
+    'website': os.environ.get('SITE_URL', ''),
+    'email_general': os.environ.get('GENERAL_EMAIL', ''),
+    'email_support': os.environ.get('SUPPORT_EMAIL', ''),
     'legal_footer': (
-        'TallSkill is operated by PRIZE LEAGUE LTD, a company registered '
-        'in England and Wales under company number 17338919. Registered '
-        'office: 118 Windsor Road, London, England, E7 0RB, United Kingdom.'
+        'TallSkill legal operator details are pending incorporation and Indian legal review.'
     ),
-    # Postal entry
-    'postal_address_line1': '118 Windsor Road',
-    'postal_address_line2': 'London',
-    'postal_address_country': 'England',
-    'postal_address_postcode': 'E7 0RB',
-    'postal_address_country_full': 'United Kingdom',
+    # Postal entry (UK concept; unused for TallSkill India)
+    'postal_address_line1': '',
+    'postal_address_line2': '',
+    'postal_address_country': '',
+    'postal_address_postcode': '',
+    'postal_address_country_full': '',
     'postal_required_details': (
         '- Full name\n- TallSkill public ID or registered email\n'
         '- Confirmation you are aged 18+ and agree to the Terms & Conditions\n'
