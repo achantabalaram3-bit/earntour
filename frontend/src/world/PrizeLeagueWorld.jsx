@@ -635,13 +635,8 @@ export default function PrizeLeagueWorld() {
 
                     <div className="pl-world-level-stats">
                       <div>
-                        <span>
-                          TIME LIMIT
-                        </span>
-
-                        <strong>
-                          {levelData.level?.time_limit_seconds}s
-                        </strong>
+                        <span>GAME TIMER</span>
+                        <strong>NO LIMIT</strong>
                       </div>
 
                       <div>
@@ -655,51 +650,24 @@ export default function PrizeLeagueWorld() {
                       </div>
 
                       <div>
-                        <span>
-                          FREE ATTEMPTS
-                        </span>
-
-                        <strong>
-                          {levelData.level?.attempts
-                            ?.free_attempts_available ??
-                            0}
-                        </strong>
+                        <span>ATTEMPT COST</span>
+                        <strong>1 COIN</strong>
                       </div>
                     </div>
 
-                    {levelData.level?.attempts
-                      ?.next_free_attempt_at && (
-                      <div className="pl-world-level-refresh">
-                        Next free attempt:
-                        {' '}
-                        {new Date(
-                          levelData.level?.attempts
-                            ?.next_free_attempt_at,
-                        ).toLocaleString('en-IN')}
-                      </div>
-                    )}
-
                     <div className="pl-world-level-rule">
-                      Pass the skill challenge to
-                      progress to the next destination.
-                      Retries never unlock levels
-                      automatically.
+                      Complete the skill challenge to progress. You can retry until the daily leaderboard closes at 00:00 IST. Every attempt costs 1 Coin.
                     </div>
 
                     <button
                       type="button"
                       className="pl-world-level-play"
-                      disabled={
-                        Number(
-                          levelData.level?.attempts
-                            ?.free_attempts_available || 0,
-                        ) < 1
-                      }
+                      disabled={Number(levelData.level?.attempts?.coins_available || 0) < 1}
                       onClick={() =>
                         setGameFlowOpen(true)
                       }
                     >
-                      PLAY
+                      {levelData.level?.completed ? 'RETRY · 1 COIN' : 'PLAY · 1 COIN'}
                     </button>
 
                     <div className="pl-world-level-play-note">

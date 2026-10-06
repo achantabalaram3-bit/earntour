@@ -61,6 +61,8 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   const myName = auth?.user?.name || auth?.user?.user_name || null;
 
   const [champN, setChampN] = useState('all');
+  const [boardMode, setBoardMode] = useState('champion');
+  const [levelN, setLevelN] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [data, setData] = useState(null);
@@ -73,15 +75,17 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
     setLoading(true); setError('');
     try {
       const n = which === 'all' ? undefined : Number(which);
-      const res = await worldAPI.championLeaderboard(n);
+      const res = boardMode === 'level'
+        ? await worldAPI.levelLeaderboard(levelN, n)
+        : await worldAPI.championLeaderboard(n);
       setData(res || { contest: null, leaderboard: [] });
     } catch (e) {
       setError('Leaderboard is temporarily unavailable.');
       setData(null);
     } finally { setLoading(false); }
-  }, []);
+  }, [boardMode, levelN]);
 
-  useEffect(() => { if (open) load(champN); }, [open, champN, load]);
+  useEffect(() => { if (open) load(champN); }, [open, champN, boardMode, levelN, load]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -91,7 +95,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   }, [open, onClose, showMult]);
 
   const contest = data?.contest || {};
-  const endAt = parseUtcMs(contest?.end_at);
+  const endAt = parseUtcMs(boardMode === 'level' ? data?.ends_at : contest?.end_at);
 
   useEffect(() => {
     if (!open || !endAt) { setEndsIn(''); endHandledRef.current = false; return undefined; }
@@ -134,7 +138,9 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
   const status = String(contest?.status || '').toLowerCase();
   const isLive = status === 'active';
   const settled = Boolean(contest?.settled) || status === 'settled' || status === 'closed_settled';
-  const titleLbl = champN === 'all' ? 'GLOBAL RANKINGS' : `CHAMPION ${champN} RANKINGS`;
+  const titleLbl = boardMode === 'level'
+    ? `LEVEL ${levelN} DAILY RANKINGS`
+    : (champN === 'all' ? 'GLOBAL RANKINGS' : `CHAMPION ${champN} RANKINGS`);
 
   if (!open) return null;
 
@@ -166,7 +172,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <span>#</span><span>PLAYER</span><span>CHAMP</span><span>TIME</span><span className="ta-r">WINNINGS</span>
         </div>
         {rows.map((r) => {
-          const win = winningsOf(r);
+          const win = boardMode === 'level' && Number(r.rank) === 1 ? '₹50' : winningsOf(r);
           const top = r.rank <= 3;
           return (
             <div
@@ -208,8 +214,8 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <div className="pl-global-lb-card pl-global-lb-pool">
             <span className="pl-global-lb-poolicon"><Coins size={26} /></span>
             <div>
-              <div className="pl-global-lb-poolamt" data-testid="lb-prize-pool">{gbp0(BASE_PRIZES[1] / 0.5)}+</div>
-              <div className="pl-global-lb-poollbl">Per Championship · schedule pending approval</div>
+              <div className="pl-global-lb-poolamt" data-testid="lb-prize-pool">{boardMode === 'level' ? '₹50' : `${gbp0(BASE_PRIZES[1] / 0.5)}+`}</div>
+              <div className="pl-global-lb-poollbl">{boardMode === 'level' ? 'Daily Level #1 · locked bonus' : 'Per Championship · schedule pending approval'}</div>
             </div>
           </div>
           <div className="pl-global-lb-card pl-global-lb-ends">
@@ -222,7 +228,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
         </div>
 
         {/* PRIZE CALCULATION */}
-        <div className="pl-global-lb-card pl-global-lb-prizecalc">
+        {boardMode !== 'level' && <div className="pl-global-lb-card pl-global-lb-prizecalc">
           <div className="pl-global-lb-pc-left">
             <div className="pl-global-lb-sectlbl">PRIZE CALCULATION</div>
             <div className="pl-global-lb-prizes">
@@ -241,11 +247,30 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <button className="pl-global-lb-more" onClick={() => setShowMult(true)} data-testid="lb-more-multipliers">
             More <ChevronRight size={15} />
           </button>
-        </div>
+        </div>}
 
         {/* VIEW CHAMPIONSHIP */}
         <div className="pl-global-lb-card pl-global-lb-viewcard">
-          <div className="pl-global-lb-sectlbl">VIEW CHAMPIONSHIP</div>
+          <div className="pl-global-lb-sectlbl">VIEW LEADERBOARD</div>
+          <div className="pl-global-lb-viewrow">
+            <div className="pl-global-lb-select">
+              <Trophy size={15} />
+              <select value={boardMode} onChange={(e) => setBoardMode(e.target.value)} data-testid="lb-board-mode" aria-label="Leaderboard type">
+                <option value="champion">Champion / Global</option>
+                <option value="level">Normal Level Daily</option>
+              </select>
+              <ChevronDown size={15} className="pl-global-lb-selchev" />
+            </div>
+            {boardMode === 'level' && (
+              <div className="pl-global-lb-select">
+                <Clock size={15} />
+                <select value={levelN} onChange={(e) => setLevelN(Number(e.target.value))} data-testid="lb-level-select" aria-label="Level">
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>Level {n}</option>)}
+                </select>
+                <ChevronDown size={15} className="pl-global-lb-selchev" />
+              </div>
+            )}
+          </div>
           <div className="pl-global-lb-viewrow">
             <div className="pl-global-lb-select">
               <Trophy size={15} />

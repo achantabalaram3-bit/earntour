@@ -416,11 +416,15 @@ export const worldAPI = {
       { level },
     ).then(r => r.data),
 
-  reserveTokenUnlock: (level) =>
-    api.post(
-      '/world/token/unlock/reserve',
-      { level },
-    ).then(r => r.data),
+  levelLeaderboard: (level, championship) =>
+    api.get('/world/public/level-leaderboard', {
+      params: { level, ...(championship ? { championship } : {}) },
+    }).then(r => r.data),
+
+  myLevelBonuses: (championship) =>
+    api.get('/world/level-bonuses/me', {
+      params: championship ? { championship } : {},
+    }).then(r => r.data),
 
   championLeaderboard: (contestNumber) =>
     api.get(

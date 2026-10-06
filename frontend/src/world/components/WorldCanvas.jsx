@@ -1558,14 +1558,7 @@ function ChampionshipSection({
                       : null
                   );
 
-            const canEarlyUnlock =
-              canUseTokens &&
-              isCurrent &&
-              locked &&
-              backendState?.lock_reason === 'time' &&
-              backendState?.sequence_available === true &&
-              backendState?.token_unlock_enabled !== false &&
-              Number(localLevel) >= 2;
+            const canEarlyUnlock = false;
 
             const skippable =
               Boolean(
@@ -1672,20 +1665,6 @@ function ChampionshipSection({
                     }
                   >
                     SKIPPED
-                  </span>
-                )}
-
-                {canEarlyUnlock && (
-                  <span
-                    className="pl2d-level-unlock-hint"
-                    data-testid={
-                      `free-world-early-unlock-hint-${globalLevel}`
-                    }
-                  >
-                    <b>TAP TO</b>
-                    <strong>
-                      EARLY UNLOCK
-                    </strong>
                   </span>
                 )}
 
@@ -3148,9 +3127,7 @@ export default function WorldCanvas({
               championshipHistory={
                 worldState?.championship_history || []
               }
-              onRequestUnlock={
-                setUnlockModal
-              }
+              onRequestUnlock={undefined}
             />
           ),
         )}
@@ -3292,146 +3269,6 @@ export default function WorldCanvas({
           </small>
         </button>
       </nav>
-
-      {unlockModal && (
-        <div
-          className="pl2d-token-modal-backdrop"
-          data-testid="early-unlock-modal"
-          onClick={() => {
-            if (!unlockBusy) {
-              setUnlockModal(null);
-            }
-          }}
-        >
-          <section
-            className="pl2d-token-modal"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
-          >
-            <div className="pl2d-token-modal-kicker">
-              EARLY UNLOCK WITH COINS
-            </div>
-
-            <h2>
-              Level {unlockModal.globalLevel}
-            </h2>
-
-            <p className="pl2d-token-modal-lead">
-              Skip the wait and open this level now.
-              Your progress rules stay the same — this
-              only removes the countdown timer.
-            </p>
-
-            <div className="pl2d-token-modal-rows">
-              <div>
-                <span>Unlocks naturally in</span>
-                <strong data-testid="early-unlock-natural-time">
-                  {formatUnlockCountdown(
-                    Number(
-                      unlockModal.secondsUntilUnlock ||
-                        0,
-                    ),
-                  )}
-                </strong>
-              </div>
-
-              <div>
-                <span>Token cost</span>
-                <strong data-testid="early-unlock-cost">
-                  {unlockModal.cost} 🪙
-                </strong>
-              </div>
-
-              <div>
-                <span>Current balance</span>
-                <strong data-testid="early-unlock-current-balance">
-                  {walletBalance === null
-                    ? '…'
-                    : `${walletBalance} 🪙`}
-                </strong>
-              </div>
-
-              <div>
-                <span>Balance after unlock</span>
-                <strong data-testid="early-unlock-remaining-balance">
-                  {walletBalance === null
-                    ? '…'
-                    : `${Math.max(
-                        0,
-                        walletBalance -
-                          unlockModal.cost,
-                      )} 🪙`}
-                </strong>
-              </div>
-            </div>
-
-            {walletBalance !== null &&
-            walletBalance < unlockModal.cost ? (
-              <>
-                <div
-                  className="pl2d-token-modal-insufficient"
-                  data-testid="early-unlock-insufficient"
-                >
-                  Not enough coins
-                </div>
-
-                <div className="pl2d-token-modal-actions">
-                  <button
-                    type="button"
-                    className="pl2d-token-modal-cancel"
-                    data-testid="early-unlock-cancel"
-                    onClick={() =>
-                      setUnlockModal(null)
-                    }
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="button"
-                    className="pl2d-token-modal-confirm"
-                    data-testid="early-unlock-topup"
-                    onClick={() =>
-                      navigate(
-                        '/my-account/wallet',
-                      )
-                    }
-                  >
-                    View Coins
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="pl2d-token-modal-actions">
-                <button
-                  type="button"
-                  className="pl2d-token-modal-cancel"
-                  data-testid="early-unlock-cancel"
-                  disabled={unlockBusy}
-                  onClick={() =>
-                    setUnlockModal(null)
-                  }
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  className="pl2d-token-modal-confirm"
-                  data-testid="early-unlock-confirm"
-                  disabled={unlockBusy}
-                  onClick={confirmEarlyUnlock}
-                >
-                  {unlockBusy
-                    ? 'Unlocking…'
-                    : 'Unlock Now'}
-                </button>
-              </div>
-            )}
-          </section>
-        </div>
-      )}
 
     </div>
   );

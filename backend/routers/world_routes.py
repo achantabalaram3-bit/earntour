@@ -5033,19 +5033,21 @@ async def normal_level_daily_leaderboard(level: int, day: Optional[str] = None, 
     _, current_end, current_day = _india_day_window()
     day_key = day or current_day
     query = {"season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level}
-    if championship is not None:
-        query["champion_stage"] = int(championship)
     db = get_db()
-    rows = await db.world_level_daily_scores.find(query, {"_id": 0}).sort([("duration_ms", 1), ("updated_at", 1)]).limit(max(1, min(limit, 100))).to_list(100)
+    # Rank the shared level/game pool first. Championship only filters the view;
+    # it never creates a separate competition.
+    all_rows = await db.world_level_daily_scores.find(query, {"_id": 0}).sort([("duration_ms", 1), ("updated_at", 1)]).limit(5000).to_list(5000)
+    ranked_all = [{**r, "rank": i + 1} for i, r in enumerate(all_rows)]
+    rows = [r for r in ranked_all if championship is None or int(r.get("champion_stage") or 0) == int(championship)][:max(1, min(limit, 100))]
     award = await _settle_normal_level_day(db, day_key, level)
     return {
         "day_key": day_key, "timezone": "Asia/Kolkata", "level": level,
         "ends_at": _serialize_datetime(current_end) if day_key == current_day else (rows[0].get("day_end_at").isoformat() if rows else None),
         "winner_bonus_inr": NORMAL_LEVEL_DAILY_WIN_BONUS_INR,
         "leaderboard": [
-            {**r, "rank": i + 1, "prize_inr": NORMAL_LEVEL_DAILY_WIN_BONUS_INR if i == 0 else 0,
+            {**r, "prize_inr": NORMAL_LEVEL_DAILY_WIN_BONUS_INR if int(r.get("rank") or 0) == 1 else 0,
              "settled": bool(award and award.get("user_id") == r.get("user_id"))}
-            for i, r in enumerate(rows)
+            for r in rows
         ],
     }
 
@@ -5106,35 +5108,20 @@ async def free_world_session_start(
         )
     )
 
-    attempts = await _free_attempt_status(
-        db,
-        user["user_id"],
-        level,
-    )
-
-    if (
-        int(
-            attempts.get(
-                "total_attempts_available",
-                attempts.get(
-                    "free_attempts_available",
-                    0,
-                ),
-            )
-        )
-        < 1
-    ):
+    coin_wallet = await get_coin_wallet(db, user["user_id"])
+    attempts = {
+        "coin_cost_per_attempt": 1,
+        "coins_available": int(coin_wallet.get("coins") or 0),
+        "total_attempts_available": int(coin_wallet.get("coins") or 0),
+        "unlimited_attempts": True,
+    }
+    if attempts["coins_available"] < 1:
         raise HTTPException(
             status_code=409,
             detail={
-                "code":
-                    "NO_FREE_ATTEMPTS",
-
-                "message":
-                    "No free attempts available.",
-
-                "attempts":
-                    attempts,
+                "code": "COIN_REQUIRED",
+                "message": "1 Coin is required for each attempt. Watch a rewarded ad to earn a Coin.",
+                "attempts": attempts,
             },
         )
 
@@ -8611,6 +8598,7 @@ async def reserve_world_level_unlock(
     body: WorldTokenUnlockInput,
     request: Request,
 ):
+    raise HTTPException(status_code=410, detail={"code": "EARLY_UNLOCK_REMOVED", "message": "Early unlock has been removed. Coins are used only for normal-level attempts."})
     """
     Purchase early access to ONE normal level.
 

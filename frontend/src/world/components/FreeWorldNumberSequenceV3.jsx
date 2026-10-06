@@ -131,15 +131,7 @@ export default function FreeWorldNumberSequenceV3({
         ?.target_number || 20,
     );
 
-  const timerMode =
-    championMode
-      ? 'stopwatch'
-      : String(
-          level
-            ?.game_config
-            ?.timer_mode ||
-          'countdown',
-        ).toLowerCase();
+  const timerMode = 'stopwatch';
 
   const isStopwatch =
     timerMode === 'stopwatch';
@@ -271,24 +263,15 @@ export default function FreeWorldNumberSequenceV3({
     initialAttempts;
 
 
-  const freeAttempts =
-    Number(
-      attempts
-        ?.free_attempts_available ?? 0,
-    );
+  const freeAttempts = championMode
+    ? Number(attempts?.free_attempts_available ?? attempts?.attempts_remaining ?? 0)
+    : Number(attempts?.coins_available ?? walletBalance ?? 0);
 
+  const totalAttemptsAvailable = championMode
+    ? Number(attempts?.total_attempts_available ?? freeAttempts)
+    : Number(attempts?.coins_available ?? walletBalance ?? 0);
 
-  const totalAttemptsAvailable =
-    Number(
-      attempts
-        ?.total_attempts_available ??
-      freeAttempts,
-    );
-
-
-  const canTokenRetry =
-    freeAttempts < 1 &&
-    attempts?.token_retry_available === true;
+  const canTokenRetry = championMode && freeAttempts < 1 && attempts?.token_retry_available === true;
 
 
   const columns =
@@ -433,28 +416,9 @@ export default function FreeWorldNumberSequenceV3({
           );
 
         setDemoElapsedMs(
-          isStopwatch
-            ? elapsed
-            : Math.min(
-                limitMs,
-                elapsed,
-              ),
+          elapsed,
         );
 
-        if (
-          !isStopwatch &&
-          elapsed >= limitMs
-        ) {
-          if (
-            mountedRef.current
-          ) {
-            setStage(
-              'demo-complete',
-            );
-          }
-
-          return;
-        }
 
         frameId =
           window
@@ -607,10 +571,7 @@ export default function FreeWorldNumberSequenceV3({
           championMode &&
           response?.attempts
         ) {
-          setAttemptSummary({
-            attempts:
-              response.attempts,
-          });
+          setAttemptSummary({ attempts: response.attempts });
         }
 
         setOfficialNext(1);
@@ -1418,7 +1379,7 @@ if (
               <div>
 
                 <span>
-                  FREE ATTEMPTS
+                  AVAILABLE ATTEMPTS
                 </span>
 
                 <strong>
@@ -1774,7 +1735,7 @@ if (
 
             <div>
               <span>
-                FREE ATTEMPTS
+                AVAILABLE ATTEMPTS
               </span>
 
               <strong>
@@ -1841,8 +1802,7 @@ if (
             totalAttemptsAvailable < 1 &&
             !canTokenRetry && (
               <div className="fwv3-error">
-                No free attempt is
-                currently available.
+                You need 1 Coin for an attempt. Watch a rewarded ad to earn a Coin.
               </div>
             )
           }
@@ -2021,7 +1981,7 @@ if (
             {
               championMode
                 ? 'CHAMPION STOPWATCH - FASTEST VERIFIED TIME WINS'
-                : 'OFFICIAL ATTEMPT - COUNTS AS ATTEMPT'
+                : 'OFFICIAL ATTEMPT · 1 COIN · NO TIME LIMIT'
             }
           </div>
 
