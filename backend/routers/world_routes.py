@@ -33,7 +33,7 @@ from auth import get_current_user, require_admin
 from deps import get_db
 import os
 from routers.wallet_routes import _apply_tx_idempotent
-from coins_ledger import apply_coin_tx_idempotent
+from coins_ledger import apply_coin_tx_idempotent, get_coin_wallet
 from tallskill_config import CURRENCY_CODE, championship_multiplier, championship_prize, championship_rank_base_prizes
 
 
@@ -71,6 +71,9 @@ CHAMPION_TOKEN_RETRY_COST = 1
 # Technical capability exists, but prize qualification
 # based on paid contest participation is not enforced
 # until explicitly enabled and connected.
+NORMAL_LEVEL_DAILY_WIN_BONUS_INR = 50
+INDIA_TZ = ZoneInfo("Asia/Kolkata")
+
 CHAMPION_PAID_QUALIFICATION_FEATURE_ENABLED = False
 CHAMPION_PAID_QUALIFICATION_START_STAGE = 3
 
@@ -4549,138 +4552,15 @@ async def _consume_free_attempt(
 
 
 
-async def _consume_world_attempt(
-    db,
-    user_id: str,
-    level: int,
-):
-    """
-    Consume one valid play entitlement.
-
-    Priority:
-      1. Free attempt
-      2. Purchased token retry
-
-    A purchased retry:
-      - is exactly one attempt
-      - does not complete a level
-      - does not alter score
-      - does not advance Champion stage
-    """
-
-    status = await _free_attempt_status(
-        db,
-        user_id,
-        level,
+async def _consume_world_attempt(db, user_id: str, level: int):
+    """Every normal-level attempt costs exactly one TallSkill Coin."""
+    ref = "WCA-" + secrets.token_hex(16).upper()
+    spend = await apply_coin_tx_idempotent(
+        db, user_id, "spend", -1,
+        note=f"Free World Level {level} attempt",
+        ref_order_id=ref,
     )
-
-    if int(
-        status.get(
-            "free_attempts_available",
-            0,
-        )
-    ) > 0:
-        try:
-            return await _consume_free_attempt(
-                db,
-                user_id,
-                level,
-            )
-
-        except HTTPException as exc:
-            # Another concurrent request may have consumed the
-            # free entitlement after our status read. Continue
-            # to the paid entitlement check rather than creating
-            # another free attempt.
-            detail = exc.detail
-
-            code = (
-                detail.get("code")
-                if isinstance(
-                    detail,
-                    dict,
-                )
-                else None
-            )
-
-            if code not in {
-                "NO_FREE_ATTEMPTS",
-                "FREE_ATTEMPT_REFRESH_PENDING",
-                "FREE_ATTEMPT_ALREADY_USED",
-            }:
-                raise
-
-    now = _utcnow()
-
-    paid = (
-        await db.world_token_retry_daily.find_one_and_update(
-            {
-                "season_id":
-                    WORLD_SEASON_ID,
-
-                "user_id":
-                    user_id,
-
-                "level":
-                    level,
-
-                "entitlement_remaining": {
-                    "$gt": 0,
-                },
-            },
-            {
-                "$inc": {
-                    "entitlement_remaining":
-                        -1,
-                },
-
-                "$set": {
-                    "used":
-                        True,
-
-                    "used_at":
-                        now,
-
-                    "updated_at":
-                        now,
-                },
-            },
-            return_document=True,
-        )
-    )
-
-    if paid:
-        return {
-            "source":
-                "token_retry",
-
-            "consumed_at":
-                now,
-
-            "reservation_id":
-                paid.get(
-                    "granted_reservation_id"
-                ),
-
-            "token_cost":
-                int(
-                    paid.get(
-                        "token_cost",
-                        1,
-                    )
-                ),
-        }
-
-    raise HTTPException(
-        status_code=409,
-        detail={
-            "code":
-                "NO_PLAY_ATTEMPTS",
-
-            "message":
-                "No free or purchased retry attempt is available.",
-        },
-    )
+    return {"source": "coin_attempt", "consumed_at": _utcnow(), "coin_cost": 1, "wallet_tx_id": spend["tx"].get("tx_id")}
 
 
 # ===========================================================================
@@ -5074,11 +4954,8 @@ async def free_world_level(
         )
     )
 
-    attempts = await _free_attempt_status(
-        db,
-        user["user_id"],
-        level,
-    )
+    coin_wallet = await get_coin_wallet(db, user["user_id"])
+    attempts = {"coin_cost_per_attempt": 1, "coins_available": int(coin_wallet.get("coins") or 0), "unlimited_attempts": True}
 
     config = await _effective_level_config(db, level)
 
@@ -5094,6 +4971,95 @@ async def free_world_level(
         },
     }
 
+
+
+def _india_day_window(now=None):
+    """Current TallSkill normal-level leaderboard day: 00:00-00:00 IST."""
+    now = now or _utcnow()
+    local = now.astimezone(INDIA_TZ)
+    start_local = local.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_local = start_local + timedelta(days=1)
+    return start_local.astimezone(timezone.utc), end_local.astimezone(timezone.utc), start_local.date().isoformat()
+
+
+async def _record_normal_level_score(db, user: dict, champion_stage: int, level: int, duration_ms: int, session_id: str):
+    """Keep one best verified time per user/level/day across all Championships."""
+    start_at, end_at, day_key = _india_day_window()
+    user_id = user["user_id"]
+    row = await db.world_level_daily_scores.find_one({
+        "season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level, "user_id": user_id,
+    })
+    if row and int(row.get("duration_ms") or 10**12) <= duration_ms:
+        return
+    await db.world_level_daily_scores.update_one(
+        {"season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level, "user_id": user_id},
+        {"$set": {
+            "season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level,
+            "user_id": user_id, "display_name": user.get("name") or user.get("user_name") or "Player",
+            "champion_stage": champion_stage, "duration_ms": duration_ms, "session_id": session_id,
+            "day_start_at": start_at, "day_end_at": end_at, "updated_at": _utcnow(),
+        }, "$setOnInsert": {"created_at": _utcnow()}},
+        upsert=True,
+    )
+
+
+async def _settle_normal_level_day(db, day_key: str, level: int):
+    """Lock ₹50 to that day's #1 once the IST day has ended. Idempotent."""
+    row = await db.world_level_daily_scores.find_one(
+        {"season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level},
+        {"_id": 0}, sort=[("duration_ms", 1), ("updated_at", 1)],
+    )
+    if not row:
+        return None
+    end_at = _ensure_aware_datetime(row.get("day_end_at"))
+    if not end_at or _utcnow() < end_at:
+        return None
+    award_id = f"{WORLD_SEASON_ID}:{day_key}:L{level}"
+    award = {
+        "award_id": award_id, "season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level,
+        "user_id": row["user_id"], "champion_stage": int(row.get("champion_stage") or 1),
+        "amount_inr": NORMAL_LEVEL_DAILY_WIN_BONUS_INR, "status": "locked_pending_champion_top5",
+        "winning_duration_ms": int(row["duration_ms"]), "created_at": _utcnow(),
+    }
+    await db.world_level_bonus_awards.update_one({"award_id": award_id}, {"$setOnInsert": award}, upsert=True)
+    return await db.world_level_bonus_awards.find_one({"award_id": award_id}, {"_id": 0})
+
+
+@public_router.get("/level-leaderboard")
+async def normal_level_daily_leaderboard(level: int, day: Optional[str] = None, championship: Optional[int] = None, limit: int = 100):
+    """Daily normal-level board. Same level/game competes globally across Championships."""
+    if level < 1 or level > 10:
+        raise HTTPException(status_code=400, detail="Level must be 1-10.")
+    _, current_end, current_day = _india_day_window()
+    day_key = day or current_day
+    query = {"season_id": WORLD_SEASON_ID, "day_key": day_key, "level": level}
+    if championship is not None:
+        query["champion_stage"] = int(championship)
+    db = get_db()
+    rows = await db.world_level_daily_scores.find(query, {"_id": 0}).sort([("duration_ms", 1), ("updated_at", 1)]).limit(max(1, min(limit, 100))).to_list(100)
+    award = await _settle_normal_level_day(db, day_key, level)
+    return {
+        "day_key": day_key, "timezone": "Asia/Kolkata", "level": level,
+        "ends_at": _serialize_datetime(current_end) if day_key == current_day else (rows[0].get("day_end_at").isoformat() if rows else None),
+        "winner_bonus_inr": NORMAL_LEVEL_DAILY_WIN_BONUS_INR,
+        "leaderboard": [
+            {**r, "rank": i + 1, "prize_inr": NORMAL_LEVEL_DAILY_WIN_BONUS_INR if i == 0 else 0,
+             "settled": bool(award and award.get("user_id") == r.get("user_id"))}
+            for i, r in enumerate(rows)
+        ],
+    }
+
+
+@router.get("/level-bonuses/me")
+async def my_normal_level_bonuses(request: Request, championship: Optional[int] = None):
+    user = await get_current_user(request)
+    db = get_db()
+    q = {"season_id": WORLD_SEASON_ID, "user_id": user["user_id"]}
+    if championship is not None:
+        q["champion_stage"] = int(championship)
+    rows = await db.world_level_bonus_awards.find(q, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    total = sum(int(r.get("amount_inr") or 0) for r in rows)
+    return {"locked_bonus_inr": total, "awards": rows}
 
 # ===========================================================================
 # FREE NUMBER SEQUENCE SESSION
@@ -5219,12 +5185,7 @@ async def free_world_session_start(
         "challenge_numbers":
             challenge_numbers,
 
-        "time_limit_seconds":
-            int(
-                config[
-                    "time_limit_seconds"
-                ]
-            ),
+        "time_limit_seconds": None,
 
         "unlock_snapshot":
             unlock_state,
@@ -5267,10 +5228,7 @@ async def free_world_session_start(
                 challenge_numbers,
         },
 
-        "time_limit_seconds":
-            session[
-                "time_limit_seconds"
-            ],
+        "time_limit_seconds": None,
 
         "attempts":
             attempts,
@@ -5325,10 +5283,7 @@ async def free_world_session_begin(
                     )
                 ),
 
-            "time_limit_seconds":
-                session[
-                    "time_limit_seconds"
-                ],
+            "time_limit_seconds": None,
         }
 
     if session.get("status") != "created":
@@ -5447,12 +5402,7 @@ async def free_world_session_begin(
         "begun_at":
             now.isoformat(),
 
-        "time_limit_seconds":
-            int(
-                session[
-                    "time_limit_seconds"
-                ]
-            ),
+        "time_limit_seconds": None,
     }
 
 
@@ -5541,14 +5491,8 @@ async def free_world_session_submit(
         * 1000
     )
 
-    time_limit_ms = (
-        int(
-            session[
-                "time_limit_seconds"
-            ]
-        )
-        * 1000
-    )
+    # Normal levels are stopwatch competitions: no gameplay time limit.
+    time_limit_ms = None
 
     target = int(
         session[
@@ -5568,19 +5512,10 @@ async def free_world_session_submit(
         == expected_taps
     )
 
-    submitted_in_time = (
-        body.duration_ms
-        <= time_limit_ms
-    )
+    submitted_in_time = True
 
     # Small allowance for the result HTTP request itself.
-    server_in_time = (
-        server_elapsed_ms
-        <= (
-            time_limit_ms
-            + 5000
-        )
-    )
+    server_in_time = True
 
     passed = bool(
         body.solved
@@ -5589,15 +5524,8 @@ async def free_world_session_submit(
         and server_in_time
     )
 
-    score = (
-        max(
-            0,
-            time_limit_ms
-            - body.duration_ms,
-        )
-        if passed
-        else 0
-    )
+    # Faster verified completion ranks higher; score retained for compatibility.
+    score = max(0, 300000 - body.duration_ms) if passed else 0
 
     await db.world_game_sessions.update_one(
         {
@@ -5678,6 +5606,8 @@ async def free_world_session_submit(
     )
 
     if passed:
+        champion_stage = await _user_champion_stage(db, user["user_id"])
+        await _record_normal_level_score(db, user, champion_stage, level, body.duration_ms, body.session_id)
         if level < 10:
             next_level = (
                 level + 1
