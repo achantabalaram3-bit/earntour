@@ -155,7 +155,7 @@ export default function ForgotPassword() {
                     key={name}
                     className={`h-1.5 flex-1 rounded-full ${
                       index <= currentIndex
-                        ? 'bg-[#6C2BFF]'
+                        ? 'bg-[#16A34A]'
                         : 'bg-slate-200'
                     }`}
                   />
@@ -166,8 +166,8 @@ export default function ForgotPassword() {
 
           {step === 'phone' && (
             <form onSubmit={sendCode} className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#6C2BFF]/10 flex items-center justify-center">
-                <Phone className="w-6 h-6 text-[#6C2BFF]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#16A34A]/10 flex items-center justify-center">
+                <Phone className="w-6 h-6 text-[#16A34A]" />
               </div>
 
               <div>
@@ -229,8 +229,8 @@ export default function ForgotPassword() {
                 Change number
               </button>
 
-              <div className="w-12 h-12 rounded-2xl bg-[#6C2BFF]/10 flex items-center justify-center">
-                <ShieldCheck className="w-6 h-6 text-[#6C2BFF]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#16A34A]/10 flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-[#16A34A]" />
               </div>
 
               <div>
@@ -271,7 +271,7 @@ export default function ForgotPassword() {
                 type="button"
                 onClick={sendCode}
                 disabled={busy || cooldown > 0}
-                className="block mx-auto text-sm font-semibold text-[#6C2BFF] disabled:text-slate-400"
+                className="block mx-auto text-sm font-semibold text-[#16A34A] disabled:text-slate-400"
                 data-testid="forgot-password-resend"
               >
                 {cooldown > 0
@@ -293,7 +293,7 @@ export default function ForgotPassword() {
               </button>
 
               <div className="w-12 h-12 rounded-2xl bg-[#FFD54A]/20 flex items-center justify-center">
-                <KeyRound className="w-6 h-6 text-[#6C2BFF]" />
+                <KeyRound className="w-6 h-6 text-[#16A34A]" />
               </div>
 
               <div>
