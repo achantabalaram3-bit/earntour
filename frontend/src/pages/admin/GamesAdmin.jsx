@@ -246,12 +246,12 @@ export default function GamesAdmin() {
       {/* Public game-preview marketing controls.
           Completely separate from official contest game execution. */}
       <div
-        className="bg-white border-2 border-[#6C2BFF]/15 rounded-2xl p-5 md:p-6 shadow-sm"
+        className="bg-white border-2 border-[#16A34A]/15 rounded-2xl p-5 md:p-6 shadow-sm"
         data-testid="game-preview-admin-panel"
       >
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div>
-            <div className="text-xs uppercase tracking-widest font-bold text-[#6C2BFF]">
+            <div className="text-xs uppercase tracking-widest font-bold text-[#16A34A]">
               Public Game Preview
             </div>
 
@@ -303,7 +303,7 @@ export default function GamesAdmin() {
                       game_preview_enabled: e.target.checked,
                     }))
                   }
-                  className="w-5 h-5 accent-[#6C2BFF]"
+                  className="w-5 h-5 accent-[#16A34A]"
                   data-testid="game-preview-master-toggle"
                 />
               </label>
@@ -328,7 +328,7 @@ export default function GamesAdmin() {
                     }))
                   }
                   disabled={!previewSettings.game_preview_enabled}
-                  className="w-5 h-5 accent-[#6C2BFF] disabled:opacity-40"
+                  className="w-5 h-5 accent-[#16A34A] disabled:opacity-40"
                   data-testid="game-preview-home-toggle"
                 />
               </label>
@@ -392,7 +392,7 @@ export default function GamesAdmin() {
                       data-testid={`preview-select-${game.id}`}
                       className={`rounded-xl border p-3 transition ${
                         selected
-                          ? 'border-[#6C2BFF] bg-[#6C2BFF]/5'
+                          ? 'border-[#16A34A] bg-[#16A34A]/5'
                           : 'border-slate-200 bg-white'
                       } ${
                         !available ? 'opacity-40' : ''
@@ -415,8 +415,8 @@ export default function GamesAdmin() {
                           onClick={() => togglePreviewGame(game.id)}
                           className={`shrink-0 w-7 h-7 rounded-lg border flex items-center justify-center text-sm font-black transition ${
                             selected
-                              ? 'bg-[#6C2BFF] border-[#6C2BFF] text-white'
-                              : 'border-slate-300 bg-white text-transparent hover:border-[#6C2BFF]'
+                              ? 'bg-[#16A34A] border-[#16A34A] text-white'
+                              : 'border-slate-300 bg-white text-transparent hover:border-[#16A34A]'
                           }`}
                           aria-label={
                             selected
@@ -447,7 +447,7 @@ export default function GamesAdmin() {
                             </div>
                           )}
 
-                          <label className="inline-flex items-center justify-center w-full h-10 rounded-lg border border-[#6C2BFF]/30 bg-[#6C2BFF]/5 text-xs font-extrabold text-[#6C2BFF] cursor-pointer hover:bg-[#6C2BFF]/10">
+                          <label className="inline-flex items-center justify-center w-full h-10 rounded-lg border border-[#16A34A]/30 bg-[#16A34A]/5 text-xs font-extrabold text-[#16A34A] cursor-pointer hover:bg-[#16A34A]/10">
                             {(previewSettings.game_preview_images || {})[game.id]
                               ? 'Replace Promotion Image'
                               : 'Upload Promotion Image'}
@@ -503,7 +503,7 @@ export default function GamesAdmin() {
       </div>
 
       {/* Bulk actions bar */}
-      <div className="bg-gradient-to-r from-slate-900 via-fuchsia-900 to-orange-800 text-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row gap-3 md:gap-4 md:items-center md:justify-between" data-testid="bulk-actions-bar">
+      <div className="bg-gradient-to-r from-slate-900 via-green-900 to-orange-800 text-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row gap-3 md:gap-4 md:items-center md:justify-between" data-testid="bulk-actions-bar">
         <div>
           <div className="text-[10px] md:text-xs uppercase tracking-widest text-white/70">Bulk actions — all game-enabled contests</div>
           <div className="font-display text-lg md:text-xl font-extrabold mt-1">
@@ -534,8 +534,8 @@ export default function GamesAdmin() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Games available', value: games.length, color: 'from-orange-500 to-rose-500', Icon: Gamepad2 },
-          { label: 'Contests with a game', value: totalAssigned, color: 'from-fuchsia-500 to-pink-500', Icon: Zap },
-          { label: 'Manual-draw contests', value: contests.length - totalAssigned, color: 'from-indigo-500 to-purple-600', Icon: Trophy },
+          { label: 'Contests with a game', value: totalAssigned, color: 'from-emerald-600 to-pink-500', Icon: Zap },
+          { label: 'Manual-draw contests', value: contests.length - totalAssigned, color: 'from-green-500 to-emerald-700', Icon: Trophy },
           { label: 'Max attempts / ticket', value: 3, color: 'from-amber-500 to-orange-500', Icon: Users },
         ].map(s => (
           <div key={s.label} className={`rounded-2xl p-5 text-white bg-gradient-to-br ${s.color} shadow-lg`}>
@@ -553,7 +553,7 @@ export default function GamesAdmin() {
           return (
             <div key={g.id} data-testid={`game-card-${g.id}`} className="bg-white border border-slate-100 rounded-2xl p-5 hover:shadow-lg transition">
               <div className="flex items-start justify-between mb-3">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 via-rose-500 to-fuchsia-600 flex items-center justify-center text-white shadow-md">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 via-rose-500 to-emerald-700 flex items-center justify-center text-white shadow-md">
                   <Icon className="w-5 h-5" />
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full font-semibold ${count > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
