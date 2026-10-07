@@ -188,7 +188,7 @@ export default function GamePreviewSection({ mobile = false }) {
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-7">
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-[#6C2BFF] font-extrabold">
+            <div className="text-xs uppercase tracking-[0.2em] text-[#16A34A] font-extrabold">
               Free Game Preview
             </div>
 
@@ -204,7 +204,7 @@ export default function GamePreviewSection({ mobile = false }) {
 
           <Link
             to="/games"
-            className="inline-flex items-center gap-2 text-[#6C2BFF] font-extrabold"
+            className="inline-flex items-center gap-2 text-[#16A34A] font-extrabold"
             data-testid="home-all-preview-games"
           >
             Explore all games
@@ -232,7 +232,7 @@ export default function GamePreviewSection({ mobile = false }) {
                     className="w-full aspect-[16/9] rounded-xl object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6C2BFF] to-fuchsia-600 text-white flex items-center justify-center shadow-md">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#16A34A] to-emerald-700 text-white flex items-center justify-center shadow-md">
                     <Icon className="w-6 h-6" />
                   </div>
                 )}
@@ -245,7 +245,7 @@ export default function GamePreviewSection({ mobile = false }) {
                   {game.category} · Target {game.target_time_s}s
                 </div>
 
-                <div className="mt-5 inline-flex items-center gap-1.5 text-[#6C2BFF] font-extrabold text-sm">
+                <div className="mt-5 inline-flex items-center gap-1.5 text-[#16A34A] font-extrabold text-sm">
                   <Play className="w-4 h-4" />
                   Play Free
                 </div>
