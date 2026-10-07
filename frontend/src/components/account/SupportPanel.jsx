@@ -75,7 +75,7 @@ export default function SupportPanel() {
         <>
           <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-[#6C2BFF]" />
+              <MessageCircle className="w-5 h-5 text-[#16A34A]" />
               <h3 className="font-display font-bold text-lg">Support cases</h3>
             </div>
             <Button data-testid="support-new-btn" onClick={() => setView('new')} className="pl-btn-purple text-white">
@@ -143,9 +143,9 @@ export default function SupportPanel() {
           <p className="text-xs text-slate-500 mb-4">Ref: <span className="font-mono">{selected.case_id}</span> · {CATEGORIES.find(x => x.id === selected.category)?.label}</p>
           <div className="space-y-3">
             {(selected.messages || []).map((m, idx) => (
-              <div key={`${selected.case_id}-${idx}`} className={`p-3 rounded-lg ${m.author === 'admin' ? 'bg-[#6C2BFF]/5 border border-[#6C2BFF]/20' : 'bg-slate-50 border border-slate-100'}`}>
+              <div key={`${selected.case_id}-${idx}`} className={`p-3 rounded-lg ${m.author === 'admin' ? 'bg-[#16A34A]/5 border border-[#16A34A]/20' : 'bg-slate-50 border border-slate-100'}`}>
                 <div className="flex items-center gap-2 mb-1 text-xs text-slate-500">
-                  {m.author === 'admin' ? <Check className="w-3 h-3 text-[#6C2BFF]" /> : <Clock className="w-3 h-3" />}
+                  {m.author === 'admin' ? <Check className="w-3 h-3 text-[#16A34A]" /> : <Clock className="w-3 h-3" />}
                   <span className="font-semibold">{m.author === 'admin' ? 'Support Team' : 'You'}</span>
                   <span>· {new Date(m.at).toLocaleString('en-IN')}</span>
                 </div>
