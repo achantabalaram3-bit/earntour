@@ -157,7 +157,7 @@ export default function UnifiedLeaderboard({
         ))}
       </select>
 
-      <div className="mb-4 rounded-2xl bg-gradient-to-br from-slate-900 via-fuchsia-900 to-orange-800 px-4 py-4 text-white">
+      <div className="mb-4 rounded-2xl bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534] px-4 py-4 text-white">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
           Contest Leaderboard
         </div>
