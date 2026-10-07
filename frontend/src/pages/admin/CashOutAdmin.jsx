@@ -75,7 +75,7 @@ export default function CashOutAdmin() {
 
   return (
     <div className="p-6 space-y-6" data-testid="admin-cashout">
-      <h1 className="text-2xl font-extrabold flex items-center gap-2"><Banknote className="w-6 h-6 text-[#6C2BFF]" /> Cash Out / Withdrawals</h1>
+      <h1 className="text-2xl font-extrabold flex items-center gap-2"><Banknote className="w-6 h-6 text-[#16A34A]" /> Cash Out / Withdrawals</h1>
 
       {/* CONFIG */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
@@ -111,7 +111,7 @@ export default function CashOutAdmin() {
           <div className="flex gap-2">
             {STATUSES.map((s) => (
               <button key={s} onClick={() => setFilter(s)}
-                className={`text-xs font-bold uppercase px-3 py-1.5 rounded-full ${filter === s ? 'bg-[#6C2BFF] text-white' : 'bg-slate-100 text-slate-600'}`}
+                className={`text-xs font-bold uppercase px-3 py-1.5 rounded-full ${filter === s ? 'bg-[#16A34A] text-white' : 'bg-slate-100 text-slate-600'}`}
                 data-testid={`admin-filter-${s}`}>{s}</button>
             ))}
           </div>
