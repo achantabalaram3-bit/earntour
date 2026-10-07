@@ -83,7 +83,7 @@ export default function CashOutCard() {
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" data-testid="cashout-card">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-display font-extrabold text-lg text-slate-900 flex items-center gap-2">
-          <Banknote className="w-5 h-5 text-[#6C2BFF]" /> Wallet
+          <Banknote className="w-5 h-5 text-[#16A34A]" /> Wallet
         </h3>
         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Prize winnings</span>
       </div>
@@ -104,7 +104,7 @@ export default function CashOutCard() {
       <div className="mt-4">
         {config?.enabled ? (
           <Button
-            className="w-full h-12 rounded-2xl bg-[#6C2BFF] hover:bg-[#5a20e0] text-white font-bold"
+            className="w-full h-12 rounded-2xl bg-[#16A34A] hover:bg-[#5a20e0] text-white font-bold"
             onClick={openFlow}
             disabled={available <= 0}
             data-testid="cashout-open-btn"
@@ -142,7 +142,7 @@ export default function CashOutCard() {
         <DialogContent className="max-w-md" data-testid="cashout-modal">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Banknote className="w-5 h-5 text-[#6C2BFF]" />
+              <Banknote className="w-5 h-5 text-[#16A34A]" />
               {step === 'success' ? 'Cash out requested' : 'Cash out'}
             </DialogTitle>
           </DialogHeader>
@@ -167,7 +167,7 @@ export default function CashOutCard() {
                   <div>You'll need to complete identity verification (KYC). You can submit your cash out now and we'll review your KYC before paying. Visit <a href="/my-account/kyc" className="underline font-semibold">KYC</a>.</div>
                 </div>
               )}
-              <Button className="w-full h-11 rounded-2xl bg-[#6C2BFF] text-white font-bold" disabled={!amountValid}
+              <Button className="w-full h-11 rounded-2xl bg-[#16A34A] text-white font-bold" disabled={!amountValid}
                 onClick={() => setStep('bank')} data-testid="cashout-amount-next">
                 Continue <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
@@ -179,7 +179,7 @@ export default function CashOutCard() {
               <div className="text-xs font-semibold text-slate-600">Select bank account</div>
               {banks.map((b) => (
                 <button key={b.bank_account_id} onClick={() => setBankId(b.bank_account_id)}
-                  className={`w-full text-left rounded-xl border p-3 flex items-center gap-3 ${bankId === b.bank_account_id ? 'border-[#6C2BFF] bg-violet-50' : 'border-slate-200'}`}
+                  className={`w-full text-left rounded-xl border p-3 flex items-center gap-3 ${bankId === b.bank_account_id ? 'border-[#16A34A] bg-green-50' : 'border-slate-200'}`}
                   data-testid="cashout-bank-option">
                   <Landmark className="w-4 h-4 text-slate-500" />
                   <div>
@@ -208,7 +208,7 @@ export default function CashOutCard() {
                   {addingBank ? 'Adding…' : 'Add account'}
                 </Button>
               </div>
-              <Button className="w-full h-11 rounded-2xl bg-[#6C2BFF] text-white font-bold" disabled={!bankId}
+              <Button className="w-full h-11 rounded-2xl bg-[#16A34A] text-white font-bold" disabled={!bankId}
                 onClick={() => setStep('confirm')} data-testid="cashout-bank-next">
                 Continue <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
@@ -226,7 +226,7 @@ export default function CashOutCard() {
               <p className="text-[11px] text-slate-500">We'll review your KYC and payment details before completing the payment. No money is sent until an admin approves.</p>
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1 h-11 rounded-2xl" onClick={() => setStep('bank')}>Back</Button>
-                <Button className="flex-1 h-11 rounded-2xl bg-[#6C2BFF] text-white font-bold" onClick={submit} disabled={submitting} data-testid="cashout-confirm-btn">
+                <Button className="flex-1 h-11 rounded-2xl bg-[#16A34A] text-white font-bold" onClick={submit} disabled={submitting} data-testid="cashout-confirm-btn">
                   {submitting ? 'Submitting…' : 'Confirm cash out'}
                 </Button>
               </div>
@@ -238,7 +238,7 @@ export default function CashOutCard() {
               <div className="flex flex-col items-center text-center py-2">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500" />
                 <div className="text-lg font-extrabold text-slate-900 mt-2">Cash-out request submitted</div>
-                <div className="text-2xl font-extrabold text-[#6C2BFF] mt-1">{gbp(success.amount_gbp)}</div>
+                <div className="text-2xl font-extrabold text-[#16A34A] mt-1">{gbp(success.amount_gbp)}</div>
                 <div className="text-xs text-slate-500 mt-1">Status: Processing · <span className="font-mono">{success.withdrawal_id}</span></div>
                 <p className="text-xs text-slate-500 mt-2">Your cash-out request is being processed. We'll review your KYC and payment details before completing the payment.</p>
               </div>
@@ -275,7 +275,7 @@ export default function CashOutCard() {
 
 function Stat({ icon, label, value, tone, testid }) {
   const tones = {
-    slate: 'bg-slate-50 text-slate-700', violet: 'bg-violet-50 text-[#6C2BFF]',
+    slate: 'bg-slate-50 text-slate-700', violet: 'bg-green-50 text-[#16A34A]',
     amber: 'bg-amber-50 text-amber-700', emerald: 'bg-emerald-50 text-emerald-700',
   };
   return (
