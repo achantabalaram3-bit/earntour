@@ -31,7 +31,7 @@ export default function WinnersTicker() {
             </div>
             <span className="text-slate-600">
               <span className="font-semibold text-slate-900">{w.user_name}</span> just won{' '}
-              <span className="font-bold text-[#6C2BFF]">₹{Number(w.prize_amount).toLocaleString('en-IN')}</span>{' '}
+              <span className="font-bold text-[#14532D]">₹{Number(w.prize_amount).toLocaleString('en-IN')}</span>{' '}
               on <span className="italic">{w.prize_title}</span>
             </span>
           </div>
