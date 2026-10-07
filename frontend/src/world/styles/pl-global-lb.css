@@ -54,7 +54,7 @@
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  padding: 110px clamp(12px, 3.5vw, 18px) 48px;
+  padding: 42px clamp(12px, 3.5vw, 18px) 48px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -65,7 +65,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 4px 4px 2px;
+  padding: 0 4px 2px;
 }
 .pl-global-lb-pageeyebrow {
   margin-bottom: 3px;
@@ -83,8 +83,8 @@
   color: #171334;
 }
 .pl-global-lb-totalpool {
-  min-width: 190px;
-  padding: 12px 16px;
+  min-width: 250px;
+  padding: 18px 24px;
   border: 1px solid #f6dfa2;
   border-radius: 16px;
   text-align: right;
@@ -102,8 +102,8 @@
 .pl-global-lb-totalpool strong {
   display: block;
   margin-top: 2px;
-  font-size: 24px;
-  line-height: 1.1;
+  font-size: 34px;
+  line-height: 1.05;
   font-weight: 900;
   color: #9c6400;
 }
@@ -358,12 +358,12 @@
   .pl-global-lb-modal-card { border-radius: 24px; }
 }
 @media (max-width: 480px) {
-  .pl-global-lb-inner { padding: 96px 10px 40px; gap: 12px; }
+  .pl-global-lb-inner { padding: 34px 10px 40px; gap: 12px; }
   .pl-global-lb-card { padding: 13px; border-radius: 16px; }
   .pl-global-lb-pagehead { align-items: flex-end; gap: 10px; padding: 2px; }
   .pl-global-lb-pagehead h1 { font-size: 25px; }
-  .pl-global-lb-totalpool { min-width: 150px; padding: 10px 12px; border-radius: 14px; }
-  .pl-global-lb-totalpool strong { font-size: 19px; }
+  .pl-global-lb-totalpool { min-width: 170px; padding: 13px 15px; border-radius: 14px; }
+  .pl-global-lb-totalpool strong { font-size: 23px; }
   /* Prize pool + timer stay SIDE BY SIDE */
   .pl-global-lb-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
   .pl-global-lb-pool, .pl-global-lb-ends { gap: 9px; padding: 12px; }
