@@ -86,7 +86,7 @@ export default function WinningsPayoutsAdmin() {
       <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
         <div>
           <h1 className="font-display font-extrabold text-2xl text-slate-900 flex items-center gap-2">
-            <Banknote className="w-6 h-6 text-[#6C2BFF]" /> Winnings Payouts
+            <Banknote className="w-6 h-6 text-[#16A34A]" /> Winnings Payouts
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">Review UK bank withdrawal requests from the Winnings Wallet.</p>
         </div>
@@ -102,7 +102,7 @@ export default function WinningsPayoutsAdmin() {
             onClick={() => setStatus(f.id)}
             data-testid={`payouts-filter-${f.id || 'all'}`}
             className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
-              status === f.id ? 'bg-[#6C2BFF] text-white border-[#6C2BFF]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#6C2BFF]/40'
+              status === f.id ? 'bg-[#16A34A] text-white border-[#16A34A]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#16A34A]/40'
             }`}
           >
             {f.label}
@@ -181,7 +181,7 @@ export default function WinningsPayoutsAdmin() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" data-testid="payout-bank-modal"
           onClick={() => { if (!bankBusy) setBank(null); }}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-extrabold text-lg mb-3 flex items-center gap-2"><Banknote className="w-5 h-5 text-[#6C2BFF]" /> Bank details</h3>
+            <h3 className="font-extrabold text-lg mb-3 flex items-center gap-2"><Banknote className="w-5 h-5 text-[#16A34A]" /> Bank details</h3>
             {bankBusy ? (
               <div className="py-6 text-center text-slate-400 flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Revealing…</div>
             ) : (
