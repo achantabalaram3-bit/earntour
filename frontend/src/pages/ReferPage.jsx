@@ -27,10 +27,10 @@ export default function ReferPage() {
         <div className="max-w-5xl mx-auto px-4 lg:px-8 grid md:grid-cols-3 gap-4">
           {HOW.map(({ Icon, title, text }, i) => (
             <div key={title} className="rounded-2xl border border-slate-100 p-6 bg-slate-50">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] flex items-center justify-center text-white mb-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] flex items-center justify-center text-white mb-3">
                 <Icon className="w-6 h-6" />
               </div>
-              <div className="text-[10px] uppercase tracking-widest text-[#6C2BFF] font-bold">Step {i + 1}</div>
+              <div className="text-[10px] uppercase tracking-widest text-[#16A34A] font-bold">Step {i + 1}</div>
               <h3 className="mt-1 font-display font-bold text-lg text-slate-900">{title}</h3>
               <p className="mt-1 text-sm text-slate-600">{text}</p>
             </div>
