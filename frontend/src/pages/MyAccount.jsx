@@ -40,7 +40,7 @@ const KycBadge = ({ status }) => {
 
 // 12 navigation tokens — order & colours locked per spec
 const TOKENS = [
-  { id: 'profile',       label: 'Profile',        Icon: User,        color: 'from-violet-500 to-purple-600',   ring: 'ring-violet-400/40', hero: true },
+  { id: 'profile',       label: 'Profile',        Icon: User,        color: 'from-violet-500 to-green-600',   ring: 'ring-violet-400/40', hero: true },
   { id: 'wallet',        label: 'Wallet',         Icon: Wallet,      color: 'from-amber-500 to-orange-600',    ring: 'ring-amber-400/40' },
   { id: 'winnings',      label: 'Winnings',       Icon: Coins,       color: 'from-yellow-500 to-amber-600',    ring: 'ring-yellow-400/40' },
   { id: 'promotions',    label: 'Promotions',     Icon: Trophy,      color: 'from-orange-500 to-rose-600',     ring: 'ring-orange-400/40' },
@@ -263,7 +263,7 @@ export default function MyAccount() {
         {active === 'profile' && (
           <div className="bg-white rounded-2xl border border-slate-100 p-6" data-testid="panel-profile">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white text-xl font-extrabold flex items-center justify-center shrink-0">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-green-600 text-white text-xl font-extrabold flex items-center justify-center shrink-0">
                 {(profile.name || user.name || 'U').slice(0, 1).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
@@ -539,7 +539,7 @@ export default function MyAccount() {
         {active === 'policies' && (
           <div className="bg-white rounded-2xl border border-slate-100 p-6" data-testid="panel-policies">
             <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-5 h-5 text-indigo-600" />
+              <FileText className="w-5 h-5 text-green-600" />
               <h3 className="font-display font-bold text-lg">Legal &amp; policies</h3>
             </div>
             <ul className="divide-y divide-slate-100">
@@ -556,7 +556,7 @@ export default function MyAccount() {
                     <div className="font-medium text-slate-900">{p.title}</div>
                     <div className="text-xs text-slate-500">{p.desc}</div>
                   </div>
-                  <a href={p.href} className="text-sm text-indigo-600 font-semibold inline-flex items-center gap-1">
+                  <a href={p.href} className="text-sm text-green-600 font-semibold inline-flex items-center gap-1">
                     Read <ArrowRight className="w-3 h-3" />
                   </a>
                 </li>
@@ -711,7 +711,7 @@ export default function MyAccount() {
                     } else if (toppedUp && entered) {
                       statusLabel = 'Processing reward';
                       statusClass =
-                        'bg-violet-100 text-violet-700';
+                        'bg-green-100 text-green-700';
                     }
 
                     return (
