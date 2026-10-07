@@ -130,7 +130,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-2">
-        <SettingsIcon className="w-6 h-6 text-[#6C2BFF]" />
+        <SettingsIcon className="w-6 h-6 text-[#16A34A]" />
         <h2 className="font-display text-2xl font-extrabold">Site Settings</h2>
       </div>
 
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                   )}
                 </div>
 
-                <label className="mt-3 inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-[#6C2BFF] hover:bg-[#4A15D9] text-white text-sm font-bold cursor-pointer">
+                <label className="mt-3 inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-[#16A34A] hover:bg-[#14532D] text-white text-sm font-bold cursor-pointer">
                   <Upload className="w-4 h-4" />
                   {slide.url ? 'Replace image' : 'Upload image'}
 
@@ -242,7 +242,7 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <div className="rounded-xl bg-violet-50 border border-violet-100 px-4 py-3 text-xs text-violet-800">
+        <div className="rounded-xl bg-green-50 border border-green-100 px-4 py-3 text-xs text-violet-800">
           Upload all required images, then use the main
           <strong> Save settings </strong>
           button below. The homepage slider updates from these saved settings.
@@ -292,7 +292,7 @@ export default function SettingsPage() {
       </section>
 
       <div className="flex justify-end sticky bottom-0 py-4 bg-slate-50/80 backdrop-blur">
-        <Button onClick={save} disabled={busy} className="bg-[#6C2BFF] hover:bg-[#4A15D9]"><Save className="w-4 h-4 mr-1" /> {busy ? 'Saving…' : 'Save settings'}</Button>
+        <Button onClick={save} disabled={busy} className="bg-[#16A34A] hover:bg-[#14532D]"><Save className="w-4 h-4 mr-1" /> {busy ? 'Saving…' : 'Save settings'}</Button>
       </div>
 
       <WipeDemoDataPanel />
