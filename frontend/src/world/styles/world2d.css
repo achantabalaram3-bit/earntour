@@ -12679,74 +12679,37 @@
 
 
 /* =========================================================
-   TALLSKILL CONTINUOUS WORLD
-   One generated landscape flows through every championship.
-   Gameplay nodes, road, avatar and progression remain untouched.
+   TALLSKILL PLAIN WORLD
+   No map images, gradients or decorative scenery. The full
+   1000-level journey uses one clean white background.
+   Gameplay nodes, road, avatar and progression stay untouched.
    ========================================================= */
 .pl1000-section,
 .pl1000-section[class*="pl2d-biome-"] {
-  background-image:
-    radial-gradient(ellipse at 8% 18%, rgba(134, 239, 172, .34) 0 8%, transparent 24%),
-    radial-gradient(ellipse at 92% 72%, rgba(74, 222, 128, .24) 0 9%, transparent 25%),
-    linear-gradient(112deg, transparent 0 13%, rgba(187, 247, 208, .22) 13.2% 19%, transparent 19.2% 100%),
-    linear-gradient(180deg, #86efac 0%, #4ade80 18%, #22c55e 43%, #16a34a 68%, #14532d 100%) !important;
-  background-repeat: no-repeat !important;
-  background-size: 100% 100% !important;
-  background-position: center !important;
-  background-color: #16a34a !important;
+  background: #ffffff !important;
+  background-image: none !important;
   border: 0 !important;
   box-shadow: none !important;
 }
 
-/* Neighbouring sections overlap slightly so there is no visible image seam. */
 .pl1000-section + .pl1000-section {
-  margin-top: -3px !important;
+  margin-top: 0 !important;
 }
 
-/* Keep the procedural scenery alive across the full journey. */
+/* Remove all decorative world scenery; retain the gameplay road. */
 .pl2d-mountains,
 .pl2d-clouds,
 .pl2d-river-wrap,
 .pl2d-forest {
-  display: block !important;
+  display: none !important;
 }
 
-/* Mountains fade into the terrain instead of creating a section edge. */
-.pl2d-mountains {
-  opacity: .72;
-  filter: saturate(.82) hue-rotate(20deg);
-}
-
-.pl2d-clouds {
-  opacity: .58;
-}
-
-.pl2d-river-wrap {
-  opacity: .82;
-}
-
-.pl2d-forest {
-  opacity: .9;
-}
-
-/* Blend the top and bottom of each championship into its neighbours. */
-.pl1000-section::before {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(20, 83, 45, .22) 0%,
-      transparent 4%,
-      transparent 96%,
-      rgba(20, 83, 45, .22) 100%
-    ) !important;
-  pointer-events: none;
-}
-
+/* Remove section overlays so white stays uninterrupted everywhere. */
+.pl1000-section::before,
 .pl1000-section::after {
-  background:
-    radial-gradient(ellipse at 12% 88%, rgba(5, 46, 22, .18), transparent 30%),
-    radial-gradient(ellipse at 88% 24%, rgba(240, 253, 244, .12), transparent 28%) !important;
-  pointer-events: none;
+  background: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
 }
 
 /* Starting-point (entrance) avatar matches the new map avatar:
