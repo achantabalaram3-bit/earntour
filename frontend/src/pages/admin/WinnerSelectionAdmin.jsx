@@ -80,7 +80,7 @@ export default function WinnerSelectionAdmin() {
   return (
     <div className="space-y-6" data-testid="winner-selection-page">
       <div>
-        <h2 className="font-display text-2xl font-extrabold flex items-center gap-2"><Trophy className="w-6 h-6 text-[#6C2BFF]" /> Winner Selection</h2>
+        <h2 className="font-display text-2xl font-extrabold flex items-center gap-2"><Trophy className="w-6 h-6 text-[#16A34A]" /> Winner Selection</h2>
         <p className="text-slate-500 text-sm mt-1">Random-ticket contests only. Full audit log kept. Publication locks the winner.</p>
       </div>
 
@@ -115,12 +115,12 @@ export default function WinnerSelectionAdmin() {
           {!published && (
             <div className="grid md:grid-cols-2 gap-4">
               <div className="rounded-2xl border border-slate-200 p-5">
-                <div className="font-bold text-slate-900 flex items-center gap-2"><Dice5 className="w-5 h-5 text-[#6C2BFF]" /> Random draw</div>
+                <div className="font-bold text-slate-900 flex items-center gap-2"><Dice5 className="w-5 h-5 text-[#16A34A]" /> Random draw</div>
                 <p className="text-xs text-slate-500 mt-1">Cryptographically-secure random selection from all {tickets.length} paid tickets.</p>
                 <Button onClick={doDraw} disabled={busy || tickets.length === 0} data-testid="ws-draw" className="mt-3 pl-btn-purple">Run random draw</Button>
               </div>
               <div className="rounded-2xl border border-slate-200 p-5">
-                <div className="font-bold text-slate-900 flex items-center gap-2"><Hand className="w-5 h-5 text-[#6C2BFF]" /> Manual pick</div>
+                <div className="font-bold text-slate-900 flex items-center gap-2"><Hand className="w-5 h-5 text-[#16A34A]" /> Manual pick</div>
                 <div className="grid gap-2 mt-2">
                   <Input placeholder="Ticket number" type="number" value={manualTn} onChange={e => setManualTn(e.target.value)} data-testid="ws-manual-tn" />
                   <Input placeholder="Reason (10+ chars, required)" value={manualReason} onChange={e => setManualReason(e.target.value)} data-testid="ws-manual-reason" />
