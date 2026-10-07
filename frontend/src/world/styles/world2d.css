@@ -12679,45 +12679,74 @@
 
 
 /* =========================================================
-   PER-CHAMPIONSHIP 4K ILLUSTRATED MAP BACKGROUNDS
-   Each championship shows its OWN painted world, scaled to
-   "cover" (one image, no tiling). Batch 1 = championships 1–10;
-   more batches slot in the same way. Unknown numbers fall back
-   to the default painted map.
+   TALLSKILL CONTINUOUS WORLD
+   One generated landscape flows through every championship.
+   Gameplay nodes, road, avatar and progression remain untouched.
    ========================================================= */
 .pl1000-section,
-.pl1000-section.pl2d-biome-autumn,
-.pl1000-section.pl2d-biome-highlands,
-.pl1000-section.pl2d-biome-enchanted,
-.pl1000-section.pl2d-biome-coastal,
-.pl1000-section.pl2d-biome-golden,
-.pl1000-section.pl2d-biome-pine,
-.pl1000-section.pl2d-biome-royal,
-.pl1000-section.pl2d-biome-crystal {
+.pl1000-section[class*="pl2d-biome-"] {
+  background-image:
+    radial-gradient(ellipse at 8% 18%, rgba(134, 239, 172, .34) 0 8%, transparent 24%),
+    radial-gradient(ellipse at 92% 72%, rgba(74, 222, 128, .24) 0 9%, transparent 25%),
+    linear-gradient(112deg, transparent 0 13%, rgba(187, 247, 208, .22) 13.2% 19%, transparent 19.2% 100%),
+    linear-gradient(180deg, #86efac 0%, #4ade80 18%, #22c55e 43%, #16a34a 68%, #14532d 100%) !important;
   background-repeat: no-repeat !important;
-  background-size: cover !important;
-  background-position: center top !important;
-  background-color: #0e1630 !important;
-  background-image: url('../assets/champ-1.jpg') !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-color: #16a34a !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
-.pl1000-section[data-championship="1"]  { background-image: url('../assets/champ-1.jpg')  !important; }
-.pl1000-section[data-championship="2"]  { background-image: url('../assets/champ-2.jpg')  !important; }
-.pl1000-section[data-championship="3"]  { background-image: url('../assets/champ-3.jpg')  !important; }
-.pl1000-section[data-championship="4"]  { background-image: url('../assets/champ-4.jpg')  !important; }
-.pl1000-section[data-championship="5"]  { background-image: url('../assets/champ-5.jpg')  !important; }
-.pl1000-section[data-championship="6"]  { background-image: url('../assets/champ-6.jpg')  !important; }
-.pl1000-section[data-championship="7"]  { background-image: url('../assets/champ-7.jpg')  !important; }
-.pl1000-section[data-championship="8"]  { background-image: url('../assets/champ-8.jpg')  !important; }
-.pl1000-section[data-championship="9"]  { background-image: url('../assets/champ-9.jpg')  !important; }
-.pl1000-section[data-championship="10"] { background-image: url('../assets/champ-10.jpg') !important; }
+/* Neighbouring sections overlap slightly so there is no visible image seam. */
+.pl1000-section + .pl1000-section {
+  margin-top: -3px !important;
+}
 
-/* Hide the old CSS scenery so the painted map reads cleanly. */
+/* Keep the procedural scenery alive across the full journey. */
 .pl2d-mountains,
 .pl2d-clouds,
 .pl2d-river-wrap,
 .pl2d-forest {
-  display: none !important;
+  display: block !important;
+}
+
+/* Mountains fade into the terrain instead of creating a section edge. */
+.pl2d-mountains {
+  opacity: .72;
+  filter: saturate(.82) hue-rotate(20deg);
+}
+
+.pl2d-clouds {
+  opacity: .58;
+}
+
+.pl2d-river-wrap {
+  opacity: .82;
+}
+
+.pl2d-forest {
+  opacity: .9;
+}
+
+/* Blend the top and bottom of each championship into its neighbours. */
+.pl1000-section::before {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(20, 83, 45, .22) 0%,
+      transparent 4%,
+      transparent 96%,
+      rgba(20, 83, 45, .22) 100%
+    ) !important;
+  pointer-events: none;
+}
+
+.pl1000-section::after {
+  background:
+    radial-gradient(ellipse at 12% 88%, rgba(5, 46, 22, .18), transparent 30%),
+    radial-gradient(ellipse at 88% 24%, rgba(240, 253, 244, .12), transparent 28%) !important;
+  pointer-events: none;
 }
 
 /* Starting-point (entrance) avatar matches the new map avatar:
