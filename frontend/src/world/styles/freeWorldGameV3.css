@@ -149,7 +149,7 @@
     10px;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     clamp(
@@ -183,7 +183,7 @@
     18px;
 
   border:
-    1px solid #d8c8fa;
+    1px solid #BBF7D0;
 
   border-radius:
     18px;
@@ -192,7 +192,7 @@
     linear-gradient(
       135deg,
       #ffffff 0%,
-      #fbf8ff 100%
+      #F0FDF4 100%
     );
 }
 
@@ -223,13 +223,13 @@
     center;
 
   border:
-    2px solid #6724c7;
+    2px solid #16A34A;
 
   border-radius:
     8px;
 
   color:
-    #6724c7;
+    #16A34A;
 
   background:
     #ffffff;
@@ -244,7 +244,7 @@
 
 .fwv3-game-banner-copy > span {
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     15px;
@@ -347,7 +347,7 @@
     48px;
 
   color:
-    #6724c7;
+    #16A34A;
 
   stroke-width:
     2.6;
@@ -365,7 +365,7 @@
 
 .fwv3-stat-grid span {
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     13px;
@@ -407,7 +407,7 @@
 
 .fwv3-bars {
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     42px;
@@ -434,13 +434,13 @@
     18px 28px;
 
   border:
-    1px solid #d8c8fa;
+    1px solid #BBF7D0;
 
   border-radius:
     18px;
 
   background:
-    #fbf9ff;
+    #F0FDF4;
 }
 
 
@@ -455,7 +455,7 @@
     42px;
 
   color:
-    #6724c7;
+    #16A34A;
 }
 
 
@@ -551,13 +551,13 @@
 
 .fwv3-button-primary {
   border:
-    2px solid #6420c8;
+    2px solid #15803D;
 
   background:
     linear-gradient(
       135deg,
-      #7b2be2 0%,
-      #5620bd 100%
+      #22C55E 0%,
+      #14532D 100%
     );
 
   color:
@@ -576,13 +576,13 @@
 
 .fwv3-button-outline {
   border:
-    2px solid #6420c8;
+    2px solid #15803D;
 
   background:
     #ffffff;
 
   color:
-    #6420c8;
+    #15803D;
 }
 
 
@@ -615,7 +615,7 @@
 
 .fwv3-practice-note svg {
   color:
-    #6724c7;
+    #16A34A;
 }
 
 
@@ -664,7 +664,7 @@
     block;
 
   color:
-    #6724c7;
+    #16A34A;
 
   text-align:
     center;
@@ -697,7 +697,7 @@
     10px;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-variant-numeric:
     tabular-nums;
@@ -727,7 +727,7 @@
     275px;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     47px;
@@ -748,7 +748,7 @@
 
 .fwv3-timer-caption {
   color:
-    #6724c7;
+    #16A34A;
 
   text-align:
     center;
@@ -775,10 +775,10 @@
     12px -12px 8px;
 
   border-top:
-    1px solid #eceaf3;
+    1px solid #DCFCE7;
 
   border-bottom:
-    1px solid #eceaf3;
+    1px solid #DCFCE7;
 
   background:
     #ffffff;
@@ -796,7 +796,7 @@
 
 .fwv3-progress > div + div {
   border-left:
-    1px solid #eceaf3;
+    1px solid #DCFCE7;
 }
 
 
@@ -805,7 +805,7 @@
     block;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     10px;
@@ -1034,7 +1034,7 @@
     14px auto 10px;
 
   color:
-    #6724c7;
+    #16A34A;
 }
 
 
@@ -1081,13 +1081,13 @@
     16px;
 
   border:
-    1px solid #ded8ed;
+    1px solid #D1FAE5;
 
   border-radius:
     14px;
 
   background:
-    #fbf9ff;
+    #F0FDF4;
 }
 
 
@@ -1096,7 +1096,7 @@
     block;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     11px;
@@ -1132,7 +1132,7 @@
     20px 0;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     90px;
@@ -1224,7 +1224,7 @@
     20px 0;
 
   border:
-    1px solid #e0ddec;
+    1px solid #D1FAE5;
 
   border-radius:
     14px;
@@ -1245,7 +1245,7 @@
 
 .fwv3-result-grid > div:nth-child(2) {
   border-left:
-    1px solid #e0ddec;
+    1px solid #D1FAE5;
 }
 
 
@@ -1254,7 +1254,7 @@
     1 / -1;
 
   border-top:
-    1px solid #e0ddec;
+    1px solid #D1FAE5;
 }
 
 
@@ -1263,7 +1263,7 @@
     block;
 
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     10px;
@@ -1323,19 +1323,19 @@
     12px;
 
   border:
-    1px solid #ded8ed;
+    1px solid #D1FAE5;
 
   border-radius:
     12px;
 
   background:
-    #fbf9ff;
+    #F0FDF4;
 }
 
 
 .fwv3-refresh-note strong {
   color:
-    #6724c7;
+    #16A34A;
 
   font-size:
     11px;
@@ -1742,14 +1742,14 @@
   display: grid;
   place-content: center;
   padding: 12px;
-  border: 1px solid #ded8ed;
+  border: 1px solid #D1FAE5;
   border-radius: 14px;
-  background: #fbf9ff;
+  background: #F0FDF4;
 }
 
 .fwv3-ready-stats span {
   display: block;
-  color: #6724c7;
+  color: #16A34A;
   font-size: 10px;
   font-weight: 950;
 }
@@ -1804,7 +1804,7 @@
   padding: 22px 20px 20px;
 
   border-radius: 20px;
-  border: 2px solid #6420c8;
+  border: 2px solid #15803D;
 
   background: #ffffff;
 
@@ -1820,7 +1820,7 @@
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 2px;
-  color: #7b2be2;
+  color: #22C55E;
 }
 
 .fwv3-token-modal h3 {
@@ -1934,7 +1934,7 @@ body:has(.fwv3-overlay) {
   display: block;
   width: 5px;
   border-radius: 999px;
-  background: #6724c7;
+  background: #16A34A;
 }
 
 .fwv3-bars > span:nth-child(1) {
