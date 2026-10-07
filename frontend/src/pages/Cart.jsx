@@ -303,7 +303,7 @@ export default function Cart() {
               </>
             ) : (
               <>
-                <div className="w-16 h-16 rounded-full bg-[#6C2BFF]/10 text-[#6C2BFF] flex items-center justify-center mx-auto text-3xl">
+                <div className="w-16 h-16 rounded-full bg-[#16A34A]/10 text-[#16A34A] flex items-center justify-center mx-auto text-3xl">
                   🎮
                 </div>
 
@@ -311,7 +311,7 @@ export default function Cart() {
                   Ready to enter the contest?
                 </h2>
 
-                <div className="mt-5 rounded-2xl border-2 border-[#6C2BFF]/20 bg-[#6C2BFF]/5 p-4">
+                <div className="mt-5 rounded-2xl border-2 border-[#16A34A]/20 bg-[#16A34A]/5 p-4">
                   <div className="font-display font-extrabold text-slate-900">
                     Complete the skill game
                   </div>
@@ -427,16 +427,16 @@ export default function Cart() {
               {/* Inline skill re-verify — appears ONLY when the stored token is missing/expired.
                   Presence here means the user MUST answer before checkout can go through. */}
               {(i.entry_mode || 'skill_game') === 'skill_game' && skills[i.contest_id] && (
-                <div className="mt-3 rounded-xl bg-[#6C2BFF]/5 border border-[#6C2BFF]/20 p-3" data-testid={`skill-inline-${i.contest_id}`}>
+                <div className="mt-3 rounded-xl bg-[#16A34A]/5 border border-[#16A34A]/20 p-3" data-testid={`skill-inline-${i.contest_id}`}>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#6C2BFF] uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#16A34A] uppercase tracking-wider">
                       <ShieldCheck className="w-3.5 h-3.5" /> Skill check
                     </div>
                     <button
                       type="button"
                       onClick={() => loadSkillFor(i)}
                       disabled={skills[i.contest_id]?.verifying}
-                      className="text-[11px] text-slate-500 hover:text-[#6C2BFF] flex items-center gap-1"
+                      className="text-[11px] text-slate-500 hover:text-[#16A34A] flex items-center gap-1"
                       data-testid={`skill-refresh-${i.contest_id}`}
                     >
                       <RefreshCw className={`w-3 h-3 ${skills[i.contest_id]?.verifying ? 'animate-spin' : ''}`} />
@@ -460,7 +460,7 @@ export default function Cart() {
                               type="button"
                               onClick={() => pickAnswer(i, opt)}
                               data-testid={`skill-option-${i.contest_id}-${opt}`}
-                              className={`h-10 rounded-lg border-2 font-extrabold text-sm transition ${active ? 'border-[#6C2BFF] bg-[#6C2BFF] text-white' : 'border-slate-200 hover:border-[#6C2BFF] text-slate-900'}`}
+                              className={`h-10 rounded-lg border-2 font-extrabold text-sm transition ${active ? 'border-[#16A34A] bg-[#16A34A] text-white' : 'border-slate-200 hover:border-[#16A34A] text-slate-900'}`}
                             >
                               {opt}
                             </button>
