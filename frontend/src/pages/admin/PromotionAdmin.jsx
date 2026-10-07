@@ -292,7 +292,7 @@ export default function PromotionAdmin() {
         />
 
         {uploading === key && (
-          <div className="text-xs text-violet-600 font-bold mt-2">
+          <div className="text-xs text-green-600 font-bold mt-2">
             Uploading…
           </div>
         )}
@@ -369,7 +369,7 @@ export default function PromotionAdmin() {
       </div>
 
       {/* RNG DRAW */}
-      <div className="bg-gradient-to-br from-[#100d2c] to-[#070815] text-white border border-violet-500/30 rounded-3xl 2xl:rounded-[2.5rem] p-6 2xl:p-10 mt-5 2xl:mt-8">
+      <div className="bg-gradient-to-br from-[#100d2c] to-[#070815] text-white border border-green-500/30 rounded-3xl 2xl:rounded-[2.5rem] p-6 2xl:p-10 mt-5 2xl:mt-8">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
             <div className="text-yellow-400 text-xs 2xl:text-base font-black tracking-[.25em]">
@@ -483,7 +483,7 @@ export default function PromotionAdmin() {
                     paid
                       ? 'bg-emerald-950/40 border-emerald-500/40'
                       : verified
-                        ? 'bg-blue-950/30 border-blue-500/40'
+                        ? 'bg-green-950/30 border-green-600/40'
                         : 'bg-white/5 border-white/10'
                   }`}
                 >
@@ -579,7 +579,7 @@ export default function PromotionAdmin() {
                             'verify'
                           )
                         }
-                        className="flex-1 rounded-2xl py-4 2xl:py-5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 font-black 2xl:text-xl"
+                        className="flex-1 rounded-2xl py-4 2xl:py-5 bg-green-700 hover:bg-green-600 disabled:opacity-50 font-black 2xl:text-xl"
                       >
                         {winnerBusy ===
                         `${w.place}-verify`
@@ -771,7 +771,7 @@ export default function PromotionAdmin() {
           {!cfg.active ? (
             <button
               onClick={launch}
-              className="px-8 2xl:px-11 py-3 2xl:py-4 rounded-xl 2xl:rounded-2xl bg-violet-600 text-white font-black 2xl:text-lg"
+              className="px-8 2xl:px-11 py-3 2xl:py-4 rounded-xl 2xl:rounded-2xl bg-green-600 text-white font-black 2xl:text-lg"
             >
               🚀 Launch Promotion
             </button>
