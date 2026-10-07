@@ -164,7 +164,7 @@ export default function GamePreview() {
                 </div>
               </div>
 
-              <div className="mt-7 rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-fuchsia-950 text-white p-6 max-w-2xl mx-auto">
+              <div className="mt-7 rounded-2xl bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534] text-white p-6 max-w-2xl mx-auto">
                 <div className="text-xs uppercase tracking-widest text-[#FFD54A] font-bold">
                   Ready for the real challenge?
                 </div>
