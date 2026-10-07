@@ -1,6 +1,6 @@
 ﻿:root {
-  --pl-purple: #3f168e;
-  --pl-purple-2: #6f2bce;
+  --pl-purple: #14532D;
+  --pl-purple-2: #22C55E;
   --pl-gold: #f7d35b;
   --pl-gold-2: #ffb928;
   --pl-navy: #090d27;
@@ -20,7 +20,7 @@
   background:
     radial-gradient(
       circle at 50% 10%,
-      rgba(107, 62, 187, .26),
+      rgba(34, 197, 94, .20),
       transparent 28%
     ),
     #080b22;
@@ -83,8 +83,8 @@
   background:
     linear-gradient(
       145deg,
-      #762ad0,
-      #2a0d69
+      #16A34A,
+      #052E16
     );
   border: 3px solid #f5ce50;
   clip-path:
@@ -110,8 +110,8 @@
   background:
     linear-gradient(
       180deg,
-      #442181,
-      #13112e
+      #14532D,
+      #052E16
     );
   border: 1px solid #e5c24b;
   border-radius: 4px 4px 15px 15px;
@@ -718,8 +718,8 @@
   background:
     linear-gradient(
       135deg,
-      #7d2dd1,
-      #35106d
+      #22C55E,
+      #14532D
     );
   clip-path:
     polygon(
@@ -772,7 +772,7 @@
   font-family: Georgia, serif;
   font-size: 12px;
   font-weight: 900;
-  background: #4b168c;
+  background: #14532D;
   border: 2px solid #edcb51;
   clip-path:
     polygon(
@@ -828,8 +828,8 @@
   background:
     radial-gradient(
       circle at 40% 27%,
-      #7b38dd,
-      #451293 65%,
+      #22C55E,
+      #14532D 65%,
       #250857
     );
   box-shadow:
@@ -970,7 +970,7 @@
   background:
     radial-gradient(
       circle at 50% 20%,
-      rgba(102,54,153,.65),
+      rgba(20,83,45,.65),
       transparent 35%
     ),
     linear-gradient(
@@ -1039,8 +1039,8 @@
   background:
     linear-gradient(
       180deg,
-      #6425b9,
-      #351176
+      #16A34A,
+      #14532D
     );
   border: 4px solid #f2c744;
   box-shadow:
@@ -1081,8 +1081,8 @@
   background:
     linear-gradient(
       180deg,
-      #7628d1,
-      #431190
+      #22C55E,
+      #14532D
     );
   box-shadow:
     0 7px 17px rgba(0,0,0,.4),
@@ -1140,7 +1140,7 @@
     linear-gradient(
       180deg,
       #090b25,
-      #28205c 60%,
+      #14532D 60%,
       #537ba1
     );
   border-bottom: 2px solid #e8c94f;
@@ -1327,10 +1327,10 @@
   background:
     radial-gradient(
       circle at 35% 23%,
-      #9858f0 0,
-      #6626c3 32%,
-      #3c0c82 72%,
-      #230550 100%
+      #4ADE80 0,
+      #22C55E 32%,
+      #15803D 72%,
+      #052E16 100%
     );
 
   box-shadow:
