@@ -13804,3 +13804,6 @@
 .pl2d-bottom-nav.is-two-items {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
+
+/* TallSkill orange coral cream */
+:root{--pl-purple:#F97316;--pl-purple-2:#FB7185;--pl-gold:#FDBA74;--pl-gold-2:#F59E0B;--pl-navy:#431407;}.pl2d-viewport{background:radial-gradient(circle at 50% 10%,rgba(251,113,133,.24),transparent 28%),#431407;scrollbar-color:#FB923C #7C2D12;}.pl2d-world-header{background:linear-gradient(180deg,rgba(124,45,18,.98),rgba(67,20,7,.95));border-bottom-color:#FB923C;}.pl2d-world-header strong{color:#FFEDD5;text-shadow:0 2px 0 #9A3412,0 0 18px rgba(249,115,22,.28);}.pl2d-logo{background:linear-gradient(145deg,#FB7185,#F97316);border-color:#FDBA74;color:#fff;}.pl2d-season-badge{background:linear-gradient(180deg,#F97316,#7C2D12);border-color:#FDBA74;}.pl2d-season-badge small{color:#FFEDD5;}
