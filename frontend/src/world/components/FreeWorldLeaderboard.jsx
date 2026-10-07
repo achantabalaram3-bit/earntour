@@ -209,6 +209,16 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
       </header>
 
       <div className="pl-global-lb-inner">
+        <section className="pl-global-lb-pagehead" aria-label="Leaderboard summary">
+          <div>
+            <div className="pl-global-lb-pageeyebrow">FREE WORLD</div>
+            <h1>Leaderboard</h1>
+          </div>
+          <div className="pl-global-lb-totalpool">
+            <span>Total Prize Pool</span>
+            <strong>₹25,75,000</strong>
+          </div>
+        </section>
         {/* PRIZE POOL + TIMER (side by side) */}
         <div className="pl-global-lb-stats">
           <div className="pl-global-lb-card pl-global-lb-pool">
