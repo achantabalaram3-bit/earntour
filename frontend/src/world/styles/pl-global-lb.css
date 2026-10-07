@@ -157,7 +157,7 @@
 
 /* ---------- SECTION LABEL ---------- */
 .pl-global-lb-sectlbl { font-size: 11px; font-weight: 900; letter-spacing: 1.1px; color: #f5a623; margin-bottom: 10px; }
-.pl-global-lb-sectlbl.purple { color: #16A34A; }
+.pl-global-lb-sectlbl.brand { color: #16A34A; }
 
 /* ---------- PRIZE CALCULATION ---------- */
 .pl-global-lb-prizecalc { display: flex; align-items: center; gap: 14px; }
@@ -414,4 +414,4 @@
 }
 
 /* TallSkill orange coral cream */
-.pl-global-lb-shell{color:#1F2937;background-color:#FFFDF5;background-image:radial-gradient(720px 380px at 92% -8%,rgba(249,115,22,.15),transparent 60%),radial-gradient(680px 380px at 0% 108%,rgba(251,113,133,.13),transparent 60%);}.pl-global-lb-topbar{background:#14532D}.pl-global-lb-wordmark b{color:#22C55E}.pl-global-lb-pagehead h1{color:#1F2937}.pl-global-lb-worldback{border-color:#DCFCE7;color:#15803D;box-shadow:0 6px 16px rgba(249,115,22,.12)}.pl-global-lb-worldback:hover{background:#FFFDF5}.pl-global-lb-totalpool,.pl-global-lb-pool{border-color:#86EFAC;background:linear-gradient(155deg,#FFFDF5,#DCFCE7)}.pl-global-lb-totalpool span,.pl-global-lb-poollbl{color:#166534}.pl-global-lb-totalpool strong,.pl-global-lb-poolamt{color:#14532D}.pl-global-lb-card{border-color:#FFEDD5;box-shadow:0 12px 30px rgba(154,52,18,.09)}.pl-global-lb-poolicon{background:linear-gradient(160deg,#22C55E,#16A34A)}.pl-global-lb-ends{background:linear-gradient(155deg,#FFF1F2,#FFE4E6);border-color:#FECDD3}.pl-global-lb-endsicon{background:linear-gradient(160deg,#FB7185,#F43F5E)}.pl-global-lb-endsval{color:#E11D48}.pl-global-lb-endslbl{color:#BE123C}.pl-global-lb-sectlbl.purple{color:#16A34A}
+.pl-global-lb-shell{color:#1F2937;background-color:#FFFDF5;background-image:radial-gradient(720px 380px at 92% -8%,rgba(34,197,94,.13),transparent 60%),radial-gradient(680px 380px at 0% 108%,rgba(22,163,74,.10),transparent 60%);}.pl-global-lb-topbar{background:#14532D}.pl-global-lb-wordmark b{color:#22C55E}.pl-global-lb-pagehead h1{color:#1F2937}.pl-global-lb-worldback{border-color:#DCFCE7;color:#15803D;box-shadow:0 6px 16px rgba(22,163,74,.12)}.pl-global-lb-worldback:hover{background:#FFFDF5}.pl-global-lb-totalpool,.pl-global-lb-pool{border-color:#86EFAC;background:linear-gradient(155deg,#FFFDF5,#DCFCE7)}.pl-global-lb-totalpool span,.pl-global-lb-poollbl{color:#166534}.pl-global-lb-totalpool strong,.pl-global-lb-poolamt{color:#14532D}.pl-global-lb-card{border-color:#DCFCE7;box-shadow:0 12px 30px rgba(20,83,45,.09)}.pl-global-lb-poolicon{background:linear-gradient(160deg,#22C55E,#16A34A)}.pl-global-lb-ends{background:linear-gradient(155deg,#FFF1F2,#FFE4E6);border-color:#FECDD3}.pl-global-lb-endsicon{background:linear-gradient(160deg,#FB7185,#F43F5E)}.pl-global-lb-endsval{color:#E11D48}.pl-global-lb-endslbl{color:#BE123C}.pl-global-lb-sectlbl.brand{color:#16A34A}
