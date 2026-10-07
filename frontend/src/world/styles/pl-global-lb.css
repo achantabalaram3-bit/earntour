@@ -74,6 +74,16 @@
   letter-spacing: 1.3px;
   color: #7c5cff;
 }
+.pl-global-lb-titlewrap { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.pl-global-lb-worldback {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 38px; padding: 0 14px; border: 1px solid #d9ccff; border-radius: 11px;
+  background: #ffffff; color: #5a2fe0; font-size: 12.5px; font-weight: 900;
+  cursor: pointer; box-shadow: 0 6px 16px rgba(90, 47, 224, 0.10);
+}
+.pl-global-lb-worldback:hover { background: #f4f0ff; }
+.pl-global-lb-worldback:active { transform: scale(0.97); }
+
 .pl-global-lb-pagehead h1 {
   margin: 0;
   font-size: clamp(28px, 6vw, 38px);
