@@ -65,8 +65,8 @@ export default function PhoneOtpModal({ open, onVerified, onDismiss }) {
     <Dialog open={open} onOpenChange={(v) => { if (!v && onDismiss) onDismiss(); }}>
       <DialogContent className="max-w-md" data-testid="otp-modal">
         <DialogHeader>
-          <div className="w-12 h-12 rounded-full bg-[#6C2BFF]/10 flex items-center justify-center mb-2">
-            <ShieldCheck className="w-6 h-6 text-[#6C2BFF]" />
+          <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center mb-2">
+            <ShieldCheck className="w-6 h-6 text-[#16A34A]" />
           </div>
           <DialogTitle className="text-2xl font-extrabold text-slate-900">
             {step === 'phone' ? 'Verify your phone' : 'Enter the 6-digit code'}
@@ -141,7 +141,7 @@ export default function PhoneOtpModal({ open, onVerified, onDismiss }) {
                 data-testid="otp-resend-btn"
                 onClick={sendCode}
                 disabled={busy || cooldown > 0}
-                className="text-[#6C2BFF] disabled:text-slate-400 font-semibold"
+                className="text-[#16A34A] disabled:text-slate-400 font-semibold"
               >
                 {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend code'}
               </button>
