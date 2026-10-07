@@ -210,7 +210,10 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
 
       <div className="pl-global-lb-inner">
         <section className="pl-global-lb-pagehead" aria-label="Leaderboard summary">
-          <div>
+          <div className="pl-global-lb-titlewrap">
+            <button className="pl-global-lb-worldback" onClick={() => onClose?.()} aria-label="Back to World">
+              <ArrowLeft size={20} /> <span>Back to World</span>
+            </button>
             <h1>Leaderboard</h1>
           </div>
           <div className="pl-global-lb-totalpool">
