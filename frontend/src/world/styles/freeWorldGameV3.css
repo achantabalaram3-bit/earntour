@@ -1789,7 +1789,7 @@
 
   padding: 18px;
 
-  background: rgba(24, 10, 48, .55);
+  background: rgba(5, 46, 22, .58);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
@@ -1809,7 +1809,7 @@
   background: #ffffff;
 
   box-shadow:
-    0 24px 60px rgba(60, 20, 130, .35),
+    0 24px 60px rgba(20, 83, 45, .30),
     inset 0 1px 0 rgba(255,255,255,.6);
 
   animation: fwv3ModalPop .22s cubic-bezier(.2,.9,.3,1.2);
@@ -1828,7 +1828,7 @@
   text-align: center;
   font-size: 22px;
   font-weight: 900;
-  color: #2a1160;
+  color: #14532D;
 }
 
 .fwv3-token-modal-lead {
@@ -1836,7 +1836,7 @@
   text-align: center;
   font-size: 12.5px;
   line-height: 1.5;
-  color: #6b5e86;
+  color: #64748b;
 }
 
 .fwv3-token-modal-rows {
@@ -1846,7 +1846,7 @@
 
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(100,32,200,.18);
+  border: 1px solid rgba(22,163,74,.18);
   margin-bottom: 16px;
 }
 
@@ -1856,19 +1856,19 @@
   justify-content: space-between;
 
   padding: 11px 14px;
-  background: rgba(123,43,226,.05);
+  background: rgba(34,197,94,.06);
 }
 
 .fwv3-token-modal-rows > div span {
   font-size: 12px;
   font-weight: 700;
-  color: #6b5e86;
+  color: #64748b;
 }
 
 .fwv3-token-modal-rows > div strong {
   font-size: 15px;
   font-weight: 900;
-  color: #4b1aa8;
+  color: #15803D;
 }
 
 .fwv3-token-modal-insufficient {
