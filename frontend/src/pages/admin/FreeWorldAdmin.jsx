@@ -55,10 +55,10 @@ const STATUS_STYLES = {
   DRAFT: 'bg-slate-100 text-slate-700',
   SCHEDULED: 'bg-amber-100 text-amber-800',
   LIVE: 'bg-emerald-100 text-emerald-800',
-  COMPLETED: 'bg-indigo-100 text-indigo-800',
+  COMPLETED: 'bg-green-100 text-green-800',
   scheduled: 'bg-amber-100 text-amber-800',
   live: 'bg-emerald-100 text-emerald-800',
-  completed: 'bg-indigo-100 text-indigo-800',
+  completed: 'bg-green-100 text-green-800',
 };
 
 function StatusPill({ status, testid }) {
@@ -257,7 +257,7 @@ export default function FreeWorldAdmin() {
       {/* Header */}
       <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#6C2BFF] font-extrabold uppercase tracking-widest text-xs">
+          <div className="flex items-center gap-2 text-[#16A34A] font-extrabold uppercase tracking-widest text-xs">
             <Globe2 className="w-4 h-4" />
             Free World
           </div>
@@ -281,7 +281,7 @@ export default function FreeWorldAdmin() {
         data-testid="section-season-control">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-extrabold text-lg text-slate-900 flex items-center gap-2">
-            <Rocket className="w-5 h-5 text-[#6C2BFF]" /> Season Control
+            <Rocket className="w-5 h-5 text-[#16A34A]" /> Season Control
           </h2>
           <StatusPill status={seasonStatus} testid="season-status" />
         </div>
@@ -309,7 +309,7 @@ export default function FreeWorldAdmin() {
             <Button
               onClick={() => setLaunchOpen(true)}
               data-testid="launch-season-button"
-              className="bg-[#6C2BFF] hover:bg-[#5a22d6] text-white font-extrabold"
+              className="bg-[#16A34A] hover:bg-[#15803D] text-white font-extrabold"
             >
               <Rocket className="w-4 h-4 mr-2" />
               LAUNCH / SCHEDULE FREE WORLD SEASON
@@ -435,7 +435,7 @@ export default function FreeWorldAdmin() {
       <section className="rounded-2xl border border-slate-200 bg-white p-5"
         data-testid="section-free-world-users">
         <h2 className="font-extrabold text-lg text-slate-900 flex items-center gap-2 mb-4">
-          <Users className="w-5 h-5 text-[#6C2BFF]" /> Free World Users
+          <Users className="w-5 h-5 text-[#16A34A]" /> Free World Users
           <span className="text-xs font-normal text-slate-400">(read-only)</span>
         </h2>
 
@@ -498,7 +498,7 @@ export default function FreeWorldAdmin() {
               {!usersLoading && users.map((u) => (
                 <tr key={u.user_id}
                   onClick={() => setSelectedUser(u)}
-                  className="border-t border-slate-100 hover:bg-violet-50 cursor-pointer"
+                  className="border-t border-slate-100 hover:bg-green-50 cursor-pointer"
                   data-testid={`users-row-${u.user_id}`}>
                   <td className="px-3 py-2 font-mono text-xs">{u.public_id || '—'}</td>
                   <td className="px-3 py-2">{u.name || '—'}</td>
@@ -568,7 +568,7 @@ export default function FreeWorldAdmin() {
               <Button variant="outline" className="flex-1" disabled={launching}
                 onClick={() => { setLaunchOpen(false); setLaunchConfirm(''); }}
                 data-testid="launch-cancel">Cancel</Button>
-              <Button className="flex-1 bg-[#6C2BFF] hover:bg-[#5a22d6] text-white"
+              <Button className="flex-1 bg-[#16A34A] hover:bg-[#15803D] text-white"
                 disabled={launching || launchConfirm.trim() !== CONFIRM_PHRASE}
                 onClick={submitLaunch}
                 data-testid="launch-confirm-button">
