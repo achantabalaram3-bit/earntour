@@ -92,7 +92,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-10 flex justify-center">
               <Link
                 to="/competitions?view=live"
-                className="inline-flex items-center justify-center min-w-[180px] h-12 px-7 rounded-full bg-[#6C2BFF] text-white font-extrabold shadow-lg hover:opacity-90 transition"
+                className="inline-flex items-center justify-center min-w-[180px] h-12 px-7 rounded-full bg-[#16A34A] text-white font-extrabold shadow-lg hover:opacity-90 transition"
                 data-testid="home-more-live-contests"
               >
                 More Contests &gt;
@@ -115,7 +115,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-10 flex justify-center">
               <Link
                 to="/competitions?view=future"
-                className="inline-flex items-center justify-center min-w-[180px] h-12 px-7 rounded-full bg-[#6C2BFF] text-white font-extrabold shadow-lg hover:opacity-90 transition"
+                className="inline-flex items-center justify-center min-w-[180px] h-12 px-7 rounded-full bg-[#16A34A] text-white font-extrabold shadow-lg hover:opacity-90 transition"
                 data-testid="home-more-future-contests"
               >
                 More Contests &gt;
