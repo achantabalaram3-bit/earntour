@@ -6,7 +6,7 @@ import { Button } from '../../components/ui/button';
 
 const SOURCE_TONE = {
   winner_selection: 'bg-amber-100 text-amber-800',
-  support_case:     'bg-[#6C2BFF]/10 text-[#6C2BFF]',
+  support_case:     'bg-[#16A34A]/10 text-[#16A34A]',
 };
 
 function fmt(v) {
