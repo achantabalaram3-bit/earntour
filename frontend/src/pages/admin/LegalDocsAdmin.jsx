@@ -77,7 +77,7 @@ export default function LegalDocsAdmin() {
   return (
     <div className="p-6" data-testid="legal-docs-admin">
       <div className="flex items-center gap-2 mb-1">
-        <FileText className="w-5 h-5 text-indigo-600" />
+        <FileText className="w-5 h-5 text-green-600" />
         <h1 className="font-display font-extrabold text-2xl">Legal Documents</h1>
       </div>
       <p className="text-sm text-slate-500 mb-6">
@@ -95,8 +95,8 @@ export default function LegalDocsAdmin() {
                 data-testid={`legal-doc-${d.slug}`}
                 className={`w-full text-left px-3 py-2.5 rounded-lg border transition ${
                   selected?.slug === d.slug
-                    ? 'border-indigo-400 bg-indigo-50'
-                    : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
+                    ? 'border-green-400 bg-green-50'
+                    : 'border-slate-200 hover:border-green-300 hover:bg-slate-50'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -131,7 +131,7 @@ export default function LegalDocsAdmin() {
                   <Label className="text-[11px] uppercase tracking-wider">Title</Label>
                   <Input value={title} onChange={e => setTitle(e.target.value)} data-testid="legal-edit-title" />
                   <div className="text-xs text-slate-500 mt-1 flex flex-wrap gap-2 items-center">
-                    <span>Slug: <code className="text-indigo-700">{selected.slug}</code></span>
+                    <span>Slug: <code className="text-green-700">{selected.slug}</code></span>
                     <span>·</span>
                     <span>v{selected.version}</span>
                     <span>·</span>
@@ -169,7 +169,7 @@ export default function LegalDocsAdmin() {
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 rows={20}
-                className="w-full font-mono text-sm rounded-lg border border-slate-200 p-3 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                className="w-full font-mono text-sm rounded-lg border border-slate-200 p-3 mt-1 focus:outline-none focus:ring-2 focus:ring-green-400/40"
                 data-testid="legal-edit-content"
               />
 
@@ -187,7 +187,7 @@ export default function LegalDocsAdmin() {
                 <Button
                   onClick={save}
                   disabled={saving}
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-green-600 hover:bg-green-700"
                   data-testid="legal-save-draft"
                 >
                   <Save className="w-4 h-4 mr-1" /> {saving ? 'Saving…' : 'Save draft'}
