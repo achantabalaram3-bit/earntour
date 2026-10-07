@@ -99,7 +99,7 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
   const Progress = () => (
     <div className="flex items-center gap-2 mb-4">
       {[1, 2, 3, 4].map((n) => (
-        <div key={n} className={`h-1.5 rounded-full flex-1 transition-colors ${n <= step ? 'bg-[#6C2BFF]' : 'bg-slate-200'}`} />
+        <div key={n} className={`h-1.5 rounded-full flex-1 transition-colors ${n <= step ? 'bg-[#16A34A]' : 'bg-slate-200'}`} />
       ))}
     </div>
   );
@@ -117,7 +117,7 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
 
         {step === 1 && (
           <form onSubmit={submitDob} className="space-y-3">
-            <div className="w-12 h-12 rounded-full bg-[#FFD54A]/20 flex items-center justify-center"><Calendar className="w-6 h-6 text-[#6C2BFF]" /></div>
+            <div className="w-12 h-12 rounded-full bg-[#FFD54A]/20 flex items-center justify-center"><Calendar className="w-6 h-6 text-[#16A34A]" /></div>
             <h3 className="font-display font-extrabold text-2xl text-slate-900">Almost there!</h3>
             <p className="text-sm text-slate-500">We need a couple of things before you can play.</p>
             <div>
@@ -133,7 +133,7 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
         {step === 2 && (
           <div className="space-y-3">
             <button type="button" onClick={() => setStep(1)} className="text-slate-500 hover:text-slate-900 text-sm flex items-center gap-1"><ArrowLeft className="w-3 h-3" /> Back</button>
-            <div className="w-12 h-12 rounded-full bg-[#6C2BFF]/10 flex items-center justify-center"><Phone className="w-6 h-6 text-[#6C2BFF]" /></div>
+            <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center"><Phone className="w-6 h-6 text-[#16A34A]" /></div>
             <h3 className="font-display font-extrabold text-2xl text-slate-900">Verify your mobile</h3>
             <p className="text-sm text-slate-500">Required to receive winner notifications and secure your account.</p>
             <div>
@@ -150,7 +150,7 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
         {step === 3 && (
           <form onSubmit={advanceCode} className="space-y-3">
             <button type="button" onClick={() => setStep(2)} className="text-slate-500 hover:text-slate-900 text-sm flex items-center gap-1"><ArrowLeft className="w-3 h-3" /> Back</button>
-            <div className="w-12 h-12 rounded-full bg-[#6C2BFF]/10 flex items-center justify-center"><ShieldCheck className="w-6 h-6 text-[#6C2BFF]" /></div>
+            <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center"><ShieldCheck className="w-6 h-6 text-[#16A34A]" /></div>
             <h3 className="font-display font-extrabold text-2xl text-slate-900">Enter the code</h3>
             <p className="text-sm text-slate-500">Sent to {data.normalizedPhone}</p>
             <Input
@@ -167,7 +167,7 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
             <Button data-testid="gf-verify" type="submit" disabled={data.code.length !== 6} className="w-full h-11 pl-btn-gold text-slate-900 font-extrabold">
               Continue <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
-            <button type="button" onClick={sendOtp} disabled={busy || cooldown > 0} className="block mx-auto text-[#6C2BFF] disabled:text-slate-400 text-sm font-semibold" data-testid="gf-resend">
+            <button type="button" onClick={sendOtp} disabled={busy || cooldown > 0} className="block mx-auto text-[#16A34A] disabled:text-slate-400 text-sm font-semibold" data-testid="gf-resend">
               {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend code'}
             </button>
           </form>
@@ -176,13 +176,13 @@ export default function GoogleFinalizeModal({ open, onComplete }) {
         {step === 4 && (
           <div className="space-y-3">
             <button type="button" onClick={() => setStep(3)} className="text-slate-500 hover:text-slate-900 text-sm flex items-center gap-1"><ArrowLeft className="w-3 h-3" /> Back</button>
-            <div className="w-12 h-12 rounded-full bg-[#FFD54A]/20 flex items-center justify-center"><ScrollText className="w-6 h-6 text-[#6C2BFF]" /></div>
+            <div className="w-12 h-12 rounded-full bg-[#FFD54A]/20 flex items-center justify-center"><ScrollText className="w-6 h-6 text-[#16A34A]" /></div>
             <h3 className="font-display font-extrabold text-2xl text-slate-900">One last thing</h3>
             <p className="text-sm text-slate-500">Confirm you agree to our terms — required to finish signup.</p>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 max-h-40 overflow-auto">
               By ticking the box you agree to TallSkill&apos;s{' '}
-              <Link to="/terms" target="_blank" className="text-[#6C2BFF] underline">Terms &amp; Conditions</Link>,{' '}
-              <Link to="/privacy" target="_blank" className="text-[#6C2BFF] underline">Privacy Policy</Link>, and confirm you&apos;re 18+, meet TallSkill&apos;s eligibility requirements,
+              <Link to="/terms" target="_blank" className="text-[#16A34A] underline">Terms &amp; Conditions</Link>,{' '}
+              <Link to="/privacy" target="_blank" className="text-[#16A34A] underline">Privacy Policy</Link>, and confirm you&apos;re 18+, meet TallSkill&apos;s eligibility requirements,
               and play responsibly. Prizes are subject to KYC. TallSkill is free to play.
             </div>
             <label className="flex items-start gap-3 cursor-pointer select-none py-2">
