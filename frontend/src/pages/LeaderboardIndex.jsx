@@ -15,7 +15,7 @@ export default function LeaderboardIndex() {
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10">
       <div className="mb-8">
-        <div className="text-xs uppercase tracking-widest font-bold text-[#6C2BFF]">
+        <div className="text-xs uppercase tracking-widest font-bold text-[#16A34A]">
           Contest Leaderboards
         </div>
 
@@ -43,7 +43,7 @@ export default function LeaderboardIndex() {
             )}
 
             <div className="p-6">
-              <div className="text-xs font-bold uppercase tracking-widest text-[#6C2BFF]">
+              <div className="text-xs font-bold uppercase tracking-widest text-[#16A34A]">
                 {contest.status}
               </div>
 
@@ -53,7 +53,7 @@ export default function LeaderboardIndex() {
 
               <Link
                 to={`/leaderboard/${contest.contest_id}`}
-                className="mt-5 inline-flex items-center gap-2 text-[#6C2BFF] font-bold"
+                className="mt-5 inline-flex items-center gap-2 text-[#16A34A] font-bold"
               >
                 View Leaderboard
                 <ArrowRight className="w-4 h-4" />
