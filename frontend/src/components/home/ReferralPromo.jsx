@@ -32,9 +32,9 @@ export default function ReferralPromo() {
   return (
     <section className="py-14" data-testid="referral-promo">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-900 to-fuchsia-900 p-8 lg:p-12 text-white">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534] p-8 lg:p-12 text-white">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
+          <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-green-400/15 blur-3xl" />
           <div className="relative grid lg:grid-cols-2 gap-8 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur border border-white/20 text-xs font-semibold uppercase tracking-wider">
