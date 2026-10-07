@@ -166,7 +166,7 @@ export default function Login() {
  {/* Left panel — premium purple/gold brand hero */}
  <div className="relative hidden lg:flex flex-col justify-between p-12 text-white pl-hero-bg overflow-hidden">
  <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#FFD54A]/25 rounded-full blur-3xl pl-float" />
- <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-[#8B5CFF]/30 rounded-full blur-3xl pl-float" style={{ animationDelay: '1s' }} />
+ <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-[#22C55E]/30 rounded-full blur-3xl pl-float" style={{ animationDelay: '1s' }} />
  <div className="relative">
  <Link to="/" className="inline-flex"><PrizeLeagueLogo size={44} /></Link>
  </div>
@@ -199,12 +199,12 @@ export default function Login() {
  <button
  onClick={() => setMode('register')}
  data-testid="mode-signup"
- className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${mode === 'register' ? 'bg-white text-[#6C2BFF] shadow' : 'text-slate-500'}`}
+ className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${mode === 'register' ? 'bg-white text-[#16A34A] shadow' : 'text-slate-500'}`}
  >Sign up free</button>
  <button
  onClick={() => setMode('login')}
  data-testid="mode-login"
- className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${mode === 'login' ? 'bg-white text-[#6C2BFF] shadow' : 'text-slate-500'}`}
+ className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${mode === 'login' ? 'bg-white text-[#16A34A] shadow' : 'text-slate-500'}`}
  >Log in</button>
  </div>
 
@@ -215,7 +215,7 @@ export default function Login() {
  {mode === 'login' ? 'Great to see you again.' : 'Create your account with mandatory mobile verification.'}
  </p>
 
- <Button onClick={google} variant="outline" className="w-full h-11 gap-2 border-slate-200 hover:bg-slate-50 hover:border-[#6C2BFF]/40 font-semibold" data-testid="google-signin">
+ <Button onClick={google} variant="outline" className="w-full h-11 gap-2 border-slate-200 hover:bg-slate-50 hover:border-[#16A34A]/40 font-semibold" data-testid="google-signin">
  <GoogleIcon /> Continue with Google
  </Button>
 
@@ -241,7 +241,7 @@ export default function Login() {
  <Label>Password</Label>
  <Link
  to="/forgot-password"
- className="text-xs font-semibold text-[#6C2BFF] hover:text-[#4A15D9]"
+ className="text-xs font-semibold text-[#16A34A] hover:text-[#4A15D9]"
  data-testid="login-forgot-password-link"
  >
  Forgot password?
@@ -266,10 +266,10 @@ export default function Login() {
  )}
 
  <p className="text-[11px] text-slate-400 text-center mt-5">
- By continuing you agree to our <Link to="/terms" className="underline hover:text-[#6C2BFF]">Terms</Link> and <Link to="/privacy" className="underline hover:text-[#6C2BFF]">Privacy Policy</Link>. You confirm you&apos;re 18 or older.
+ By continuing you agree to our <Link to="/terms" className="underline hover:text-[#16A34A]">Terms</Link> and <Link to="/privacy" className="underline hover:text-[#16A34A]">Privacy Policy</Link>. You confirm you&apos;re 18 or older.
  </p>
  <p className="text-xs text-slate-400 text-center mt-3">
- Staff? <Link to="/admin/login" className="text-[#6C2BFF] hover:text-[#4A15D9] font-semibold">Admin sign-in →</Link>
+ Staff? <Link to="/admin/login" className="text-[#16A34A] hover:text-[#4A15D9] font-semibold">Admin sign-in →</Link>
  </p>
  </div>
  </div>
