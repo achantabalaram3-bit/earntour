@@ -293,7 +293,7 @@ export default function PlayGame() {
         </Link>
       </div>
 
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-900 to-fuchsia-900 text-white rounded-3xl p-6 mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534] text-white rounded-3xl p-6 mb-6 relative overflow-hidden">
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-orange-500/20 blur-3xl" />
 
         <div className="relative">
@@ -321,7 +321,7 @@ export default function PlayGame() {
           data-testid="game-introduction"
         >
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#6C2BFF]/10 text-[#6C2BFF] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-[#16A34A]/10 text-[#16A34A] flex items-center justify-center">
               <ShieldCheck className="w-6 h-6" />
             </div>
 
@@ -355,7 +355,7 @@ export default function PlayGame() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[#6C2BFF]/20 bg-[#6C2BFF]/5 p-4">
+          <div className="mt-5 rounded-2xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-4">
             <div className="font-bold text-slate-900">Practice mode</div>
             <p className="text-sm text-slate-600 mt-1">
               Practice does not consume an attempt, submit a score, or affect
@@ -391,12 +391,12 @@ export default function PlayGame() {
 
       {phase === 'demo' && (
         <div
-          className="bg-white rounded-2xl border-2 border-sky-200 p-6"
+          className="bg-white rounded-2xl border-2 border-green-200 p-6"
           data-testid="practice-mode"
         >
           <div className="flex items-center justify-between gap-3 mb-5">
             <div>
-              <div className="text-xs uppercase tracking-widest text-sky-600 font-bold">
+              <div className="text-xs uppercase tracking-widest text-green-700 font-bold">
                 Practice Mode
               </div>
               <div className="font-display text-xl font-extrabold text-slate-900">
@@ -404,7 +404,7 @@ export default function PlayGame() {
               </div>
             </div>
 
-            <div className="text-xs bg-sky-50 text-sky-700 px-3 py-1.5 rounded-full font-bold">
+            <div className="text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full font-bold">
               No attempt used
             </div>
           </div>
@@ -460,7 +460,7 @@ export default function PlayGame() {
           data-testid="official-attempt-ready"
         >
           <div className="text-center">
-            <Play className="w-14 h-14 text-[#6C2BFF] mx-auto" />
+            <Play className="w-14 h-14 text-[#16A34A] mx-auto" />
 
             <h2 className="font-display text-2xl font-extrabold text-slate-900 mt-4">
               Ready for an official attempt?
