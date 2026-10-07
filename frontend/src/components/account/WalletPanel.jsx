@@ -45,7 +45,7 @@ function TxReceipt({ tx, open, onClose, walletBefore }) {
  <DialogContent className="max-w-md" data-testid="tx-receipt">
  <DialogHeader>
  <DialogTitle className="flex items-center gap-2">
- <Receipt className="w-5 h-5 text-[#6C2BFF]" /> Transaction receipt
+ <Receipt className="w-5 h-5 text-[#16A34A]" /> Transaction receipt
  </DialogTitle>
  </DialogHeader>
  <div className="rounded-2xl border-2 border-dashed border-slate-200 p-5 bg-slate-50">
@@ -106,7 +106,7 @@ export default function WalletPanel({ wallet, walletTxs }) {
 
  return (
  <div className="space-y-6" data-testid="wallet-panel">
- <div className="bg-gradient-to-br from-[#3E0BAA] via-[#6C2BFF] to-[#8B5CFF] rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden" data-testid="wallet-hero">
+ <div className="bg-gradient-to-br from-[#3E0BAA] via-[#16A34A] to-[#22C55E] rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden" data-testid="wallet-hero">
  <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-[#FFD54A]/20 blur-3xl" />
  <div className="relative">
  <div className="text-white/85 text-xs uppercase tracking-widest flex items-center gap-2"><Coins className="w-4 h-4" /> {TOKEN_POLICY.name} · Challenge World entry</div>
@@ -152,7 +152,7 @@ export default function WalletPanel({ wallet, walletTxs }) {
  key={f.id}
  onClick={() => setFilter(f.id)}
  data-testid={`filter-${f.id}`}
- className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${filter === f.id ? 'bg-[#6C2BFF] text-white border-[#6C2BFF]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#6C2BFF]/40'}`}
+ className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${filter === f.id ? 'bg-[#16A34A] text-white border-[#16A34A]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#16A34A]/40'}`}
  >{f.label}</button>
  ))}
  </div>
