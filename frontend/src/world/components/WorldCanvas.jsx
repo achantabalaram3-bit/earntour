@@ -245,16 +245,16 @@ function formatChampionPrize(championshipNumber) {
 }
 
 const PL1000_SLOT_POSITIONS = [
-  { x: 57, bottom: 4  },  // Level 1  (road ~43 → beside, right)
-  { x: 22, bottom: 12 },  // Level 2  (road ~36 → beside, left)
-  { x: 45, bottom: 20 },  // Level 3  (road ~31 → beside, right)
-  { x: 23, bottom: 28 },  // Level 4  (road ~37 → beside, left)
-  { x: 59, bottom: 36 },  // Level 5  (road ~45 → beside, right)
-  { x: 43, bottom: 44 },  // Level 6  (road ~57 → beside, left)
-  { x: 78, bottom: 52 },  // Level 7  (road ~64 → beside, right)
-  { x: 52, bottom: 60 },  // Level 8  (road ~66 → beside, left)
-  { x: 74, bottom: 68 },  // Level 9  (road ~60 → beside, right)
-  { x: 36, bottom: 76 },  // Level 10 (road ~50 → beside, left)
+  { x: 64, bottom: 4  },  // Level 1  — right of lower S
+  { x: 35, bottom: 12 },  // Level 2  — left of road
+  { x: 47, bottom: 20 },  // Level 3  — right of left sweep
+  { x: 16, bottom: 28 },  // Level 4  — outside left bend
+  { x: 49, bottom: 36 },  // Level 5  — right as road crosses centre
+  { x: 49, bottom: 44 },  // Level 6  — left of right sweep
+  { x: 82, bottom: 52 },  // Level 7  — outside right bend
+  { x: 54, bottom: 60 },  // Level 8  — left of road
+  { x: 72, bottom: 68 },  // Level 9  — right as road returns
+  { x: 34, bottom: 76 },  // Level 10 — left of upper sweep
 
   // Dedicated Champion Arena position.
   // This is NOT a numbered level.
@@ -268,16 +268,16 @@ const PL1000_SLOT_POSITIONS = [
  * clear for the avatar to walk on the path).
  */
 const PL1000_ROAD_X = [
-  43, // Level 1
-  36, // Level 2
-  31, // Level 3
-  37, // Level 4
-  45, // Level 5
-  57, // Level 6
-  64, // Level 7
-  66, // Level 8
-  60, // Level 9
-  50, // Level 10
+  50, // Level 1
+  49, // Level 2
+  34, // Level 3
+  29, // Level 4
+  36, // Level 5
+  63, // Level 6
+  71, // Level 7
+  67, // Level 8
+  58, // Level 9
+  47, // Level 10
   50, // Champion
 ];
 
@@ -1175,44 +1175,40 @@ function ChampionshipSection({
           d="
             M 50 1020
 
-            C 50 975,
-              43 950,
-              39 920
+            C 55 980,
+              57 945,
+              50 910
 
-            C 34 890,
-              30 850,
-              31 800
+            C 42 870,
+              28 840,
+              27 790
 
-            C 32 750,
-              37 715,
-              40 670
+            C 26 735,
+              32 690,
+              43 650
 
-            C 47 625,
-              55 590,
-              58 550
+            C 53 610,
+              69 575,
+              72 525
 
-            C 64 510,
-              68 470,
-              68 430
+            C 75 475,
+              72 430,
+              64 390
 
-            C 67 390,
-              63 350,
-              59 310
+            C 57 350,
+              45 315,
+              39 275
 
-            C 54 270,
-              48 225,
-              43 185
+            C 34 235,
+              36 195,
+              44 155
 
-            C 38 145,
-              34 120,
-              34 100
+            C 49 125,
+              52 98,
+              50 70
 
-            C 34 78,
-              40 62,
-              46 52
-
-            C 48 40,
-              49 26,
+            C 49 45,
+              49 20,
               50 -20
           "
         />
@@ -1222,44 +1218,40 @@ function ChampionshipSection({
           d="
             M 50 1020
 
-            C 50 975,
-              43 950,
-              39 920
+            C 55 980,
+              57 945,
+              50 910
 
-            C 34 890,
-              30 850,
-              31 800
+            C 42 870,
+              28 840,
+              27 790
 
-            C 32 750,
-              37 715,
-              40 670
+            C 26 735,
+              32 690,
+              43 650
 
-            C 47 625,
-              55 590,
-              58 550
+            C 53 610,
+              69 575,
+              72 525
 
-            C 64 510,
-              68 470,
-              68 430
+            C 75 475,
+              72 430,
+              64 390
 
-            C 67 390,
-              63 350,
-              59 310
+            C 57 350,
+              45 315,
+              39 275
 
-            C 54 270,
-              48 225,
-              43 185
+            C 34 235,
+              36 195,
+              44 155
 
-            C 38 145,
-              34 120,
-              34 100
+            C 49 125,
+              52 98,
+              50 70
 
-            C 34 78,
-              40 62,
-              46 52
-
-            C 48 40,
-              49 26,
+            C 49 45,
+              49 20,
               50 -20
           "
         />
@@ -1269,44 +1261,40 @@ function ChampionshipSection({
           d="
             M 50 1020
 
-            C 50 975,
-              43 950,
-              39 920
+            C 55 980,
+              57 945,
+              50 910
 
-            C 34 890,
-              30 850,
-              31 800
+            C 42 870,
+              28 840,
+              27 790
 
-            C 32 750,
-              37 715,
-              40 670
+            C 26 735,
+              32 690,
+              43 650
 
-            C 47 625,
-              55 590,
-              58 550
+            C 53 610,
+              69 575,
+              72 525
 
-            C 64 510,
-              68 470,
-              68 430
+            C 75 475,
+              72 430,
+              64 390
 
-            C 67 390,
-              63 350,
-              59 310
+            C 57 350,
+              45 315,
+              39 275
 
-            C 54 270,
-              48 225,
-              43 185
+            C 34 235,
+              36 195,
+              44 155
 
-            C 38 145,
-              34 120,
-              34 100
+            C 49 125,
+              52 98,
+              50 70
 
-            C 34 78,
-              40 62,
-              46 52
-
-            C 48 40,
-              49 26,
+            C 49 45,
+              49 20,
               50 -20
           "
         />
