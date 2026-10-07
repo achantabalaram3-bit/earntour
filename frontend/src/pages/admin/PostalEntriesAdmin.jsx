@@ -11,11 +11,11 @@ import { Mailbox, Plus, ClipboardList } from 'lucide-react';
 
 const STATUSES = [
   { key: 'all',           label: 'All',           colour: 'bg-slate-100 text-slate-700' },
-  { key: 'received',      label: 'Received',      colour: 'bg-sky-100 text-sky-700' },
+  { key: 'received',      label: 'Received',      colour: 'bg-emerald-100 text-emerald-700' },
   { key: 'under_review',  label: 'Under review',  colour: 'bg-amber-100 text-amber-700' },
   { key: 'validated',     label: 'Validated',     colour: 'bg-emerald-100 text-emerald-700' },
   { key: 'rejected',      label: 'Rejected',      colour: 'bg-rose-100 text-rose-700' },
-  { key: 'allocated',     label: 'Allocated',     colour: 'bg-indigo-100 text-indigo-700' },
+  { key: 'allocated',     label: 'Allocated',     colour: 'bg-green-100 text-green-700' },
   { key: 'duplicate',     label: 'Duplicate',     colour: 'bg-stone-100 text-stone-700' },
   { key: 'late_entry',    label: 'Late entry',    colour: 'bg-orange-100 text-orange-700' },
 ];
@@ -76,7 +76,7 @@ export default function PostalEntriesAdmin() {
     <div className="p-6" data-testid="postal-admin">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Mailbox className="w-5 h-5 text-indigo-600" />
+          <Mailbox className="w-5 h-5 text-green-600" />
           <h1 className="font-display font-extrabold text-2xl">Postal Entries</h1>
         </div>
         <Button onClick={() => setShowCreate(true)} className="pl-btn-purple text-white" data-testid="postal-new-btn">
@@ -97,7 +97,7 @@ export default function PostalEntriesAdmin() {
               data-testid={`postal-tab-${s.key}`}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
                 isActive
-                  ? 'bg-indigo-600 text-white border-indigo-600'
+                  ? 'bg-green-600 text-white border-green-600'
                   : `${s.colour} border-transparent hover:bg-white hover:border-slate-200`
               }`}
             >
