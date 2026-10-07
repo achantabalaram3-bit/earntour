@@ -58,7 +58,7 @@ export default function CompanySettingsAdmin() {
   return (
     <div className="p-6 max-w-4xl" data-testid="company-settings-admin">
       <div className="flex items-center gap-2 mb-1">
-        <Building2 className="w-5 h-5 text-indigo-600" />
+        <Building2 className="w-5 h-5 text-green-600" />
         <h1 className="font-display font-extrabold text-2xl">Company Settings</h1>
       </div>
       <p className="text-sm text-slate-500 mb-6">
