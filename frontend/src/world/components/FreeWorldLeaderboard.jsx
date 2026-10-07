@@ -1,7 +1,7 @@
 ﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown, Coins, ChevronRight,
-} from 'lucide-react';
+, ArrowLeft } from 'lucide-react';
 import { worldAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/pl-global-lb.css';
@@ -203,8 +203,8 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           <img src={LOGO_URL} alt="TallSkill" className="pl-global-lb-logo" />
           <span className="pl-global-lb-wordmark"><b>Tall</b>Skill</span>
         </div>
-        <button className="pl-global-lb-back" onClick={() => onClose?.()} data-testid="lb-close" aria-label="Close leaderboard">
-          <X size={18} /> <span>Back</span>
+        <button className="pl-global-lb-back" onClick={() => onClose?.()} data-testid="lb-close" aria-label="Back to World">
+          <ArrowLeft size={18} /> <span>Back to World</span>
         </button>
       </header>
 
