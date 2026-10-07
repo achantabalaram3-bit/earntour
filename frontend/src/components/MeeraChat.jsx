@@ -63,7 +63,7 @@ export default function MeeraChat({ theme = 'light', onActionsExecuted, publicMo
   return (
     <>
       <button onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 group flex items-center gap-2 pl-3 pr-4 py-3 rounded-full bg-gradient-to-r from-fuchsia-600 via-green-600 to-green-600 text-white shadow-xl shadow-green-500/40 hover:shadow-green-500/60 transition-shadow">
+        className="fixed bottom-6 right-6 z-40 group flex items-center gap-2 pl-3 pr-4 py-3 rounded-full bg-gradient-to-r from-[#22C55E] via-[#16A34A] to-[#14532D] text-white shadow-xl shadow-green-500/40 hover:shadow-green-500/60 transition-shadow">
         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><Sparkles className="w-4 h-4" /></div>
         <span className="font-semibold">Ask Meera</span>
       </button>
@@ -72,7 +72,7 @@ export default function MeeraChat({ theme = 'light', onActionsExecuted, publicMo
         <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
           <aside onClick={e => e.stopPropagation()} className={`relative w-full max-w-lg h-full ${theme === 'dark' ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'} shadow-2xl flex flex-col`}>
-            <header className="flex items-center justify-between p-4 border-b border-slate-200/60 bg-gradient-to-r from-fuchsia-600 to-green-600 text-white">
+            <header className="flex items-center justify-between p-4 border-b border-slate-200/60 bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center"><Sparkles className="w-5 h-5" /></div>
                 <div>
@@ -86,7 +86,7 @@ export default function MeeraChat({ theme = 'light', onActionsExecuted, publicMo
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 && (
                 <div className="text-center py-8">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-green-500 text-white flex items-center justify-center mx-auto"><Bot className="w-7 h-7" /></div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 text-white flex items-center justify-center mx-auto"><Bot className="w-7 h-7" /></div>
                   <h3 className="font-display font-bold mt-3">Hi, I’m Meera 👋</h3>
                   <p className="text-sm opacity-70 mt-1 max-w-xs mx-auto">Tell me what contests you want and I’ll add, edit, launch, pause or remove them for you — no limits.</p>
                   <div className="mt-4 space-y-2">
@@ -98,7 +98,7 @@ export default function MeeraChat({ theme = 'light', onActionsExecuted, publicMo
               )}
               {messages.map((m) => (
                 <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 border ${m.role === 'user' ? 'bg-gradient-to-br from-green-600 to-fuchsia-600 text-white border-transparent' : bubbleBase}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 border ${m.role === 'user' ? 'bg-gradient-to-br from-[#16A34A] to-[#14532D] text-white border-transparent' : bubbleBase}`}>
                     <div className="whitespace-pre-wrap text-sm">{m.text}</div>
                     {m.results && m.results.length > 0 && (
                       <div className="mt-2 space-y-1">
@@ -133,7 +133,7 @@ export default function MeeraChat({ theme = 'light', onActionsExecuted, publicMo
                   placeholder="Ask Meera anything about contests…"
                   className={`flex-1 rounded-xl px-4 py-2.5 text-sm border ${theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200'}`}
                 />
-                <Button type="submit" disabled={busy || !input.trim()} className="bg-gradient-to-r from-fuchsia-600 to-green-600 hover:from-fuchsia-700 hover:to-green-700">
+                <Button type="submit" disabled={busy || !input.trim()} className="bg-gradient-to-r from-[#22C55E] to-[#16A34A] hover:from-green-700 hover:to-green-800">
                   {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 </Button>
               </form>
