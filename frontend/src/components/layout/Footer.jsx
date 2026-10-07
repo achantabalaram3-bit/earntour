@@ -15,7 +15,7 @@ export default function Footer() {
  };
 
  return (
- <footer className="pt-14 pb-8" style={{ background: '#0B0D1F', color: 'rgba(255,255,255,0.7)' }}>
+ <footer className="pt-14 pb-8" style={{ background: '#052E16', color: 'rgba(255,255,255,0.7)' }}>
  <div className="max-w-7xl mx-auto px-4 lg:px-8 grid md:grid-cols-5 gap-10">
  <div className="md:col-span-2 lg:col-span-1">
  <div className="flex items-center gap-3">
@@ -29,9 +29,9 @@ export default function Footer() {
  TallSkill is a skill-gaming platform for India with Free World and Challenge World. No deposits — tokens are earned, never bought.
  </p>
  <div className="flex gap-3 mt-4">
- <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#6C2BFF] flex items-center justify-center transition-colors"><Facebook className="w-4 h-4" /></a>
- <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#6C2BFF] flex items-center justify-center transition-colors"><Instagram className="w-4 h-4" /></a>
- <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#6C2BFF] flex items-center justify-center transition-colors"><Twitter className="w-4 h-4" /></a>
+ <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#16A34A] flex items-center justify-center transition-colors"><Facebook className="w-4 h-4" /></a>
+ <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#16A34A] flex items-center justify-center transition-colors"><Instagram className="w-4 h-4" /></a>
+ <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#16A34A] flex items-center justify-center transition-colors"><Twitter className="w-4 h-4" /></a>
  </div>
  </div>
 
