@@ -2206,7 +2206,7 @@ export default function AlertsAdmin() {
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-2">
-          <Bell className="h-6 w-6 text-[#6C2BFF]" />
+          <Bell className="h-6 w-6 text-[#16A34A]" />
           <h1 className="text-2xl font-bold text-slate-900">Alerts</h1>
         </div>
         <p className="mt-1 text-sm text-slate-500">
@@ -2277,7 +2277,7 @@ export default function AlertsAdmin() {
           <div className="mb-2 text-sm font-semibold text-slate-700">Channels</div>
           <div className="flex flex-wrap gap-2">
             {[['in_app','In-App'],['email','Email'],['sms','SMS']].map(([v,l]) => (
-              <button key={v} type="button" onClick={() => toggleChannel(v)} className={`rounded-full border px-4 py-2 text-sm font-semibold ${form.channels.includes(v) ? 'border-[#6C2BFF] bg-[#6C2BFF] text-white' : 'border-slate-300 bg-white text-slate-700'}`}>{l}</button>
+              <button key={v} type="button" onClick={() => toggleChannel(v)} className={`rounded-full border px-4 py-2 text-sm font-semibold ${form.channels.includes(v) ? 'border-[#16A34A] bg-[#16A34A] text-white' : 'border-slate-300 bg-white text-slate-700'}`}>{l}</button>
             ))}
           </div>
           <p className="mt-2 text-xs text-slate-500">Email and SMS stay Pending until their delivery providers are connected. In-app sends immediately.</p>
@@ -2293,7 +2293,7 @@ export default function AlertsAdmin() {
           <span className="mt-1 block text-right text-xs text-slate-400">{form.message.length} / 4000</span>
         </label>
 
-        <button disabled={loading || targetCount < 1 || targetCount > 10000} className="inline-flex items-center gap-2 rounded-xl bg-[#6C2BFF] px-5 py-3 font-bold text-white disabled:opacity-50">
+        <button disabled={loading || targetCount < 1 || targetCount > 10000} className="inline-flex items-center gap-2 rounded-xl bg-[#16A34A] px-5 py-3 font-bold text-white disabled:opacity-50">
           <Send className="h-4 w-4" /> {loading ? 'Sending…' : 'Send Alert'}
         </button>
       </form>
