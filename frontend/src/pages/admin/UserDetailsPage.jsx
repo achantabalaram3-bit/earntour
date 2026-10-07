@@ -20,7 +20,7 @@ import {
 const Section = ({ title, icon: Icon, children }) => (
   <section className="bg-white rounded-2xl border border-slate-200 p-5">
     <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-4 h-4 text-indigo-600" />
+      <Icon className="w-4 h-4 text-green-600" />
       <h2 className="font-display font-bold text-base">{title}</h2>
     </div>
     {children}
@@ -313,7 +313,7 @@ function ProfileManagementCard({ userId, identity, onReload }) {
                 change('address', e.target.value)
               }
               rows={3}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C2BFF]/20"
+              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20"
               data-testid="edit-user-address"
             />
           ) : (
@@ -543,7 +543,7 @@ export default function UserDetailsPage() {
       <BackButton to="/admin/users" label="All users" className="mb-1" />
 
       {/* Hero */}
-      <div className="relative rounded-2xl bg-gradient-to-br from-violet-600 to-purple-800 text-white p-6 overflow-hidden">
+      <div className="relative rounded-2xl bg-gradient-to-br from-green-600 to-purple-800 text-white p-6 overflow-hidden">
         <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
         <div className="relative flex flex-wrap items-start gap-4">
           <div className="w-16 h-16 rounded-2xl bg-white/25 text-2xl font-black flex items-center justify-center border-2 border-white/40">
@@ -836,7 +836,7 @@ export default function UserDetailsPage() {
       {world && (
         <section className="bg-white rounded-2xl border border-slate-200 p-5" data-testid="user-360-world-history">
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="w-4 h-4 text-indigo-600" />
+            <Trophy className="w-4 h-4 text-green-600" />
             <h2 className="font-display font-bold text-base">Free World history</h2>
           </div>
 
@@ -852,7 +852,7 @@ export default function UserDetailsPage() {
             {/* Championship progression */}
             <div className="rounded-xl border border-slate-200 p-4">
               <div className="flex items-center gap-2 font-bold text-sm mb-3">
-                <MapIcon className="w-4 h-4 text-violet-600" /> Championship progression
+                <MapIcon className="w-4 h-4 text-green-600" /> Championship progression
               </div>
               {!world.progress ? (
                 <div className="text-xs text-slate-400">No Free World progress yet.</div>
@@ -887,7 +887,7 @@ export default function UserDetailsPage() {
             {/* Levels history */}
             <div className="rounded-xl border border-slate-200 p-4">
               <div className="flex items-center gap-2 font-bold text-sm mb-3">
-                <Swords className="w-4 h-4 text-indigo-600" /> Levels history ({world.stats?.level_attempts_count || 0})
+                <Swords className="w-4 h-4 text-green-600" /> Levels history ({world.stats?.level_attempts_count || 0})
               </div>
               {!world.level_attempts?.length ? (
                 <div className="text-xs text-slate-400">No level attempts recorded.</div>
