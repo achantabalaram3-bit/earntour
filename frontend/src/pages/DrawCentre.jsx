@@ -74,7 +74,7 @@ export default function DrawCentre() {
     <div className="max-w-6xl mx-auto px-4 lg:px-8 py-8 md:py-10" data-testid="draw-centre">
       <BackButton to="/" label="Home" className="mb-4" />
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] flex items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] flex items-center justify-center">
           <Trophy className="w-6 h-6 text-[#FFD54A]" />
         </div>
         <div>
@@ -85,7 +85,7 @@ export default function DrawCentre() {
 
       <Tabs defaultValue="pending">
         <TabsList className="grid grid-cols-2 w-full max-w-md">
-          <TabsTrigger value="pending" data-testid="tab-pending">Pending Draws {pending.length ? <span className="ml-2 text-xs bg-[#6C2BFF] text-white rounded-full px-2 py-0.5">{pending.length}</span> : null}</TabsTrigger>
+          <TabsTrigger value="pending" data-testid="tab-pending">Pending Draws {pending.length ? <span className="ml-2 text-xs bg-[#16A34A] text-white rounded-full px-2 py-0.5">{pending.length}</span> : null}</TabsTrigger>
           <TabsTrigger value="results" data-testid="tab-results">Draw Results</TabsTrigger>
         </TabsList>
 
@@ -108,7 +108,7 @@ export default function DrawCentre() {
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
               {pending.map(({ contest, ticketCount }) => (
-                <Link to={`/competition/${contest.slug}`} key={contest.contest_id} className="bg-white rounded-2xl border border-slate-100 hover:border-[#6C2BFF]/40 hover:shadow-lg transition p-4 flex gap-4" data-testid={`pending-item-${contest.contest_id}`}>
+                <Link to={`/competition/${contest.slug}`} key={contest.contest_id} className="bg-white rounded-2xl border border-slate-100 hover:border-[#16A34A]/40 hover:shadow-lg transition p-4 flex gap-4" data-testid={`pending-item-${contest.contest_id}`}>
                   <img
                     src={contest.image}
                     alt={contest.title}
@@ -121,7 +121,7 @@ export default function DrawCentre() {
                     <div className="font-bold text-slate-900 break-words">{contest.title}</div>
                     <div className="text-xs text-slate-500 mt-0.5">Prize {gbp(contest.prize_amount)}</div>
                     <div className="mt-2 flex flex-wrap gap-2 items-center">
-                      <Badge className="bg-[#6C2BFF]/10 text-[#6C2BFF] hover:bg-[#6C2BFF]/10">{ticketCount} ticket{ticketCount !== 1 ? 's' : ''}</Badge>
+                      <Badge className="bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/10">{ticketCount} ticket{ticketCount !== 1 ? 's' : ''}</Badge>
                       <Countdown endDate={contest.end_date} />
                     </div>
                     <div className="text-[11px] text-slate-500 mt-2">Draw: {new Date(contest.end_date).toLocaleString('en-IN')}</div>
@@ -160,7 +160,7 @@ export default function DrawCentre() {
                       <td className="p-3 font-semibold text-slate-900">{r.contest ? r.contest.title : r.prize_title}</td>
                       <td className="p-3 text-slate-700">{r.user_name}</td>
                       <td className="p-3 text-slate-500 font-mono text-xs">#{r.ticket_number}</td>
-                      <td className="p-3 text-[#6C2BFF] font-bold">{gbp(r.prize_amount)}</td>
+                      <td className="p-3 text-[#16A34A] font-bold">{gbp(r.prize_amount)}</td>
                       <td className="p-3 text-slate-500 text-xs">{new Date(r.drawn_at).toLocaleString('en-IN')}</td>
                       <td className="p-3">
                         {r.isMine ? (
