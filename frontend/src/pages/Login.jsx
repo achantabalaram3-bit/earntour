@@ -163,7 +163,7 @@ export default function Login() {
 
  return (
  <div className="min-h-[calc(100vh-8rem)] grid lg:grid-cols-2 relative overflow-hidden bg-white" data-testid="login-page">
- {/* Left panel — premium purple/gold brand hero */}
+ {/* Left panel — premium green/gold brand hero */}
  <div className="relative hidden lg:flex flex-col justify-between p-12 text-white pl-hero-bg overflow-hidden">
  <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#FFD54A]/25 rounded-full blur-3xl pl-float" />
  <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-[#22C55E]/30 rounded-full blur-3xl pl-float" style={{ animationDelay: '1s' }} />
@@ -241,7 +241,7 @@ export default function Login() {
  <Label>Password</Label>
  <Link
  to="/forgot-password"
- className="text-xs font-semibold text-[#16A34A] hover:text-[#4A15D9]"
+ className="text-xs font-semibold text-[#16A34A] hover:text-[#14532D]"
  data-testid="login-forgot-password-link"
  >
  Forgot password?
@@ -269,7 +269,7 @@ export default function Login() {
  By continuing you agree to our <Link to="/terms" className="underline hover:text-[#16A34A]">Terms</Link> and <Link to="/privacy" className="underline hover:text-[#16A34A]">Privacy Policy</Link>. You confirm you&apos;re 18 or older.
  </p>
  <p className="text-xs text-slate-400 text-center mt-3">
- Staff? <Link to="/admin/login" className="text-[#16A34A] hover:text-[#4A15D9] font-semibold">Admin sign-in →</Link>
+ Staff? <Link to="/admin/login" className="text-[#16A34A] hover:text-[#14532D] font-semibold">Admin sign-in →</Link>
  </p>
  </div>
  </div>
