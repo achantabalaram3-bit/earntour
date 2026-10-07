@@ -456,7 +456,7 @@ const minimalWorldHeader =
    <Link
      to="/my-account/wallet"
      data-testid="free-world-token-balance"
-     className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD54A]/60 bg-gradient-to-b from-[#1a1140] to-[#0a0b1a] px-2.5 py-1.5 text-[#FFDD42] shadow-[0_0_12px_rgba(255,202,31,0.25)] hover:border-[#FFE680] hover:shadow-[0_0_18px_rgba(255,202,31,0.4)] transition whitespace-nowrap"
+     className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD54A]/60 bg-gradient-to-b from-[#14532D] to-[#052E16] px-2.5 py-1.5 text-[#FFDD42] shadow-[0_0_12px_rgba(255,202,31,0.25)] hover:border-[#FFE680] hover:shadow-[0_0_18px_rgba(255,202,31,0.4)] transition whitespace-nowrap"
      title="Your token balance"
    >
      <span className="text-[13px] leading-none" aria-hidden="true">🪙</span>
@@ -634,7 +634,7 @@ const minimalWorldHeader =
  </Link>
 
  <Link to="/my-account/policies" onClick={() => setOpen(false)} className="mt-3 flex items-center gap-3 py-3 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white" data-testid="mobile-policies-link">
- <div className="w-9 h-9 rounded-full bg-white/5 text-indigo-500 flex items-center justify-center">📄</div>
+ <div className="w-9 h-9 rounded-full bg-white/5 text-green-500 flex items-center justify-center">📄</div>
  <div className="flex-1 text-sm text-white/80">Policies</div>
  </Link>
 
