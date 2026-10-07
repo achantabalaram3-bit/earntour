@@ -362,7 +362,7 @@ export default function FreeWorldContestConfig({
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
           <div>
-            <div className="flex items-center gap-2 text-[#6C2BFF] text-xs font-extrabold uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-[#16A34A] text-xs font-extrabold uppercase tracking-widest">
               <Gamepad2 className="w-4 h-4" />
               Progression configuration
             </div>
