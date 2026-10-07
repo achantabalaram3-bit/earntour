@@ -4741,3 +4741,6 @@ body [data-testid="site-header"] {
   .pl-special-fab-gift,
   .pl-special-fab-ring { animation: none !important; opacity: 1 !important; }
 }
+
+/* TallSkill orange coral cream */
+.pl-world-page{background:radial-gradient(circle at 50% 20%,#FED7AA 0%,#FB923C 55%,#9A3412 100%)}.pl-world-round-button,.pl-world-brand,.pl-world-season-chip,.pl-world-map-help,.pl-world-arena-key,.pl-world-bottom-bar{border-color:rgba(253,186,116,.55);background:linear-gradient(145deg,rgba(124,45,18,.96),rgba(154,52,18,.88))}.pl-world-round-button,.pl-world-season-chip{color:#FFEDD5}.pl-world-brand-mark{color:#7C2D12;background:linear-gradient(145deg,#FED7AA,#FB923C)}.pl-world-brand-eyebrow,.pl-world-season-chip span,.pl-world-map-help-title span,.pl-world-arena-key span,.pl-world-bottom-bar span{color:#FDBA74}
