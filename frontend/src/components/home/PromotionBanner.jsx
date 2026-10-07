@@ -84,13 +84,13 @@ export default function PromotionBanner() {
     >
       <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-4 md:pt-6">
         <div
-          className="relative w-full aspect-[2/1] overflow-hidden rounded-2xl md:rounded-3xl bg-[#0B0D1F] shadow-lg border border-slate-100"
+          className="relative w-full aspect-[2/1] overflow-hidden rounded-2xl md:rounded-3xl bg-[#052E16] shadow-lg border border-slate-100"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           {slides.length === 0 ? (
             <div
-              className="absolute inset-0 bg-gradient-to-br from-[#111329] via-[#171936] to-[#21164f]"
+              className="absolute inset-0 bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534]"
               data-testid="promotion-empty-state"
             />
           ) : (
