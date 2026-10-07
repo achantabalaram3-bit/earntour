@@ -19,4 +19,4 @@
 .earntour-world-grid-single { grid-template-columns: minmax(0, 520px); justify-content: center; }
 
 /* TallSkill orange coral cream */
-.world-selector-page{background:radial-gradient(ellipse at top,#9A3412,#431407 68%);}.earntour-world-card{border-color:#FB923C;background:linear-gradient(145deg,#7C2D12,#431407);}.earntour-world-free{border-color:#FB7185;background:linear-gradient(145deg,#9A3412,#431407);}.earntour-world-card button,.earntour-world-free button{background:linear-gradient(135deg,#F97316,#FB7185);color:#fff;}
+.world-selector-page{background:radial-gradient(ellipse at top,#166534,#052E16 68%);}.earntour-world-card{border-color:#4ADE80;background:linear-gradient(145deg,#14532D,#052E16);}.earntour-world-free{border-color:#22C55E;background:linear-gradient(145deg,#166534,#052E16);}.earntour-world-card button,.earntour-world-free button{background:linear-gradient(135deg,#16A34A,#22C55E);color:#fff;}
