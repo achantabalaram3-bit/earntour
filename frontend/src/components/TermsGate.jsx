@@ -64,7 +64,7 @@ export default function TermsGate() {
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 text-white flex items-center justify-center mb-3">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white flex items-center justify-center mb-3">
             <ShieldCheck className="w-7 h-7" />
           </div>
           <DialogTitle className="font-display font-extrabold text-2xl">
@@ -81,7 +81,7 @@ export default function TermsGate() {
           <Link
             to="/legal/terms"
             target="_blank"
-            className="flex items-center justify-between text-slate-800 hover:text-indigo-700 font-medium"
+            className="flex items-center justify-between text-slate-800 hover:text-green-700 font-medium"
             data-testid="tc-link-terms"
           >
             <span>Read Terms &amp; Conditions</span>
@@ -90,7 +90,7 @@ export default function TermsGate() {
           <Link
             to="/legal/privacy"
             target="_blank"
-            className="flex items-center justify-between text-slate-800 hover:text-indigo-700 font-medium"
+            className="flex items-center justify-between text-slate-800 hover:text-green-700 font-medium"
             data-testid="tc-link-privacy"
           >
             <span>Read Privacy Policy</span>
@@ -107,8 +107,8 @@ export default function TermsGate() {
           />
           <span className="text-sm text-slate-700 leading-relaxed">
             I confirm I am aged 18 or over, meet TallSkill's eligibility requirements, and I accept
-            the <Link to="/legal/terms" target="_blank" className="text-indigo-700 hover:underline">Terms &amp; Conditions</Link> and
-            {' '}<Link to="/legal/privacy" target="_blank" className="text-indigo-700 hover:underline">Privacy Policy</Link>.
+            the <Link to="/legal/terms" target="_blank" className="text-green-700 hover:underline">Terms &amp; Conditions</Link> and
+            {' '}<Link to="/legal/privacy" target="_blank" className="text-green-700 hover:underline">Privacy Policy</Link>.
           </span>
         </label>
 
