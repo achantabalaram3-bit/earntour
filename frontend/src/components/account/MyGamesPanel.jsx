@@ -25,7 +25,7 @@ export default function MyGamesPanel() {
         <Gamepad2 className="w-10 h-10 text-slate-300 mx-auto mb-3" />
         <p className="text-slate-600 font-semibold">No skill games yet</p>
         <p className="text-slate-400 text-sm mt-1">Buy a ticket for a contest that includes a skill game and it will appear here.</p>
-        <Link to="/competitions" className="inline-flex items-center gap-1 text-[#6C2BFF] font-semibold mt-4 hover:underline">
+        <Link to="/competitions" className="inline-flex items-center gap-1 text-[#16A34A] font-semibold mt-4 hover:underline">
           Browse contests <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
@@ -67,7 +67,7 @@ export default function MyGamesPanel() {
               <div className="font-display font-bold text-slate-900 mt-1 truncate">{g.contest_title}</div>
               <div className="text-xs text-slate-500 mt-0.5">
                 Attempts <b className="text-slate-900">{g.attempts_used}/{g.max_attempts}</b>
-                {g.best_points != null && <> · Best score <b className="text-[#6C2BFF]">{g.best_points}</b></>}
+                {g.best_points != null && <> · Best score <b className="text-[#16A34A]">{g.best_points}</b></>}
               </div>
             </div>
 
@@ -80,7 +80,7 @@ export default function MyGamesPanel() {
                 </Link>
               ) : (
                 <Link to={`/leaderboard/${g.contest_id}`}>
-                  <button className="px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:border-[#6C2BFF] hover:text-[#6C2BFF] inline-flex items-center gap-1.5">
+                  <button className="px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:border-[#16A34A] hover:text-[#16A34A] inline-flex items-center gap-1.5">
                     <Trophy className="w-4 h-4" /> Leaderboard
                   </button>
                 </Link>
