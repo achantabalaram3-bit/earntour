@@ -62,7 +62,7 @@ export function ContestImageFocalPicker({ initialImage, onUploaded }) {
   return (
     <div className="space-y-3" data-testid="focal-picker">
       <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 rounded-lg px-3 py-2">
-        <Crosshair className="w-4 h-4 text-indigo-600" />
+        <Crosshair className="w-4 h-4 text-green-600" />
         <span>Click anywhere on the preview to set the focal point — cropping will keep this point visible on every device size. Use the rule-of-thirds grid to position the subject on an intersection.</span>
       </div>
 
@@ -107,7 +107,7 @@ export function ContestImageFocalPicker({ initialImage, onUploaded }) {
           </div>
           {file && (
             <div
-              className="absolute w-6 h-6 -ml-3 -mt-3 rounded-full border-2 border-white shadow-xl bg-indigo-600 flex items-center justify-center pointer-events-none"
+              className="absolute w-6 h-6 -ml-3 -mt-3 rounded-full border-2 border-white shadow-xl bg-green-600 flex items-center justify-center pointer-events-none"
               style={{ left: `${focal.x * 100}%`, top: `${focal.y * 100}%` }}
               data-testid="focal-crosshair"
             >
