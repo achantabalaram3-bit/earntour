@@ -33,7 +33,7 @@ function BarList({ title, icon: Icon, items, total, labelMap }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Icon className="w-4 h-4 text-indigo-600" />
+        <Icon className="w-4 h-4 text-green-600" />
         <h2 className="font-display font-bold text-base">{title}</h2>
       </div>
       {!items?.length ? (
@@ -53,7 +53,7 @@ function BarList({ title, icon: Icon, items, total, labelMap }) {
                 </div>
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#8B5CFF] to-[#6C2BFF]"
+                    className="h-full rounded-full bg-gradient-to-r from-[#22C55E] to-[#16A34A]"
                     style={{ width: `${Math.max(4, (item.count / max) * 100)}%` }}
                   />
                 </div>
@@ -110,7 +110,7 @@ export default function AcquisitionAdmin() {
                 data-testid={`acq-days-${d}`}
                 className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                   days === d
-                    ? 'bg-gradient-to-r from-[#8B5CFF] to-[#6C2BFF] text-white'
+                    ? 'bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-white'
                     : 'text-slate-600 hover:bg-slate-50'
                 }`}
               >
@@ -149,7 +149,7 @@ export default function AcquisitionAdmin() {
           {/* Daily trend */}
           <div className="bg-white rounded-2xl border border-slate-200 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-indigo-600" />
+              <TrendingUp className="w-4 h-4 text-green-600" />
               <h2 className="font-display font-bold text-base">Daily visits</h2>
             </div>
             {!data.trend?.length ? (
@@ -159,7 +159,7 @@ export default function AcquisitionAdmin() {
                 {data.trend.map((t) => (
                   <div key={t.day} className="flex flex-col items-center gap-1 min-w-[14px] flex-1" title={`${t.day}: ${t.visits} visits`}>
                     <div
-                      className="w-full rounded-t bg-gradient-to-t from-[#6C2BFF] to-[#8B5CFF]"
+                      className="w-full rounded-t bg-gradient-to-t from-[#16A34A] to-[#22C55E]"
                       style={{ height: `${Math.max(3, (t.visits / trendMax) * 130)}px` }}
                     />
                     <span className="text-[9px] text-slate-400 rotate-0 whitespace-nowrap">
@@ -228,7 +228,7 @@ export default function AcquisitionAdmin() {
           {/* Recent visits */}
           <div className="bg-white rounded-2xl border border-slate-200 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <MousePointerClick className="w-4 h-4 text-indigo-600" />
+              <MousePointerClick className="w-4 h-4 text-green-600" />
               <h2 className="font-display font-bold text-base">Recent visits</h2>
             </div>
             {!visits.length ? (
