@@ -1,7 +1,7 @@
 ﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown, Coins, ChevronRight,
-, ArrowLeft } from 'lucide-react';
+  Trophy, X, Clock, RefreshCw, Radio, Crown, User, ChevronDown, Coins, ChevronRight, ArrowLeft
+} from 'lucide-react';
 import { worldAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/pl-global-lb.css';
