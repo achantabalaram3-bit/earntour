@@ -29,10 +29,10 @@ export default function ContestLeaderboardCard({ contestId, contestTitle, limit 
   };
 
   return (
-    <div className="rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-rose-50 to-fuchsia-50 overflow-hidden" data-testid={`contest-leaderboard-card-${contestId}`}>
+    <div className="rounded-2xl border border-orange-200 bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50 overflow-hidden" data-testid={`contest-leaderboard-card-${contestId}`}>
       <div className="px-5 py-4 border-b border-orange-200/60 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 via-rose-500 to-fuchsia-600 flex items-center justify-center text-white shadow">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#22C55E] via-[#16A34A] to-[#14532D] flex items-center justify-center text-white shadow">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
