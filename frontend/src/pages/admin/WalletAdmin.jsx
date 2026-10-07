@@ -65,10 +65,10 @@ export default function WalletAdmin() {
       {/* Totals */}
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: 'Total on platform', value: totals ? gbp(totals.total_balance) : '₹0.00', color: 'from-[#8B5CFF] to-[#6C2BFF]', Icon: Coins },
+          { label: 'Total on platform', value: totals ? gbp(totals.total_balance) : '₹0.00', color: 'from-[#22C55E] to-[#16A34A]', Icon: Coins },
           { label: 'Lifetime top-ups', value: totals ? gbp(totals.total_lifetime_topup) : '₹0.00', color: 'from-orange-500 to-rose-500', Icon: TrendingUp },
-          { label: 'Lifetime spend', value: totals ? gbp(totals.total_lifetime_spend) : '₹0.00', color: 'from-fuchsia-500 to-pink-500', Icon: TrendingDown },
-          { label: 'Wallets', value: totals?.wallet_count || 0, color: 'from-indigo-500 to-purple-600', Icon: Wallet },
+          { label: 'Lifetime spend', value: totals ? gbp(totals.total_lifetime_spend) : '₹0.00', color: 'from-emerald-600 to-pink-500', Icon: TrendingDown },
+          { label: 'Wallets', value: totals?.wallet_count || 0, color: 'from-green-500 to-emerald-700', Icon: Wallet },
         ].map(s => (
           <div key={s.label} className={`rounded-2xl p-5 bg-gradient-to-br ${s.color} text-white shadow-lg`}>
             <s.Icon className="w-6 h-6 opacity-80" />
