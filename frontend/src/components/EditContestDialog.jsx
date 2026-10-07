@@ -976,7 +976,7 @@ export default function EditContestDialog({ contest, open, onClose, onSaved, mod
             onClick={save}
             disabled={busy || uploading}
             data-testid="contest-save-btn"
-            className="bg-[#16A34A] hover:bg-[#4A15D9]"
+            className="bg-[#16A34A] hover:bg-[#14532D]"
           >{busy
             ? 'Saving...'
             : uploading
