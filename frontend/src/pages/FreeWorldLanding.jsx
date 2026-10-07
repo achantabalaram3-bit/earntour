@@ -81,7 +81,7 @@ export default function FreeWorldLanding() {
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="max-w-6xl mx-auto px-5 pt-5 text-sm text-slate-500">
         <ol className="flex items-center gap-2">
-          <li><Link to="/" className="hover:text-[#6C2BFF]">Home</Link></li>
+          <li><Link to="/" className="hover:text-[#16A34A]">Home</Link></li>
           <li aria-hidden="true">/</li>
           <li className="text-slate-800 font-semibold" aria-current="page">Free World</li>
         </ol>
@@ -91,11 +91,11 @@ export default function FreeWorldLanding() {
       <header className="relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-5 py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C2BFF] bg-[#6C2BFF]/10 rounded-full px-3 py-1">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#16A34A] bg-[#16A34A]/10 rounded-full px-3 py-1">
               <Sparkles className="w-3.5 h-3.5" /> Free to play
             </span>
             <h1 className="mt-4 font-display font-black text-4xl sm:text-5xl lg:text-6xl leading-tight">
-              Free World <span className="text-[#6C2BFF]">–</span> Play Skill Games &amp; Compete for Prizes
+              Free World <span className="text-[#16A34A]">–</span> Play Skill Games &amp; Compete for Prizes
             </h1>
             <p className="mt-4 text-base md:text-lg text-slate-600 max-w-xl">
               Free World is TallSkill’s free skill-gaming world for players in India. Progress through
@@ -106,7 +106,7 @@ export default function FreeWorldLanding() {
               <Link
                 to="/world"
                 data-testid="free-world-landing-play"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8B5CFF] to-[#6C2BFF] text-white font-bold px-7 py-3.5 shadow-lg hover:translate-y-[-1px] transition-transform"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-white font-bold px-7 py-3.5 shadow-lg hover:translate-y-[-1px] transition-transform"
               >
                 Play Free World <ArrowRight className="w-4 h-4" />
               </Link>
@@ -158,7 +158,7 @@ export default function FreeWorldLanding() {
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {STEPS.map((s, i) => (
               <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5">
-                <div className="w-11 h-11 rounded-xl bg-[#6C2BFF]/10 text-[#6C2BFF] grid place-items-center">
+                <div className="w-11 h-11 rounded-xl bg-[#16A34A]/10 text-[#16A34A] grid place-items-center">
                   <s.icon className="w-5 h-5" />
                 </div>
                 <h3 className="mt-4 font-bold text-base">{s.title}</h3>
@@ -219,8 +219,8 @@ export default function FreeWorldLanding() {
             <p className="mt-4 text-sm text-slate-600">
               Free World is free to play and open to eligible TallSkill players. Full eligibility, prize
               and participation details follow TallSkill’s published rules. Please read the{' '}
-              <Link to="/terms" className="text-[#6C2BFF] font-semibold hover:underline">Terms &amp; Conditions</Link>{' '}
-              and <Link to="/how-it-works" className="text-[#6C2BFF] font-semibold hover:underline">How It Works</Link>{' '}
+              <Link to="/terms" className="text-[#16A34A] font-semibold hover:underline">Terms &amp; Conditions</Link>{' '}
+              and <Link to="/how-it-works" className="text-[#16A34A] font-semibold hover:underline">How It Works</Link>{' '}
               before you play.
             </p>
           </div>
@@ -241,14 +241,14 @@ export default function FreeWorldLanding() {
         <div className="mt-10 text-center">
           <Link
             to="/world"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8B5CFF] to-[#6C2BFF] text-white font-bold px-8 py-4 shadow-lg hover:translate-y-[-1px] transition-transform"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-white font-bold px-8 py-4 shadow-lg hover:translate-y-[-1px] transition-transform"
           >
             Enter Free World <ArrowRight className="w-4 h-4" />
           </Link>
           <p className="mt-4 text-sm text-slate-500">
-            Explore more: <Link to="/competitions" className="text-[#6C2BFF] hover:underline">Contests</Link>{' '}
-            · <Link to="/leaderboard" className="text-[#6C2BFF] hover:underline">Leaderboard</Link>{' '}
-            · <Link to="/winners" className="text-[#6C2BFF] hover:underline">Winners</Link>
+            Explore more: <Link to="/competitions" className="text-[#16A34A] hover:underline">Contests</Link>{' '}
+            · <Link to="/leaderboard" className="text-[#16A34A] hover:underline">Leaderboard</Link>{' '}
+            · <Link to="/winners" className="text-[#16A34A] hover:underline">Winners</Link>
           </p>
         </div>
       </section>
