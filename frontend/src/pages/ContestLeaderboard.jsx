@@ -138,7 +138,7 @@ export default function ContestLeaderboard() {
         <button
           type="button"
           onClick={load}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#6C2BFF]"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#16A34A]"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
@@ -146,9 +146,9 @@ export default function ContestLeaderboard() {
       </div>
 
       {/* Exact Global Leaderboard hero styling */}
-      <div className="bg-gradient-to-br from-slate-900 via-fuchsia-900 to-orange-800 text-white rounded-3xl p-8 mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534] text-white rounded-3xl p-8 mb-6 relative overflow-hidden">
         <div className="absolute -right-8 -top-8 w-40 h-40 bg-amber-400/20 rounded-full blur-3xl" />
-        <div className="absolute -left-8 -bottom-8 w-40 h-40 bg-fuchsia-500/20 rounded-full blur-3xl" />
+        <div className="absolute -left-8 -bottom-8 w-40 h-40 bg-green-400/15 rounded-full blur-3xl" />
 
         <div className="relative">
           <div className="text-white/80 text-xs uppercase tracking-widest flex items-center gap-2">
