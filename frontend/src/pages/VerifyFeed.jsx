@@ -64,7 +64,7 @@ export default function VerifyFeed() {
                     <Calendar className="w-3 h-3" /> {new Date(r.committed_at).toLocaleString('en-IN')}
                   </span>
                   <span className="text-xs text-slate-400">·</span>
-                  <span className="text-xs text-indigo-700 font-semibold">{r.num_winning_tickets} winning tickets</span>
+                  <span className="text-xs text-green-700 font-semibold">{r.num_winning_tickets} winning tickets</span>
                 </div>
                 <div className="mt-2 flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
                   <Hash className="w-3.5 h-3.5 text-slate-500 shrink-0" />
@@ -83,7 +83,7 @@ export default function VerifyFeed() {
         Algorithm: SHA-256 of the JSON-encoded winning-ticket list. The plain list stays encrypted
         server-side (Fernet) and is decrypted only when a valid entrant completes the required
         skill task on a specific ticket. See our{' '}
-        <a href="/legal/anti-fraud" className="text-indigo-700 hover:underline">Anti-Fraud Policy</a>{' '}
+        <a href="/legal/anti-fraud" className="text-green-700 hover:underline">Anti-Fraud Policy</a>{' '}
         for the full commitment scheme.
       </p>
     </div>
