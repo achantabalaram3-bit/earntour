@@ -77,7 +77,7 @@ export default function WinningsWallet() {
       {/* Winnings Wallet */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5" data-testid="winnings-wallet-card">
         <div className="flex items-center justify-between">
-          <h3 className="font-extrabold text-lg flex items-center gap-2"><Wallet className="w-5 h-5 text-[#6C2BFF]" /> Winnings Wallet</h3>
+          <h3 className="font-extrabold text-lg flex items-center gap-2"><Wallet className="w-5 h-5 text-[#16A34A]" /> Winnings Wallet</h3>
           <Button variant="outline" onClick={() => setWOpen(true)}
             disabled={!wallet || wallet.available_pence <= 0} data-testid="withdraw-button">Withdraw Winnings</Button>
         </div>
