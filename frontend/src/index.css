@@ -23,24 +23,24 @@ h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Poppins', sans-serif; lett
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 174 84% 32%;
+    --primary: 24 95% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
+    --secondary: 33 100% 96%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
+    --muted: 33 60% 95%;
     --muted-foreground: 215 16% 47%;
-    --accent: 24 95% 53%;
+    --accent: 8 88% 61%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 174 84% 32%;
-    --chart-1: 174 84% 32%;
-    --chart-2: 24 95% 53%;
+    --ring: 24 95% 53%;
+    --chart-1: 24 95% 53%;
+    --chart-2: 8 88% 61%;
     --chart-3: 43 96% 56%;
-    --chart-4: 262 83% 58%;
-    --chart-5: 340 82% 52%;
+    --chart-4: 16 90% 58%;
+    --chart-5: 355 78% 58%;
     --radius: 0.75rem;
   }
 }
@@ -66,12 +66,12 @@ html, body { overflow-x: hidden; }
 
 /* ---------- Prize League Premium Palette + Utilities ---------- */
 :root {
-  --pl-purple: #6C2BFF;
-  --pl-purple-2: #8B5CFF;
-  --pl-gold: #FFD54A;
-  --pl-gold-2: #F5B800;
-  --pl-dark: #0B0D1F;
-  --pl-dark-2: #161433;
+  --pl-purple: #F97316;
+  --pl-purple-2: #FB7185;
+  --pl-gold: #FDBA74;
+  --pl-gold-2: #F59E0B;
+  --pl-dark: #431407;
+  --pl-dark-2: #7C2D12;
   --pl-success: #2ECC71;
 }
 
@@ -158,3 +158,34 @@ html, body { overflow-x: hidden; }
   height: 3px; border-radius: 999px;
   background: linear-gradient(90deg, #FFE68A, #F5B800);
 }
+
+/* TallSkill Orange + Coral + Cream theme */
+:root {
+  --ts-orange: #F97316;
+  --ts-orange-deep: #EA580C;
+  --ts-coral: #FB7185;
+  --ts-coral-deep: #F43F5E;
+  --ts-cream: #FFF7ED;
+  --ts-cream-soft: #FFFBF5;
+  --ts-amber: #F59E0B;
+  --ts-ink: #3B241C;
+}
+body { background: var(--ts-cream-soft); color: var(--ts-ink); }
+
+/* Re-map inherited purple/indigo Tailwind surfaces without changing layout. */
+[class*="bg-purple-"], [class*="bg-violet-"], [class*="bg-indigo-"] { background-color: var(--ts-orange) !important; }
+[class*="text-purple-"], [class*="text-violet-"], [class*="text-indigo-"] { color: var(--ts-orange-deep) !important; }
+[class*="border-purple-"], [class*="border-violet-"], [class*="border-indigo-"] { border-color: #FDBA74 !important; }
+[class*="ring-purple-"], [class*="ring-violet-"], [class*="ring-indigo-"] { --tw-ring-color: rgba(249,115,22,.45) !important; }
+[class*="from-purple-"], [class*="from-violet-"], [class*="from-indigo-"] { --tw-gradient-from: var(--ts-orange) !important; --tw-gradient-to: rgb(249 115 22 / 0) !important; }
+[class*="via-purple-"], [class*="via-violet-"], [class*="via-indigo-"] { --tw-gradient-via: var(--ts-coral) !important; }
+[class*="to-purple-"], [class*="to-violet-"], [class*="to-indigo-"] { --tw-gradient-to: var(--ts-coral) !important; }
+[class*="hover:bg-purple-"]:hover, [class*="hover:bg-violet-"]:hover, [class*="hover:bg-indigo-"]:hover { background-color: var(--ts-orange-deep) !important; }
+[class*="hover:text-purple-"]:hover, [class*="hover:text-violet-"]:hover, [class*="hover:text-indigo-"]:hover { color: var(--ts-coral-deep) !important; }
+
+.pl-gold-text { background: linear-gradient(180deg,#FED7AA 0%,#FB923C 48%,#EA580C 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.pl-hero-bg { background: radial-gradient(1200px 500px at 15% 0%,rgba(251,113,133,.30),transparent 60%), radial-gradient(900px 400px at 85% 20%,rgba(249,115,22,.38),transparent 60%), linear-gradient(180deg,#7C2D12 0%,#431407 100%); }
+.pl-glass { background: rgba(124,45,18,.58); border-color: rgba(255,247,237,.14); }
+.pl-btn-gold { background: linear-gradient(180deg,#FED7AA,#FB923C); color:#431407; box-shadow:0 10px 30px rgba(249,115,22,.28),inset 0 -2px 0 rgba(0,0,0,.08); }
+.pl-btn-purple { background: linear-gradient(180deg,var(--ts-coral),var(--ts-orange)); color:#fff; box-shadow:0 10px 30px rgba(249,115,22,.30); }
+.pl-nav-active::after { background: linear-gradient(90deg,var(--ts-orange),var(--ts-coral)); }
