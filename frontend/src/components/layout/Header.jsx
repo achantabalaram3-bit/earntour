@@ -153,7 +153,7 @@ const minimalWorldHeader =
      className="border-b border-white/10"
      style={{
       background:
-       'linear-gradient(180deg, #0B0D1F 0%, #161433 100%)',
+       'linear-gradient(180deg, #052E16 0%, #14532D 100%)',
      }}
     >
      <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-4 lg:px-8 h-14 sm:h-16 md:h-[70px] gap-3">
@@ -193,7 +193,7 @@ const minimalWorldHeader =
 
          <Link
           to="/world"
-          className="inline-flex items-center justify-center rounded-full border border-[#8B5CFF]/50 bg-[#8B5CFF]/10 px-3 sm:px-4 py-2 text-white text-[11px] sm:text-sm font-extrabold tracking-wide hover:bg-[#8B5CFF]/20 transition"
+          className="inline-flex items-center justify-center rounded-full border border-[#22C55E]/50 bg-[#22C55E]/10 px-3 sm:px-4 py-2 text-white text-[11px] sm:text-sm font-extrabold tracking-wide hover:bg-[#22C55E]/20 transition"
           data-testid="login-header-free-world"
          >
           FREE WORLD
@@ -233,7 +233,7 @@ const minimalWorldHeader =
           aria-label="My account"
           data-testid="world-header-account"
          >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] text-white text-xs font-bold flex items-center justify-center ring-2 ring-white/20">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] text-white text-xs font-bold flex items-center justify-center ring-2 ring-white/20">
            {(user.name || user.email || 'U')
             .slice(0, 1)
             .toUpperCase()}
@@ -262,7 +262,7 @@ const minimalWorldHeader =
  }
  data-testid="site-header"
 >
- <div style={{ background: 'linear-gradient(180deg, #0B0D1F 0%, #161433 100%)' }} className="border-b border-white/5">
+ <div style={{ background: 'linear-gradient(180deg, #052E16 0%, #14532D 100%)' }} className="border-b border-white/5">
  <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-4 lg:px-8 h-14 sm:h-16 md:h-[70px] gap-2">
  <Link to="/" className="shrink-0 flex items-center" data-testid="header-logo">
  {/* Mobile (below 640px): show full wordmark; ≥sm/≥lg keep existing sizes exactly */}
@@ -397,7 +397,7 @@ const minimalWorldHeader =
  aria-label="My account"
  data-testid="mobile-profile-icon"
  >
- <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] text-white text-xs font-bold flex items-center justify-center ring-2 ring-white/20">
+ <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] text-white text-xs font-bold flex items-center justify-center ring-2 ring-white/20">
  {(user.name || user.email || 'U').slice(0, 1).toUpperCase()}
  </div>
  </Link>
@@ -408,7 +408,7 @@ const minimalWorldHeader =
  data-testid="header-profile-btn"
  className="inline-flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-white/10 transition"
  >
- <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] text-white text-xs font-bold flex items-center justify-center ring-2 ring-white/20">
+ <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] text-white text-xs font-bold flex items-center justify-center ring-2 ring-white/20">
  {(user.name || user.email || 'U').slice(0, 1).toUpperCase()}
  </div>
  <span className="text-sm font-semibold text-white max-w-[8rem] truncate hidden md:inline">Hi, {(user.name || user.email || 'You').split(' ')[0]}</span>
@@ -419,7 +419,7 @@ const minimalWorldHeader =
  <div
  data-testid="profile-dropdown"
  className="absolute right-0 mt-2 w-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
- style={{ background: '#161433' }}
+ style={{ background: '#14532D' }}
  >
  <div className="px-4 py-3 border-b border-white/10">
  <div className="text-white font-bold text-sm truncate">{user.name || user.email}</div>
@@ -500,7 +500,7 @@ const minimalWorldHeader =
            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-2 py-1.5 text-white hover:bg-white/10 transition"
            aria-label="Profile"
          >
-           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] text-white text-[10px] font-bold flex items-center justify-center ring-1 ring-white/20">
+           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] text-white text-[10px] font-bold flex items-center justify-center ring-1 ring-white/20">
              {(user.name || user.email || 'U')
                .slice(0, 1)
                .toUpperCase()}
@@ -523,7 +523,7 @@ const minimalWorldHeader =
            <div
              className="absolute right-0 mt-2 w-48 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-[9999]"
              style={{
-               background: '#161433',
+               background: '#14532D',
              }}
              data-testid="free-world-profile-menu"
            >
@@ -577,7 +577,7 @@ const minimalWorldHeader =
  {open && (
  <div className="fixed inset-0 z-50 lg:hidden" data-testid="mobile-menu">
  <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
- <aside className="absolute top-0 right-0 h-full w-[85%] max-w-sm p-6 flex flex-col" style={{ background: '#0B0D1F' }}>
+ <aside className="absolute top-0 right-0 h-full w-[85%] max-w-sm p-6 flex flex-col" style={{ background: '#052E16' }}>
  <div className="flex items-center justify-between mb-6">
  <PrizeLeagueLogo size={52} />
  <button onClick={() => setOpen(false)} className="p-2 text-white" aria-label="Close">
@@ -601,7 +601,7 @@ const minimalWorldHeader =
  <>
  {/* Ordered mobile menu per spec */}
  <Link to="/my-account" onClick={() => setOpen(false)} className="mt-4 flex items-center gap-3 py-3 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white" data-testid="mobile-profile-link">
- <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] text-white text-xs font-bold flex items-center justify-center">{(user.name || user.email || 'U').slice(0,1).toUpperCase()}</div>
+ <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] text-white text-xs font-bold flex items-center justify-center">{(user.name || user.email || 'U').slice(0,1).toUpperCase()}</div>
  <div className="flex-1 min-w-0">
  <div className="font-bold text-sm truncate">{user.name || user.email}</div>
  <div className="text-white/60 text-xs">My Profile →</div>
@@ -614,7 +614,7 @@ const minimalWorldHeader =
  </Link>
 
  <Link to="/my-account/tickets" onClick={() => setOpen(false)} className="mt-3 flex items-center gap-3 py-3 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white" data-testid="mobile-tickets-link">
- <div className="w-9 h-9 rounded-full bg-white/5 text-[#6C2BFF] flex items-center justify-center font-bold">🎟</div>
+ <div className="w-9 h-9 rounded-full bg-white/5 text-[#16A34A] flex items-center justify-center font-bold">🎟</div>
  <div className="flex-1 text-sm text-white/80">My Tickets</div>
  </Link>
 
@@ -624,8 +624,8 @@ const minimalWorldHeader =
  </Link>
 
  <Link to="/draw-centre" onClick={() => setOpen(false)} className="mt-3 flex items-center gap-3 py-3 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white" data-testid="mobile-draw-centre-link">
- <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8B5CFF] to-[#6C2BFF] text-white flex items-center justify-center"><Trophy className="w-5 h-5 text-[#FFD54A]" /></div>
- <div className="flex-1 text-sm text-white/80">Draw Centre {pendingKnown && pendingDrawCount > 0 ? <span className="ml-2 text-xs bg-[#6C2BFF] text-white rounded-full px-2 py-0.5">{badgeText}</span> : null}</div>
+ <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] text-white flex items-center justify-center"><Trophy className="w-5 h-5 text-[#FFD54A]" /></div>
+ <div className="flex-1 text-sm text-white/80">Draw Centre {pendingKnown && pendingDrawCount > 0 ? <span className="ml-2 text-xs bg-[#16A34A] text-white rounded-full px-2 py-0.5">{badgeText}</span> : null}</div>
  </Link>
 
  <Link to="/my-account/support" onClick={() => setOpen(false)} className="mt-3 flex items-center gap-3 py-3 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white" data-testid="mobile-support-link">
