@@ -302,7 +302,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
         {/* YOUR POSITION */}
         {myRow ? (
           <div className="pl-global-lb-card pl-global-lb-you" data-testid="lb-your-rank">
-            <div className="pl-global-lb-sectlbl purple">YOUR POSITION</div>
+            <div className="pl-global-lb-sectlbl brand">YOUR POSITION</div>
             <div className="pl-global-lb-yourow">
               <span className="pl-global-lb-yourank">#{myRow.rank}</span>
               <span className="pl-global-lb-av you">{initials(nameOf(myRow))}</span>
@@ -314,7 +314,7 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
           </div>
         ) : (
           <div className="pl-global-lb-card pl-global-lb-you empty" data-testid="lb-your-rank-empty">
-            <div className="pl-global-lb-sectlbl purple">YOUR POSITION</div>
+            <div className="pl-global-lb-sectlbl brand">YOUR POSITION</div>
             <p className="pl-global-lb-youempty"><User size={15} /> Set a score in Free World to claim your spot on the board.</p>
           </div>
         )}
