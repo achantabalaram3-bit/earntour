@@ -3,8 +3,8 @@
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
-::-webkit-scrollbar-thumb { background: #F97316; border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: #EA580C; }
+::-webkit-scrollbar-thumb { background: #16A34A; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #15803D; }
 
 /* Marquee */
 @keyframes marquee {
@@ -60,7 +60,7 @@
   100% { background-position: 0% 50%; }
 }
 .gz-hero-gradient {
-  background: linear-gradient(120deg, #431407 0%, #7C2D12 20%, #F97316 40%, #FB7185 62%, #FB923C 82%, #F59E0B 100%);
+  background: linear-gradient(120deg, #052E16 0%, #14532D 20%, #16A34A 40%, #22C55E 62%, #22C55E 82%, #F5B82E 100%);
   background-size: 300% 300%;
   animation: gzHeroShift 18s ease infinite;
 }
