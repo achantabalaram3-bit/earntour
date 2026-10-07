@@ -25,9 +25,9 @@ export default function KycAdmin() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center flex-wrap gap-3">
-        <h2 className="font-display text-2xl font-extrabold flex items-center gap-2"><Shield className="w-6 h-6 text-[#6C2BFF]" /> Identity Verification (KYC)</h2>
+        <h2 className="font-display text-2xl font-extrabold flex items-center gap-2"><Shield className="w-6 h-6 text-[#16A34A]" /> Identity Verification (KYC)</h2>
         <div className="flex gap-1 bg-white border border-slate-100 p-1 rounded-xl">
-          {TABS.map(t => <button key={t.key} onClick={() => setTab(t.key)} className={`px-3 py-1.5 rounded-lg text-sm font-medium ${tab === t.key ? 'bg-[#6C2BFF] text-white' : 'text-slate-600 hover:bg-slate-50'}`}>{t.label}</button>)}
+          {TABS.map(t => <button key={t.key} onClick={() => setTab(t.key)} className={`px-3 py-1.5 rounded-lg text-sm font-medium ${tab === t.key ? 'bg-[#16A34A] text-white' : 'text-slate-600 hover:bg-slate-50'}`}>{t.label}</button>)}
         </div>
       </div>
 
@@ -65,7 +65,7 @@ export default function KycAdmin() {
                       </a>
                     )}
                     {k.address_proof_url && (
-                      <a href={`${k.address_proof_url}${k.address_proof_url.includes('?') ? '&' : '?'}auth=${localStorage.getItem('gz_token') || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200 font-medium">
+                      <a href={`${k.address_proof_url}${k.address_proof_url.includes('?') ? '&' : '?'}auth=${localStorage.getItem('gz_token') || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-green-100 text-green-800 hover:bg-green-200 font-medium">
                         📄 View Address Proof
                       </a>
                     )}
