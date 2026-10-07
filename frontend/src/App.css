@@ -3,8 +3,8 @@
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
-::-webkit-scrollbar-thumb { background: #14b8a6; border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: #0d9488; }
+::-webkit-scrollbar-thumb { background: #F97316; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #EA580C; }
 
 /* Marquee */
 @keyframes marquee {
@@ -33,7 +33,7 @@
 
 /* Card hover */
 .prize-card { transition: transform .35s ease, box-shadow .35s ease; }
-.prize-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -20px rgba(20,184,166,.4); }
+.prize-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -20px rgba(249,115,22,.4); }
 
 /* Spin */
 @keyframes spin-slow { from { transform: rotate(0); } to { transform: rotate(360deg); } }
@@ -46,10 +46,10 @@
 /* Confetti dots decorative */
 .confetti {
   background-image:
-    radial-gradient(circle at 10% 20%, rgba(20,184,166,.35) 0 3px, transparent 4px),
+    radial-gradient(circle at 10% 20%, rgba(249,115,22,.35) 0 3px, transparent 4px),
     radial-gradient(circle at 80% 30%, rgba(249,115,22,.35) 0 3px, transparent 4px),
     radial-gradient(circle at 30% 70%, rgba(251,191,36,.4) 0 3px, transparent 4px),
-    radial-gradient(circle at 65% 80%, rgba(168,85,247,.35) 0 3px, transparent 4px);
+    radial-gradient(circle at 65% 80%, rgba(244,63,94,.35) 0 3px, transparent 4px);
 }
 
 
@@ -60,7 +60,7 @@
   100% { background-position: 0% 50%; }
 }
 .gz-hero-gradient {
-  background: linear-gradient(120deg, #0f172a 0%, #1e1b4b 20%, #6d28d9 40%, #db2777 62%, #f97316 82%, #f59e0b 100%);
+  background: linear-gradient(120deg, #431407 0%, #7C2D12 20%, #F97316 40%, #FB7185 62%, #FB923C 82%, #F59E0B 100%);
   background-size: 300% 300%;
   animation: gzHeroShift 18s ease infinite;
 }
