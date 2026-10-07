@@ -173,7 +173,7 @@ export default function Competitions() {
           className={[
             'rounded-full px-5 py-2.5 text-sm font-extrabold transition',
             view === 'all'
-              ? 'bg-[#6C2BFF] text-white'
+              ? 'bg-[#16A34A] text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
           ].join(' ')}
           data-testid="contest-view-all"
@@ -187,7 +187,7 @@ export default function Competitions() {
           className={[
             'rounded-full px-5 py-2.5 text-sm font-extrabold transition',
             view === 'live'
-              ? 'bg-[#6C2BFF] text-white'
+              ? 'bg-[#16A34A] text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
           ].join(' ')}
           data-testid="contest-view-live"
@@ -201,7 +201,7 @@ export default function Competitions() {
           className={[
             'rounded-full px-5 py-2.5 text-sm font-extrabold transition',
             view === 'future'
-              ? 'bg-[#6C2BFF] text-white'
+              ? 'bg-[#16A34A] text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
           ].join(' ')}
           data-testid="contest-view-future"
@@ -236,7 +236,7 @@ export default function Competitions() {
               className={[
                 'rounded-full px-4 py-2 text-sm font-bold transition',
                 cat === category.slug
-                  ? 'bg-[#6C2BFF] text-white'
+                  ? 'bg-[#16A34A] text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
               ].join(' ')}
             >
@@ -261,7 +261,7 @@ export default function Competitions() {
       {items.length === 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white py-20 text-center">
 
-          <Sparkles className="w-10 h-10 mx-auto text-[#6C2BFF]" />
+          <Sparkles className="w-10 h-10 mx-auto text-[#16A34A]" />
 
           <h2 className="mt-4 font-display text-2xl font-extrabold text-slate-900">
             {view === 'live'
