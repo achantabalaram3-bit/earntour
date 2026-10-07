@@ -34,7 +34,7 @@ export default function AdminLogin() {
 
  return (
  <div className="min-h-screen flex items-center justify-center px-4 py-12 pl-hero-bg relative overflow-hidden">
- <div className="absolute top-0 left-0 w-96 h-96 bg-[#6C2BFF]/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+ <div className="absolute top-0 left-0 w-96 h-96 bg-[#22C55E]/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
  <div className="absolute bottom-0 right-0 w-[32rem] h-[32rem] bg-[#FFD54A]/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
  <div className="relative w-full max-w-md">
