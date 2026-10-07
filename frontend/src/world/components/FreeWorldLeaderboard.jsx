@@ -211,7 +211,6 @@ export default function FreeWorldLeaderboard({ open, onClose }) {
       <div className="pl-global-lb-inner">
         <section className="pl-global-lb-pagehead" aria-label="Leaderboard summary">
           <div>
-            <div className="pl-global-lb-pageeyebrow">FREE WORLD</div>
             <h1>Leaderboard</h1>
           </div>
           <div className="pl-global-lb-totalpool">
