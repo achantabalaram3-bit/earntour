@@ -74,7 +74,7 @@ export default function AnnouncementTicker({ mode = 'promo' }) {
   return (
     <div
       className="pl-marquee relative z-30 block w-full shrink-0 overflow-hidden border-y border-white/10"
-      style={{ background: 'linear-gradient(90deg, #6C2BFF 0%, #8B5CFF 50%, #6C2BFF 100%)' }}
+      style={{ background: 'linear-gradient(90deg, #16A34A 0%, #22C55E 50%, #16A34A 100%)' }}
       data-testid="announcement-ticker"
       aria-label={showWinners ? 'Championship winners' : 'Announcements'}
     >
