@@ -40,8 +40,8 @@ const Metric = ({ label, value, Icon, note }) => (
         )}
       </div>
 
-      <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-        <Icon className="w-5 h-5 text-violet-600" />
+      <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+        <Icon className="w-5 h-5 text-green-600" />
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@ const Status = ({ children, tone = 'slate' }) => {
     emerald: 'bg-emerald-100 text-emerald-700',
     amber: 'bg-amber-100 text-amber-700',
     blue: 'bg-blue-100 text-blue-700',
-    violet: 'bg-violet-100 text-violet-700',
+    violet: 'bg-green-100 text-green-700',
     rose: 'bg-rose-100 text-rose-700',
     slate: 'bg-slate-100 text-slate-600',
   };
@@ -406,7 +406,7 @@ export default function ReferralsBonusesAdmin() {
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-violet-700 text-xs uppercase tracking-widest font-bold">
+          <div className="inline-flex items-center gap-2 text-green-700 text-xs uppercase tracking-widest font-bold">
             <Gift className="w-4 h-4" />
             Rewards Operations
           </div>
@@ -518,7 +518,7 @@ export default function ReferralsBonusesAdmin() {
           <div className="p-5 grid lg:grid-cols-3 gap-5">
 
             {/* SIGNUP */}
-            <div className="rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
+            <div className="rounded-2xl border border-green-100 bg-green-50/50 p-4">
               <div className="font-bold text-violet-900">
                 Signup Bonus
               </div>
@@ -1060,7 +1060,7 @@ export default function ReferralsBonusesAdmin() {
                       {a.user_id ? (
                         <Link
                           to={`/admin/users/${a.user_id}`}
-                          className="font-semibold text-violet-700 hover:underline"
+                          className="font-semibold text-green-700 hover:underline"
                         >
                           {a.user_name ||
                             a.public_id ||
@@ -1124,7 +1124,7 @@ export default function ReferralsBonusesAdmin() {
 
 
       {/* CURRENT RULES */}
-      <div className="rounded-2xl border border-violet-100 bg-violet-50 p-4">
+      <div className="rounded-2xl border border-green-100 bg-green-50 p-4">
         <div className="font-semibold text-violet-900 text-sm">
           Current programme rules
         </div>
@@ -1241,7 +1241,7 @@ export default function ReferralsBonusesAdmin() {
                       <td className="px-4 py-3">
                         <Link
                           to={`/admin/users/${r.referrer_user_id}`}
-                          className="font-semibold text-violet-700 hover:underline"
+                          className="font-semibold text-green-700 hover:underline"
                         >
                           {r.referrer_name ||
                             r.referrer_public_id ||
@@ -1256,7 +1256,7 @@ export default function ReferralsBonusesAdmin() {
                       <td className="px-4 py-3">
                         <Link
                           to={`/admin/users/${r.referred_user_id}`}
-                          className="font-semibold text-violet-700 hover:underline"
+                          className="font-semibold text-green-700 hover:underline"
                         >
                           {r.referred_name ||
                             r.referred_public_id ||
@@ -1371,7 +1371,7 @@ export default function ReferralsBonusesAdmin() {
                     <td className="px-4 py-3">
                       <Link
                         to={`/admin/users/${u.user_id}`}
-                        className="font-semibold text-violet-700 hover:underline"
+                        className="font-semibold text-green-700 hover:underline"
                       >
                         {u.name || u.public_id || 'User'}
                       </Link>
@@ -1436,7 +1436,7 @@ export default function ReferralsBonusesAdmin() {
         </div>
 
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <Ticket className="w-5 h-5 text-blue-600" />
+          <Ticket className="w-5 h-5 text-green-700" />
 
           <div className="font-bold mt-2">
             {summary.referral_waiting_contest ?? 0}
@@ -1447,8 +1447,8 @@ export default function ReferralsBonusesAdmin() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
-          <Gift className="w-5 h-5 text-violet-600" />
+        <div className="rounded-xl border border-violet-200 bg-green-50 p-4">
+          <Gift className="w-5 h-5 text-green-600" />
 
           <div className="font-bold mt-2">
             {summary.referral_processing ?? 0}
