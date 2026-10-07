@@ -463,7 +463,7 @@ export default function SignupWizard() {
           className={
             `h-1.5 rounded-full flex-1 transition-colors ${
               number <= step
-                ? 'bg-[#6C2BFF]'
+                ? 'bg-[#16A34A]'
                 : 'bg-slate-200'
             }`
           }
@@ -676,8 +676,8 @@ export default function SignupWizard() {
             Back
           </button>
 
-          <div className="w-12 h-12 rounded-full bg-[#6C2BFF]/10 flex items-center justify-center">
-            <Mail className="w-6 h-6 text-[#6C2BFF]" />
+          <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center">
+            <Mail className="w-6 h-6 text-[#16A34A]" />
           </div>
 
           <h3 className="font-display font-extrabold text-2xl text-slate-900">
@@ -732,7 +732,7 @@ export default function SignupWizard() {
               busy ||
               emailCooldown > 0
             }
-            className="block mx-auto text-[#6C2BFF] disabled:text-slate-400 text-sm font-semibold"
+            className="block mx-auto text-[#16A34A] disabled:text-slate-400 text-sm font-semibold"
             data-testid="signup-email-resend"
           >
             {emailCooldown > 0
@@ -755,8 +755,8 @@ export default function SignupWizard() {
             Back
           </button>
 
-          <div className="w-12 h-12 rounded-full bg-[#6C2BFF]/10 flex items-center justify-center">
-            <Phone className="w-6 h-6 text-[#6C2BFF]" />
+          <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center">
+            <Phone className="w-6 h-6 text-[#16A34A]" />
           </div>
 
           <h3 className="font-display font-extrabold text-2xl text-slate-900">
@@ -833,8 +833,8 @@ export default function SignupWizard() {
             Back
           </button>
 
-          <div className="w-12 h-12 rounded-full bg-[#6C2BFF]/10 flex items-center justify-center">
-            <ShieldCheck className="w-6 h-6 text-[#6C2BFF]" />
+          <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center">
+            <ShieldCheck className="w-6 h-6 text-[#16A34A]" />
           </div>
 
           <h3 className="font-display font-extrabold text-2xl text-slate-900">
@@ -887,7 +887,7 @@ export default function SignupWizard() {
               busy ||
               phoneCooldown > 0
             }
-            className="block mx-auto text-[#6C2BFF] disabled:text-slate-400 text-sm font-semibold"
+            className="block mx-auto text-[#16A34A] disabled:text-slate-400 text-sm font-semibold"
             data-testid="signup-resend"
           >
             {phoneCooldown > 0
@@ -911,7 +911,7 @@ export default function SignupWizard() {
           </button>
 
           <div className="w-12 h-12 rounded-full bg-[#FFD54A]/20 flex items-center justify-center">
-            <ScrollText className="w-6 h-6 text-[#6C2BFF]" />
+            <ScrollText className="w-6 h-6 text-[#16A34A]" />
           </div>
 
           <h3 className="font-display font-extrabold text-2xl text-slate-900">
@@ -931,7 +931,7 @@ export default function SignupWizard() {
             <Link
               to="/terms"
               target="_blank"
-              className="text-[#6C2BFF] underline"
+              className="text-[#16A34A] underline"
             >
               Terms &amp; Conditions
             </Link>
@@ -940,7 +940,7 @@ export default function SignupWizard() {
             <Link
               to="/privacy"
               target="_blank"
-              className="text-[#6C2BFF] underline"
+              className="text-[#16A34A] underline"
             >
               Privacy Policy
             </Link>
