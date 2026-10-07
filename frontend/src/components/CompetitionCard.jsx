@@ -102,7 +102,7 @@ export default function CompetitionCard({ c }) {
       className="group block"
       data-testid={`competition-card-${c.slug}`}
     >
-      <div className="overflow-hidden rounded-md bg-[#161433]">
+      <div className="overflow-hidden rounded-md bg-[#14532D]">
         <div className="relative aspect-[2/1] overflow-hidden bg-transparent">
           <img
             src={resolveMediaUrl(c.image)}
