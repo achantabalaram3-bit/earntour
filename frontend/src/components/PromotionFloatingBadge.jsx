@@ -118,10 +118,10 @@ export default function PromotionFloatingBadge() {
         top: position?.y ?? -9999,
         touchAction: 'none',
       }}
-      className={`fixed z-[80] select-none rounded-full border-2 border-[#FFD54A] bg-[#0B0D1F]/95 px-3 py-2.5 sm:px-4 sm:py-3 text-white shadow-2xl backdrop-blur-md transition-transform ${dragging ? 'scale-105 cursor-grabbing' : 'hover:scale-105 cursor-grab'}`}
+      className={`fixed z-[80] select-none rounded-full border-2 border-[#FFD54A] bg-[#052E16]/95 px-3 py-2.5 sm:px-4 sm:py-3 text-white shadow-2xl backdrop-blur-md transition-transform ${dragging ? 'scale-105 cursor-grabbing' : 'hover:scale-105 cursor-grab'}`}
     >
       <span className="flex items-center gap-2">
-        <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#FFD54A] to-[#FFB300] text-[#0B0D1F] shadow-lg">
+        <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#FFD54A] to-[#FFB300] text-[#052E16] shadow-lg">
           <Gift className="h-4 w-4 sm:h-5 sm:w-5" />
         </span>
         <span className="text-left leading-tight">
