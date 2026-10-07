@@ -40,17 +40,17 @@ const KycBadge = ({ status }) => {
 
 // 12 navigation tokens — order & colours locked per spec
 const TOKENS = [
-  { id: 'profile',       label: 'Profile',        Icon: User,        color: 'from-violet-500 to-green-600',   ring: 'ring-violet-400/40', hero: true },
+  { id: 'profile',       label: 'Profile',        Icon: User,        color: 'from-green-500 to-emerald-700',   ring: 'ring-green-400/40', hero: true },
   { id: 'wallet',        label: 'Wallet',         Icon: Wallet,      color: 'from-amber-500 to-orange-600',    ring: 'ring-amber-400/40' },
   { id: 'winnings',      label: 'Winnings',       Icon: Coins,       color: 'from-yellow-500 to-amber-600',    ring: 'ring-yellow-400/40' },
   { id: 'promotions',    label: 'Promotions',     Icon: Trophy,      color: 'from-orange-500 to-rose-600',     ring: 'ring-orange-400/40' },
   { id: 'tickets',       label: 'Tickets',        Icon: Ticket,      color: 'from-teal-500 to-emerald-600',    ring: 'ring-teal-400/40' },
   { id: 'games',         label: 'My Games',       Icon: Gamepad2,    color: 'from-fuchsia-500 to-pink-600',    ring: 'ring-fuchsia-400/40' },
-  { id: 'notifications', label: 'Notifications',  Icon: Bell,        color: 'from-sky-500 to-blue-600',        ring: 'ring-sky-400/40' },
+  { id: 'notifications', label: 'Notifications',  Icon: Bell,        color: 'from-emerald-400 to-green-700',        ring: 'ring-emerald-400/40' },
   { id: 'kyc',           label: 'KYC',            Icon: ShieldCheck, color: 'from-emerald-500 to-green-600',   ring: 'ring-emerald-400/40' },
   { id: 'security',      label: 'Security',       Icon: Lock,        color: 'from-slate-700 to-slate-900',     ring: 'ring-slate-400/40' },
   { id: 'support',       label: 'Support',        Icon: LifeBuoy,    color: 'from-cyan-500 to-teal-600',       ring: 'ring-cyan-400/40' },
-  { id: 'policies',      label: 'Policies',       Icon: FileText,    color: 'from-indigo-500 to-blue-700',     ring: 'ring-indigo-400/40' },
+  { id: 'policies',      label: 'Policies',       Icon: FileText,    color: 'from-green-600 to-emerald-800',     ring: 'ring-green-500/40' },
   { id: 'preferences',   label: 'Preferences',    Icon: Settings2,   color: 'from-stone-500 to-neutral-700',   ring: 'ring-stone-400/40' },
   { id: 'referrals',     label: 'Refer & Earn',   Icon: Gift,        color: 'from-rose-500 to-red-600',        ring: 'ring-rose-400/40' },
   { id: 'signout',       label: 'Sign Out',       Icon: LogOut,      color: 'from-red-600 to-rose-800',        ring: 'ring-red-500/50', danger: true },
@@ -263,7 +263,7 @@ export default function MyAccount() {
         {active === 'profile' && (
           <div className="bg-white rounded-2xl border border-slate-100 p-6" data-testid="panel-profile">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-green-600 text-white text-xl font-extrabold flex items-center justify-center shrink-0">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-emerald-700 text-white text-xl font-extrabold flex items-center justify-center shrink-0">
                 {(profile.name || user.name || 'U').slice(0, 1).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
@@ -582,7 +582,7 @@ export default function MyAccount() {
                     <div className="font-medium text-sm">{p.label}</div>
                     <div className="text-xs text-slate-500">{p.desc}</div>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-4 h-4 accent-orange-500" />
+                  <input type="checkbox" defaultChecked className="w-4 h-4 accent-green-600" />
                 </label>
               ))}
             </div>
@@ -707,7 +707,7 @@ export default function MyAccount() {
                     } else if (toppedUp && !entered) {
                       statusLabel = 'Waiting for contest entry';
                       statusClass =
-                        'bg-blue-100 text-blue-700';
+                        'bg-emerald-100 text-emerald-700';
                     } else if (toppedUp && entered) {
                       statusLabel = 'Processing reward';
                       statusClass =
@@ -720,7 +720,7 @@ export default function MyAccount() {
                         className="py-4 flex flex-col sm:flex-row sm:items-center gap-3"
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-fuchsia-500 to-orange-500 text-white text-sm font-bold flex items-center justify-center">
+                          <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-green-500 to-emerald-700 text-white text-sm font-bold flex items-center justify-center">
                             {(r.referred_name || r.referred_email || '?')
                               .slice(0, 1)
                               .toUpperCase()}
