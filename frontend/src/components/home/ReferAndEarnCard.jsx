@@ -54,11 +54,11 @@ export default function ReferAndEarnCard() {
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div
           className="relative rounded-3xl overflow-hidden shadow-2xl"
-          style={{ background: 'linear-gradient(135deg, #161433 0%, #241a5f 55%, #6C2BFF 130%)' }}
+          style={{ background: 'linear-gradient(135deg, #052E16 0%, #14532D 58%, #16A34A 130%)' }}
         >
           {/* decorative blobs */}
           <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-[#FFD54A]/20 blur-3xl" />
-          <div className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-[#8B5CFF]/30 blur-3xl" />
+          <div className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-[#22C55E]/20 blur-3xl" />
 
           <div className="relative grid md:grid-cols-[1.2fr,1fr] gap-8 p-6 md:p-10 items-center">
             <div>
@@ -84,7 +84,7 @@ export default function ReferAndEarnCard() {
                       <button
                         onClick={copyLink}
                         data-testid="refer-copy"
-                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-white text-[#0B0D1F] font-bold text-sm hover:bg-white/90"
+                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-white text-[#052E16] font-bold text-sm hover:bg-white/90"
                       >
                         {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                         {copied ? 'Copied!' : 'Copy link'}
@@ -119,7 +119,7 @@ export default function ReferAndEarnCard() {
             {/* Gift illustration (icon block) */}
             <div className="hidden md:flex items-center justify-center">
               <div className="relative w-64 h-64 rounded-full bg-white/5 border border-white/10 flex items-center justify-center pl-float">
-                <div className="absolute inset-6 rounded-full bg-gradient-to-br from-[#FFD54A]/30 to-[#6C2BFF]/30 blur-xl" />
+                <div className="absolute inset-6 rounded-full bg-gradient-to-br from-[#FFD54A]/30 to-[#22C55E]/25 blur-xl" />
                 <Gift className="relative w-32 h-32 text-[#FFD54A]" strokeWidth={1.3} />
               </div>
             </div>
