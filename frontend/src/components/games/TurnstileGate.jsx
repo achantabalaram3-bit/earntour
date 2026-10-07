@@ -87,9 +87,9 @@ export default function TurnstileGate({ contestId, onVerified }) {
   if (!enabled || verified) return null;  // dev mode or already passed
 
   return (
-    <div className="my-4 p-4 rounded-2xl border-2 border-[#6C2BFF]/20 bg-[#6C2BFF]/5 text-center" data-testid="turnstile-gate">
+    <div className="my-4 p-4 rounded-2xl border-2 border-[#16A34A]/20 bg-[#16A34A]/5 text-center" data-testid="turnstile-gate">
       <div className="inline-flex items-center gap-2 text-slate-700 font-semibold mb-3">
-        <ShieldCheck className="w-4 h-4 text-[#6C2BFF]" /> Verify you&apos;re human to start
+        <ShieldCheck className="w-4 h-4 text-[#16A34A]" /> Verify you&apos;re human to start
       </div>
       <div ref={widgetRef} className="flex justify-center" data-testid="turnstile-widget" />
       {verifying && (
