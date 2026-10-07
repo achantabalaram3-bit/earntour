@@ -8,7 +8,7 @@ const ROLES_INFO = [
   { key: 'super_admin', label: 'Super Admin', color: 'bg-rose-100 text-rose-700', desc: 'Full control including role changes, deleting users, changing settings, and the Emergency stop.' },
   { key: 'admin', label: 'Admin', color: 'bg-amber-100 text-amber-700', desc: 'Manage contests, users, KYC, orders, payments, winners. Cannot demote other admins.' },
   { key: 'operator', label: 'Operator (Production)', color: 'bg-blue-100 text-blue-700', desc: 'Run live draws, manage prize inventory, review KYC. Cannot change site settings.' },
-  { key: 'support', label: 'Customer Support', color: 'bg-indigo-100 text-indigo-700', desc: 'Read-only across users/orders. Can approve/reject KYC. Cannot draw winners or change contests.' },
+  { key: 'support', label: 'Customer Support', color: 'bg-green-100 text-green-700', desc: 'Read-only across users/orders. Can approve/reject KYC. Cannot draw winners or change contests.' },
   { key: 'user', label: 'Player (default)', color: 'bg-slate-100 text-slate-700', desc: 'Standard end-user – buys tickets, submits KYC, receives payouts.' },
 ];
 
@@ -25,10 +25,10 @@ export default function RolesPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="font-display text-2xl font-extrabold flex items-center gap-2"><ShieldCheck className="w-6 h-6 text-[#6C2BFF]" /> Roles &amp; Permissions</h2>
+      <h2 className="font-display text-2xl font-extrabold flex items-center gap-2"><ShieldCheck className="w-6 h-6 text-[#16A34A]" /> Roles &amp; Permissions</h2>
 
       <section className="bg-white rounded-2xl border border-slate-100 p-6">
-        <div className="flex items-center gap-2 mb-3"><Info className="w-4 h-4 text-[#6C2BFF]" /><h3 className="font-display font-bold">Role guide</h3></div>
+        <div className="flex items-center gap-2 mb-3"><Info className="w-4 h-4 text-[#16A34A]" /><h3 className="font-display font-bold">Role guide</h3></div>
         <div className="grid md:grid-cols-2 gap-3">
           {ROLES_INFO.map(r => (
             <div key={r.key} className="border border-slate-100 rounded-xl p-4">
@@ -41,8 +41,8 @@ export default function RolesPage() {
 
       <section className="bg-white rounded-2xl border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2"><Users className="w-4 h-4 text-[#6C2BFF]" /><h3 className="font-display font-bold">Staff members ({staff.length})</h3></div>
-          <a href="/admin/users" className="text-xs text-[#6C2BFF] hover:underline">Manage all users →</a>
+          <div className="flex items-center gap-2"><Users className="w-4 h-4 text-[#16A34A]" /><h3 className="font-display font-bold">Staff members ({staff.length})</h3></div>
+          <a href="/admin/users" className="text-xs text-[#16A34A] hover:underline">Manage all users →</a>
         </div>
         {staff.length === 0 ? (
           <div className="text-center py-10 text-slate-500 text-sm">Only the seeded super-admin so far. Promote users from the Users page or ask Meera.</div>
