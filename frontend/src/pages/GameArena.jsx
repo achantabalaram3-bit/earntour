@@ -48,7 +48,7 @@ export default function GameArena() {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <section className="bg-gradient-to-br from-slate-950 via-indigo-950 to-fuchsia-950 text-white">
+      <section className="bg-gradient-to-br from-[#052E16] via-[#14532D] to-[#166534] text-white">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#FFD54A] font-extrabold">
@@ -97,7 +97,7 @@ export default function GameArena() {
                         className="w-full h-full object-cover group-hover:scale-[1.02] transition"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#6C2BFF] to-fuchsia-700 text-white">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#22C55E] to-[#14532D] text-white">
                         <Gamepad2 className="w-14 h-14" />
                       </div>
                     )}
@@ -112,7 +112,7 @@ export default function GameArena() {
                       {game.category} · Target {game.target_time_s}s
                     </div>
 
-                    <div className="mt-5 inline-flex items-center gap-1 text-[#6C2BFF] font-bold text-sm">
+                    <div className="mt-5 inline-flex items-center gap-1 text-[#16A34A] font-bold text-sm">
                       <Play className="w-4 h-4" />
                       Play Free
                       <ArrowRight className="w-4 h-4" />
