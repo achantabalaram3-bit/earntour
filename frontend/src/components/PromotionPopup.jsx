@@ -413,7 +413,7 @@ export default function PromotionPopup() {
           rounded-3xl
           2xl:rounded-[2.5rem]
 
-          bg-[#0B0D1F]
+          bg-[#052E16]
 
           shadow-2xl
 
@@ -482,7 +482,7 @@ export default function PromotionPopup() {
             sm:aspect-[4/3]
             lg:aspect-video
 
-            bg-[#0B0D1F]
+            bg-[#052E16]
 
             overflow-hidden
           "
@@ -570,7 +570,7 @@ export default function PromotionPopup() {
 
             items-center
 
-            bg-[#0B0D1F]
+            bg-[#052E16]
           "
         >
           <button
@@ -588,7 +588,7 @@ export default function PromotionPopup() {
               from-[#FFD54A]
               to-[#FFB300]
 
-              text-[#0B0D1F]
+              text-[#052E16]
 
               font-black
 
