@@ -16,7 +16,7 @@ const ROLES = ['user', 'operator', 'support', 'admin', 'super_admin'];
 const ROLE_COLORS = {
   user: 'bg-slate-100 text-slate-700',
   operator: 'bg-blue-100 text-blue-700',
-  support: 'bg-indigo-100 text-indigo-700',
+  support: 'bg-green-100 text-green-700',
   admin: 'bg-amber-100 text-amber-700',
   super_admin: 'bg-rose-100 text-rose-700',
 };
@@ -90,7 +90,7 @@ function Select({ value, onChange, children, testid }) {
       value={value}
       onChange={onChange}
       data-testid={testid}
-      className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#6C2BFF]/20"
+      className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20"
     >
       {children}
     </select>
@@ -423,7 +423,7 @@ export default function UsersPage() {
             <SlidersHorizontal className="w-4 h-4 mr-2" />
             Filters
             {activeFilterCount > 0 && (
-              <span className="ml-2 rounded-full bg-[#6C2BFF] text-white text-xs min-w-5 h-5 px-1.5 inline-flex items-center justify-center">
+              <span className="ml-2 rounded-full bg-[#16A34A] text-white text-xs min-w-5 h-5 px-1.5 inline-flex items-center justify-center">
                 {activeFilterCount}
               </span>
             )}
@@ -658,7 +658,7 @@ export default function UsersPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="bg-white border rounded-xl p-3">
-          <UsersIcon className="w-4 h-4 text-indigo-500 mb-1" />
+          <UsersIcon className="w-4 h-4 text-green-500 mb-1" />
           <div className="text-xl font-extrabold">{list.length}</div>
           <div className="text-xs text-slate-500">Filtered users</div>
         </div>
@@ -675,7 +675,7 @@ export default function UsersPage() {
         </div>
 
         <div className="bg-white border rounded-xl p-3">
-          <Ticket className="w-4 h-4 text-blue-500 mb-1" />
+          <Ticket className="w-4 h-4 text-green-600 mb-1" />
           <div className="text-xl font-extrabold">
             {list.reduce((sum, u) => sum + num(u.tickets), 0)}
           </div>
@@ -694,7 +694,7 @@ export default function UsersPage() {
         </div>
 
         <div className="bg-white border rounded-xl p-3">
-          <UserPlus className="w-4 h-4 text-purple-500 mb-1" />
+          <UserPlus className="w-4 h-4 text-emerald-600 mb-1" />
           <div className="text-xl font-extrabold">
             {list.filter(
               u => u.acquisition_type === 'influencer'
@@ -754,7 +754,7 @@ export default function UsersPage() {
                   className="border-t border-slate-100 hover:bg-slate-50"
                   data-testid={`user-row-${u.user_id}`}
                 >
-                  <td className="p-3 font-mono text-xs font-bold text-indigo-700">
+                  <td className="p-3 font-mono text-xs font-bold text-green-700">
                     <Link
                       to={`/admin/users/${u.user_id}`}
                       className="hover:underline"
@@ -815,13 +815,13 @@ export default function UsersPage() {
                     </div>
 
                     {u.influencer_code && (
-                      <div className="text-[11px] text-purple-600 mt-1">
+                      <div className="text-[11px] text-emerald-700 mt-1">
                         {u.influencer_code}
                       </div>
                     )}
 
                     {u.joined_referral_code && (
-                      <div className="text-[11px] text-blue-600 mt-1">
+                      <div className="text-[11px] text-green-700 mt-1">
                         {u.joined_referral_code}
                       </div>
                     )}
