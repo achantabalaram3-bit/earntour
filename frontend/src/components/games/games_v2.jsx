@@ -301,7 +301,7 @@ export function TowerOfHanoi({ onComplete }) {
           <button key={i} onClick={()=>click(i)} data-testid={`hanoi-peg-${i}`}
             className={`h-48 rounded-xl border-2 border-b-8 flex flex-col-reverse items-center justify-start gap-1 pb-2 ${sel===i?'border-orange-500 bg-orange-50':'border-slate-300 bg-slate-50'}`}>
             {peg.map((d,idx) => (
-              <div key={idx} style={{width:`${30+d*20}%`}} className={`h-6 rounded ${d===1?'bg-orange-400':d===2?'bg-rose-500':'bg-fuchsia-600'}`} />
+              <div key={idx} style={{width:`${30+d*20}%`}} className={`h-6 rounded ${d===1?'bg-orange-400':d===2?'bg-rose-500':'bg-green-700'}`} />
             ))}
           </button>
         ))}
@@ -504,7 +504,7 @@ export function TwentyFortyEightMini({ onComplete }) {
       <div className="text-slate-600 text-sm mb-2">Merge tiles to reach <b>32</b>. Use direction buttons.</div>
       <div className="inline-grid grid-cols-3 gap-1 bg-slate-300 p-1 rounded-lg">
         {board.map((r,i)=>r.map((v,j)=>{
-          const colors = { 0:'bg-slate-200 text-transparent', 2:'bg-orange-100', 4:'bg-orange-200', 8:'bg-orange-300', 16:'bg-orange-400 text-white', 32:'bg-rose-500 text-white', 64:'bg-fuchsia-600 text-white' };
+          const colors = { 0:'bg-slate-200 text-transparent', 2:'bg-orange-100', 4:'bg-orange-200', 8:'bg-orange-300', 16:'bg-orange-400 text-white', 32:'bg-rose-500 text-white', 64:'bg-green-700 text-white' };
           return <div key={`${i}-${j}`} data-testid={`tf-${i}-${j}`} className={`w-16 h-16 rounded flex items-center justify-center font-display font-bold text-xl ${colors[v]||'bg-slate-800 text-white'}`}>{v||''}</div>;
         }))}
       </div>
