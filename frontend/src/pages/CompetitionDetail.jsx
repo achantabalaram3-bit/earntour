@@ -149,7 +149,7 @@ export default function CompetitionDetail() {
       <div className="grid lg:grid-cols-2 gap-6 lg:gap-10">
         {/* IMAGE COLUMN - dark neutral bg, object-contain, loading + fallback */}
         <div>
-          <div className="relative aspect-[4/3] md:aspect-video lg:aspect-square rounded-2xl md:rounded-3xl overflow-hidden bg-[#0B0D1F] shadow-xl">
+          <div className="relative aspect-[4/3] md:aspect-video lg:aspect-square rounded-2xl md:rounded-3xl overflow-hidden bg-[#052E16] shadow-xl">
             {imgState === 'loading' && (
               <div className="absolute inset-0 flex items-center justify-center animate-pulse">
                 <ImageIcon className="w-12 h-12 text-white/20" />
@@ -169,7 +169,7 @@ export default function CompetitionDetail() {
         {/* DETAILS COLUMN */}
         <div>
           <div className="flex flex-wrap gap-2 mb-3">
-            <Badge className="bg-[#6C2BFF]/10 text-[#6C2BFF] hover:bg-[#6C2BFF]/10">{c.tag}</Badge>
+            <Badge className="bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/10">{c.tag}</Badge>
             {c.jackpot && <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white">BIG PRIZE</Badge>}
             <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100" data-testid="entry-mode-badge">
               {isSkillGame ? 'Skill Contest' : 'Random Ticket Draw'}
@@ -181,7 +181,7 @@ export default function CompetitionDetail() {
 
           {/* Countdown */}
           <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-            <div className="flex items-center gap-2 text-sm text-slate-600 mb-2"><Clock className="w-4 h-4 text-[#6C2BFF]" /> Draw ends in</div>
+            <div className="flex items-center gap-2 text-sm text-slate-600 mb-2"><Clock className="w-4 h-4 text-[#16A34A]" /> Draw ends in</div>
             <div className="flex gap-2">
               {[{k:'Days',v:t.days},{k:'Hours',v:t.hours},{k:'Mins',v:t.mins},{k:'Secs',v:t.secs}].map((x) => (
                 <div key={x.k} className="flex-1 bg-white rounded-xl p-3 text-center border border-slate-100">
@@ -196,17 +196,17 @@ export default function CompetitionDetail() {
           <div className="mt-6" data-testid="sale-progress">
             <div className="flex justify-between text-sm mb-1">
               <span className="text-slate-600">Entries sold</span>
-              <span className="font-semibold text-[#6C2BFF]">{status.pct}%</span>
+              <span className="font-semibold text-[#16A34A]">{status.pct}%</span>
             </div>
             <Progress value={status.pct} className="h-2" />
           </div>
 
           {isComingSoon ? (
             <div
-              className="mt-6 rounded-2xl border-2 border-[#6C2BFF]/20 bg-[#6C2BFF]/5 p-6 md:p-8 text-center"
+              className="mt-6 rounded-2xl border-2 border-[#16A34A]/20 bg-[#16A34A]/5 p-6 md:p-8 text-center"
               data-testid="coming-soon-detail-lock"
             >
-              <div className="inline-flex items-center rounded-full bg-[#6C2BFF] px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider text-white">
+              <div className="inline-flex items-center rounded-full bg-[#16A34A] px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider text-white">
                 Coming Soon
               </div>
 
@@ -222,12 +222,12 @@ export default function CompetitionDetail() {
             <>
           {/* Skill Question or Random Draw notice */}
           {isSkillGame ? (
-            <div className="mt-6 p-4 md:p-5 rounded-2xl border-2 border-[#6C2BFF]/20 bg-[#6C2BFF]/5" data-testid="skill-question-block">
+            <div className="mt-6 p-4 md:p-5 rounded-2xl border-2 border-[#16A34A]/20 bg-[#16A34A]/5" data-testid="skill-question-block">
               <div className="flex items-center gap-2 mb-3 flex-wrap">
-                <Brain className="w-5 h-5 text-[#6C2BFF]" />
-                <div className="font-display font-bold text-slate-900">Skill Question <span className="text-xs uppercase text-[#6C2BFF] ml-1">Required</span></div>
+                <Brain className="w-5 h-5 text-[#16A34A]" />
+                <div className="font-display font-bold text-slate-900">Skill Question <span className="text-xs uppercase text-[#16A34A] ml-1">Required</span></div>
                 {challenge?.op && (
-                  <span className="text-[10px] uppercase tracking-wider bg-white border border-[#6C2BFF]/20 text-[#6C2BFF] px-1.5 py-0.5 rounded-full font-bold" data-testid="skill-op-badge">
+                  <span className="text-[10px] uppercase tracking-wider bg-white border border-[#16A34A]/20 text-[#16A34A] px-1.5 py-0.5 rounded-full font-bold" data-testid="skill-op-badge">
                     {challenge.op}
                     {challenge.difficulty ? ` - ${challenge.difficulty}` : ''}
                   </span>
@@ -236,7 +236,7 @@ export default function CompetitionDetail() {
                   type="button"
                   onClick={loadChallenge}
                   disabled={challengeLoading || verified}
-                  className="ml-auto text-xs text-[#6C2BFF] hover:underline disabled:opacity-40"
+                  className="ml-auto text-xs text-[#16A34A] hover:underline disabled:opacity-40"
                   data-testid="new-question-btn"
                 >
                   {challengeLoading ? 'Loading...' : 'New question'}
@@ -252,7 +252,7 @@ export default function CompetitionDetail() {
                   return (
                     <button key={opt} onClick={() => submitAnswer(opt)} disabled={verified}
                       data-testid={`skill-option-${opt}`}
-                      className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition-colors ${state === 'correct' ? 'bg-emerald-500 border-emerald-500 text-white' : state === 'wrong' ? 'bg-rose-500 border-rose-500 text-white' : isSel ? 'bg-white border-[#6C2BFF] text-[#6C2BFF]' : 'bg-white border-slate-200 hover:border-[#6C2BFF]/60'}`}>
+                      className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition-colors ${state === 'correct' ? 'bg-emerald-500 border-emerald-500 text-white' : state === 'wrong' ? 'bg-rose-500 border-rose-500 text-white' : isSel ? 'bg-white border-[#16A34A] text-[#16A34A]' : 'bg-white border-slate-200 hover:border-[#16A34A]/60'}`}>
                       <span className="inline-flex items-center gap-2 justify-center">
                         {state === 'correct' && <Check className="w-4 h-4" />}
                         {state === 'wrong' && <X className="w-4 h-4" />}
@@ -307,7 +307,7 @@ export default function CompetitionDetail() {
                 <button
                   key={n}
                   onClick={() => setTickets(n)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${tickets === n ? 'bg-[#6C2BFF] text-white border-[#6C2BFF]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#6C2BFF]/40'}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${tickets === n ? 'bg-[#16A34A] text-white border-[#16A34A]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#16A34A]/40'}`}
                 >{n}</button>
               ))}
             </div>
@@ -334,11 +334,11 @@ export default function CompetitionDetail() {
                 checked={confirmed}
                 onChange={(e) => setConfirmed(e.target.checked)}
                 data-testid="before-you-buy-check"
-                className="mt-0.5 w-4 h-4 accent-[#6C2BFF]"
+                className="mt-0.5 w-4 h-4 accent-[#16A34A]"
               />
               <span>
                 <strong>Before you buy -</strong> I confirm I have read the contest information above, I&apos;m aged 18+ and resident in the UK, I understand that I am purchasing {tickets} entry ticket{tickets > 1 ? 's' : ''} to <em>{c.title}</em> for <strong>{fmtTokens(subtotal)}</strong>, and I accept the {' '}
-                <Link to="/legal/terms" className="text-[#6C2BFF] underline">Terms &amp; Conditions</Link>.
+                <Link to="/legal/terms" className="text-[#16A34A] underline">Terms &amp; Conditions</Link>.
               </span>
             </label>
 
@@ -359,7 +359,7 @@ export default function CompetitionDetail() {
                 </span>
               </Button>
             </Link>
-            <p className="text-[11px] text-slate-500 text-center mt-2"><Link to="/free-entry" className="text-[#6C2BFF] hover:underline">Free postal entry route</Link> available - no purchase necessary.</p>
+            <p className="text-[11px] text-slate-500 text-center mt-2"><Link to="/free-entry" className="text-[#16A34A] hover:underline">Free postal entry route</Link> available - no purchase necessary.</p>
           </div>
             </>
           )}
@@ -416,15 +416,15 @@ export default function CompetitionDetail() {
                 c.age_restriction && ['Age restrictions', c.age_restriction],
 
                 ['Data & privacy',
-                  <>Your data is handled per our <Link key="pp" to="/legal/privacy" className="text-[#6C2BFF] underline">Privacy Policy</Link>.</>
+                  <>Your data is handled per our <Link key="pp" to="/legal/privacy" className="text-[#16A34A] underline">Privacy Policy</Link>.</>
                 ],
 
                 ['Complaints',
-                  <>See our <Link key="cx" to="/legal/complaints" className="text-[#6C2BFF] underline">Complaints Policy</Link>.</>
+                  <>See our <Link key="cx" to="/legal/complaints" className="text-[#16A34A] underline">Complaints Policy</Link>.</>
                 ],
 
                 ['Full Terms & Conditions',
-                  <><Link key="tc" to="/legal/terms" className="text-[#6C2BFF] underline">Read the full Terms &amp; Conditions</Link> before entering.</>
+                  <><Link key="tc" to="/legal/terms" className="text-[#16A34A] underline">Read the full Terms &amp; Conditions</Link> before entering.</>
                 ],
               ].filter(Boolean).map(([title, body], i) => (
                 <li key={i} data-testid={`contest-info-item-${i}`}>
