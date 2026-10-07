@@ -57,7 +57,7 @@ export default function HowItWorks() {
         <div className="max-w-7xl mx-auto px-4 lg:px-8 grid md:grid-cols-3 gap-4">
           {NOTES.map(({ Icon, title, text }) => (
             <div key={title} className="rounded-2xl border border-slate-100 bg-slate-50 p-6">
-              <Icon className="w-8 h-8 text-[#6C2BFF]" />
+              <Icon className="w-8 h-8 text-[#16A34A]" />
               <h3 className="mt-3 font-display font-bold text-lg text-slate-900">{title}</h3>
               <p className="mt-1 text-sm text-slate-600">{text}</p>
             </div>
