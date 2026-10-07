@@ -378,7 +378,7 @@ export default function EditContestDialog({ contest, open, onClose, onSaved, mod
           <div className="grid grid-cols-2 gap-2" data-testid="contest-mode-toggle">
             <button type="button" onClick={() => upd('public_coming_soon', false)}
               data-testid="contest-mode-real"
-              className={`rounded-xl border-2 px-4 py-3 text-sm font-extrabold ${!form.public_coming_soon ? 'border-[#6C2BFF] bg-[#6C2BFF]/5 text-[#6C2BFF]' : 'border-slate-200 text-slate-500'}`}>
+              className={`rounded-xl border-2 px-4 py-3 text-sm font-extrabold ${!form.public_coming_soon ? 'border-[#16A34A] bg-[#16A34A]/5 text-[#16A34A]' : 'border-slate-200 text-slate-500'}`}>
               REAL CONTEST
             </button>
             <button type="button" onClick={() => upd('public_coming_soon', true)}
@@ -419,12 +419,12 @@ export default function EditContestDialog({ contest, open, onClose, onSaved, mod
                   type="button"
                   onClick={onPickFile}
                   disabled={uploading}
-                  className="flex aspect-[2/1] w-full flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 transition hover:border-[#6C2BFF] hover:bg-[#6C2BFF]/5 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex aspect-[2/1] w-full flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 transition hover:border-[#16A34A] hover:bg-[#16A34A]/5 disabled:cursor-not-allowed disabled:opacity-60"
                   data-testid="coming-soon-image-upload"
                 >
                   {uploading ? (
                     <>
-                      <Loader2 className="h-8 w-8 animate-spin text-[#6C2BFF]" />
+                      <Loader2 className="h-8 w-8 animate-spin text-[#16A34A]" />
 
                       <span className="mt-3 text-sm font-extrabold text-slate-800">
                         Uploading image...
@@ -432,7 +432,7 @@ export default function EditContestDialog({ contest, open, onClose, onSaved, mod
                     </>
                   ) : (
                     <>
-                      <Upload className="h-8 w-8 text-[#6C2BFF]" />
+                      <Upload className="h-8 w-8 text-[#16A34A]" />
 
                       <span className="mt-3 text-sm font-extrabold text-slate-900">
                         Upload Rectangle Image
@@ -738,7 +738,7 @@ export default function EditContestDialog({ contest, open, onClose, onSaved, mod
                     onClick={() => upd('engine_type', value)}
                     className={`rounded-xl border-2 px-3 py-3 text-xs font-black ${
                       (form.engine_type || 'leaderboard') === value
-                        ? 'border-[#6C2BFF] bg-[#6C2BFF]/5 text-[#6C2BFF]'
+                        ? 'border-[#16A34A] bg-[#16A34A]/5 text-[#16A34A]'
                         : 'border-slate-200 bg-white text-slate-600'
                     }`}
                     data-testid={`real-engine-${value}`}
@@ -976,7 +976,7 @@ export default function EditContestDialog({ contest, open, onClose, onSaved, mod
             onClick={save}
             disabled={busy || uploading}
             data-testid="contest-save-btn"
-            className="bg-[#6C2BFF] hover:bg-[#4A15D9]"
+            className="bg-[#16A34A] hover:bg-[#4A15D9]"
           >{busy
             ? 'Saving...'
             : uploading
