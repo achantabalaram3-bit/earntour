@@ -56,7 +56,7 @@ export default function Operations() {
           { label: 'Overdue draws', value: upcoming.overdue.length, color: 'from-red-500 to-rose-600' },
           { label: 'Ending in 48h', value: upcoming.ending_soon.length, color: 'from-amber-500 to-orange-500' },
           { label: 'Contests live', value: live, color: 'from-emerald-500 to-teal-500' },
-          { label: 'Payouts pending', value: winners.filter(w => !w.paid_out).length, color: 'from-fuchsia-500 to-pink-500' },
+          { label: 'Payouts pending', value: winners.filter(w => !w.paid_out).length, color: 'from-emerald-600 to-pink-500' },
         ].map((s, i) => (
           <div key={i} data-testid={`ops-stat-${i}`} className={`rounded-2xl p-5 bg-gradient-to-br ${s.color} text-white shadow-lg`}>
             <div className="text-xs opacity-90 uppercase tracking-wider">{s.label}</div>
