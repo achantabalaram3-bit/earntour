@@ -1444,7 +1444,7 @@ if (
               {
                 championMode
                   ? (
-                      'Complete 1 to 20 as fast as possible. ' +
+                      `Complete 1 to ${target} as fast as possible. ` +
                       'There is no countdown failure limit. ' +
                       'Your verified server time determines your ranking.'
                     )

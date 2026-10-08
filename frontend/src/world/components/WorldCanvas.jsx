@@ -1606,11 +1606,6 @@ function ChampionshipSection({
               backendState?.token_unlock_enabled !== false &&
               Number(localLevel) >= 2;
 
-            const skippable =
-              Boolean(
-                backendState?.skippable,
-              );
-
             return (
               <button
                 key={
@@ -1736,32 +1731,6 @@ function ChampionshipSection({
                     </span>
                   )}
 
-                {isCurrent &&
-                  skippable && (
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      className="pl1000-skip"
-                      data-testid={
-                        `free-world-skip-${globalLevel}`
-                      }
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        window.dispatchEvent(
-                          new CustomEvent(
-                            'pl-world-level-skip',
-                            {
-                              detail: {
-                                level: localLevel,
-                              },
-                            },
-                          ),
-                        );
-                      }}
-                    >
-                      SKIP
-                    </span>
-                  )}
               </button>
             );
           },
@@ -2314,81 +2283,9 @@ export default function WorldCanvas({
     };
   }, [previewState, refreshBalance]);
 
-  // Catch-up SKIP: old users who fell behind may skip remaining old levels.
-  // Server validates eligibility; we just call it and refresh authoritative
-  // state (which then triggers the stage-advance effect below if Level 10 was
-  // passed). SKIP consumes no attempt/token and grants no reward.
-  useEffect(() => {
-    const onSkip = (event) => {
-      if (previewState) return;
-      const level = Number(event?.detail?.level);
-      if (!level) return;
-      worldAPI
-        .skipLevel(level)
-        .then((res) => {
-          toast.success(`Level ${level} skipped`, {
-            description: 'Advanced to the next level.',
-          });
-          return worldAPI.state();
-        })
-        .then((fresh) => {
-          if (fresh) setStateAndCountdowns(fresh);
-        })
-        .catch((error) => {
-          const detail = error?.response?.data?.detail;
-          const message =
-            typeof detail === 'string'
-              ? detail
-              : detail?.message || 'Unable to skip this level.';
-          toast.error(message);
-        });
-    };
-
-    window.addEventListener('pl-world-level-skip', onSkip);
-    return () => {
-      window.removeEventListener('pl-world-level-skip', onSkip);
-    };
-  }, [previewState]);
-
-
-  // Avatar position fix: advance the user's PERSONAL Champion stage once their
-  // Championship has become available (their matching global Championship has
-  // closed). This uses the existing personal-progression endpoint only; the
-  // backend advances champion_stage -> next and resets current_level to 1, so
-  // the avatar (derived from champion_stage + current_level) moves to Level 1
-  // of the next Championship instead of sitting on the stale Level 10 of the
-  // just-completed one. Backend guards make this a no-op (409) until the
-  // Championship period has actually closed, and champion_ready flips to false
-  // after a successful advance, so this never loops or resets new users.
-  useEffect(() => {
-    if (previewState) return undefined;
-    const progress = worldState?.progress;
-    if (!progress) return undefined;
-    if (progress.champion_ready !== true) return undefined;
-    if (progress.season_complete === true) return undefined;
-
-    let cancelled = false;
-    worldAPI
-      .continueAfterChampion()
-      .then(() => (cancelled ? null : worldAPI.state()))
-      .then((fresh) => {
-        if (!cancelled && fresh) setStateAndCountdowns(fresh);
-      })
-      .catch(() => {
-        /* Championship period not closed yet (or already advanced): leave the
-           avatar where it is; it will advance on the next visit once closed. */
-      });
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    previewState,
-    worldState?.progress?.champion_ready,
-    worldState?.progress?.champion_stage,
-    worldState?.progress?.season_complete,
-  ]);
-
+  // Champion progression is never triggered automatically by opening the map.
+  // A player must finish their Champion Challenge before the server can
+  // authorize moving to the next Championship.
 
   const confirmEarlyUnlock = async () => {
     if (!unlockModal || unlockBusy) {
@@ -3063,6 +2960,37 @@ export default function WorldCanvas({
           : 'is-positioning',
       ].join(' ')}
     >
+      <style>{`
+        /* Champion name card: smooth, visible click feedback. */
+        .pl1000-champion-level:not(.is-completed-history) {
+          cursor: pointer;
+          transition: background-color 180ms ease, border-color 180ms ease,
+            box-shadow 180ms ease, filter 180ms ease, transform 180ms ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .pl1000-champion-level:not(.is-completed-history):hover,
+        .pl1000-champion-level:not(.is-completed-history):focus-visible {
+          background-color: #294e83 !important;
+          border-color: #8ccaff !important;
+          box-shadow: 0 0 0 3px rgba(111, 191, 255, .32),
+            0 12px 28px rgba(15, 55, 105, .4) !important;
+          filter: brightness(1.12);
+        }
+        .pl1000-champion-level:not(.is-completed-history):active {
+          background-color: #167caa !important;
+          transform: scale(.97);
+          filter: brightness(1.22);
+        }
+        .pl1000-champion-level:not(.is-completed-history):hover .pl1000-champion-name,
+        .pl1000-champion-level:not(.is-completed-history):focus-visible .pl1000-champion-name,
+        .pl1000-champion-level:not(.is-completed-history):active .pl1000-champion-name {
+          color: #fff !important;
+          text-shadow: 0 0 10px rgba(175, 226, 255, .8);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .pl1000-champion-level { transition: none !important; }
+        }
+      `}</style>
       <div className="pl2d-world-header pl2d-world-header-final">
 
         <div className="pl2d-final-brand">

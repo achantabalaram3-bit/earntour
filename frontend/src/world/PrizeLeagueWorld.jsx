@@ -287,7 +287,7 @@ export default function PrizeLeagueWorld() {
                   ?.game_config || {}),
 
                 target_number:
-                  20,
+                  30,
 
                 timer_mode:
                   'stopwatch',

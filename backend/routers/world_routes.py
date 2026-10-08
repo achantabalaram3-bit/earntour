@@ -2103,7 +2103,7 @@ ROYAL_VILLAGE_CHAMPION = {
     "name": "Champion Arena I",
     "game_id": "number_sequence",
     "game_config": {
-        "target_number": 20,
+        "target_number": 30,
         "timer_mode": "stopwatch",
     },
     # Champion uses fastest verified completion.
@@ -6768,11 +6768,12 @@ async def champion_session_start(
             },
         )
 
-    game_id = contest.get(
-        "game_id"
-    )
+    # All personal Champion stages C1-C100 use the official
+    # Number Sequence engine, even when a legacy global contest
+    # record has an empty or older game_id. Preserve all other
+    # contest settings and the existing eligibility checks.
+    game_id = "number_sequence"
 
-    # First real Champion game currently supported.
     if game_id != "number_sequence":
         raise HTTPException(
             status_code=409,
@@ -6921,8 +6922,8 @@ async def champion_session_start(
         ) or {}
     )
 
-    # Champion V2 reuses the exact same Number Sequence game.
-    target = 20
+    # All Champion stages use Number Sequence 1-30.
+    target = 30
 
     timer_mode = str(
         game_config.get(
@@ -11342,6 +11343,12 @@ async def free_world_skip_level(level: int, request: Request):
             detail={"code": "INVALID_LEVEL", "message": "Invalid level."},
         )
 
+    if stage == 1 and level == 10:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "CHAMPION_PLAY_REQUIRED", "message": "Championship 1 Level 10 cannot be skipped."},
+        )
+
     completed_levels = set(
         int(x) for x in (progress.get("completed_levels") or [])
     )
@@ -11491,6 +11498,27 @@ async def continue_after_champion(
                     "Complete the normal progression first.",
             },
         )
+
+    # C1 cannot be bypassed: the user must actually submit their personal
+    # Championship 1 Champion Challenge before moving to Championship 2.
+    if champion_stage == 1:
+        submitted_c1 = await db.world_champion_sessions.find_one(
+            {
+                "season_id": WORLD_SEASON_ID,
+                "user_id": user["user_id"],
+                "champion_stage_snapshot": 1,
+                "status": "submitted",
+            },
+            {"_id": 1},
+        )
+        if not submitted_c1:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": "CHAMPION_PLAY_REQUIRED",
+                    "message": "Play and submit Championship 1 Champion Challenge before entering Championship 2.",
+                },
+            )
 
     # The user may advance only when THEIR matching global
     # Championship has closed. A later closed Championship must
